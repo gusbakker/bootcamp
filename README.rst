@@ -25,8 +25,8 @@ The project has four basic apps:
 Technology Stack
 ----------------
 
-* Python_ 3.6.x / 3.7.x
-* `Django 3`_
+* Python_ 3.11
+* `Django 4`_
 * PostgreSQL_
 * `Redis 5.0`_
 * Daphne_
@@ -42,7 +42,7 @@ Technology Stack
 * Cookiecutter_
 
 .. _Python: https://www.python.org/
-.. _`Django 3`: https://www.djangoproject.com/
+.. _`Django 4`: https://www.djangoproject.com/
 .. _PostgreSQL: https://www.postgresql.org/
 .. _`Redis 5.0`: https://redis.io/documentation
 .. _Daphne: https://github.com/django/daphne/
