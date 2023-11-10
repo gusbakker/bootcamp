@@ -27,7 +27,7 @@
             <div id="contact-info" class="card" style="margin-bottom: 15px">
                 <div class="card-body">
                     <h4 class="card-title">
-                        {% ifequal request.user object %}
+                        {% if request.user == object %}
                         {% else %}
                             {% if not request.user in object.contact_list.all %}
                                 {% if request.user in object.pending_list.all %}
@@ -84,9 +84,9 @@
                                    id="send_msg" title="Send message to this user"
                                    style="margin-right: 10px;">Message</a>
                             {% endif %}
-                        {% endifequal %}
+                        {% endif %}
 
-                        {% ifequal request.user object %}
+                        {% if request.user == object %}
                         {% else %}
                             {% if request.user in object.followers.all %}
                                 <a href="{% url 'users:follow_user' object.id %}" class="btn btn-primary btn-sm"
@@ -96,14 +96,14 @@
                                    class="btn btn-outline-primary btn-sm"
                                    id="follow_user">Follow</a>
                             {% endif %}
-                        {% endifequal %}
+                        {% endif %}
                     </h4>
                     <h1 class="fn">
                         {{ object.get_profile_name }}
-                        {% ifequal request.user object %}
+                        {% if request.user == object %}
                             <a href="{% url 'users:update' %}"
                                class="btn btn-primary pull-right">{% trans 'Edit Profile' %}</a>
-                        {% endifequal %}
+                        {% endif %}
                     </h1>
                     <p>
                         <i class="fa fa-user-circle-o" aria-hidden="true"></i>
@@ -137,11 +137,11 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#user_friends">Friends</a>
                 </li>
-                {% ifequal request.user object %}
+                {% if request.user == object %}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#user_friend_requests">Friend Requests</a>
                     </li>
-                {% endifequal %}
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#user_followers">Followers</a>
                 </li>
@@ -155,11 +155,11 @@
                 <div id="user_activity" class="tab-pane active"><br>
                     {% include 'users/user_activity.html' with user_activity=user_activity %}
                 </div>
-                {% ifequal request.user object %}
+                {% if request.user == object %}
                     <div id="user_friend_requests" class="tab-pane fade"><br>
                         {% include 'users/user_friend_requests.html' with users=object.pending_list.all %}
                     </div>
-                {% endifequal %}
+                {% endif %}
                 <div id="user_friends" class="tab-pane fade"><br>
                     {% include 'users/user_friends.html' with users=object.contact_list.all %}
                 </div>

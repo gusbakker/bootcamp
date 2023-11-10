@@ -15,7 +15,7 @@
                 <h4>
                     <a href="{% url 'users:detail' user.username %}">{{ user.username }}</a>
                 </h4>
-                {% ifequal request.user user %}
+                {% if request.user == user %}
                 {% else %}
                     {% if not request.user in user.contact_list.all %}
                         {% if request.user in user.pending_list.all %}
@@ -69,9 +69,9 @@
                            title="Send message to this user"
                            style="float:right; margin-right:10px;">Message</a>
                     {% endif %}
-                {% endifequal %}
+                {% endif %}
 
-                {% ifequal request.user user %}
+                {% if request.user == user %}
                 {% else %}
                     {% if request.user in user.followers.all %}
                         <a href="{% url 'users:follow_user' user.id %}"
@@ -84,7 +84,7 @@
                            id="follow_user"
                            style="float:right; margin-right:10px;">Follow</a>
                     {% endif %}
-                {% endifequal %}
+                {% endif %}
                 <p class="text-muted">Member since <span>{{ user.member_since|naturaltime }}</span>
                 </p>
             </div>

@@ -1,40 +1,24 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from allauth.account.views import PasswordChangeView
 
 from . import views
 
 app_name = "users"
 urlpatterns = [
-    url(regex=r"^~users$", view=views.UserListView.as_view(), name="list"),
-    url(regex=r"^~redirect/$", view=views.UserRedirectView.as_view(), name="redirect"),
-    url(regex=r"^~update/$", view=views.UserUpdateView.as_view(), name="update"),
-    url(regex=r"^~password/$", view=PasswordChangeView.as_view(), name="account_change_password"),
-    url(r"^picture/$", views.picture, name="picture"),
-    url(r"^upload_picture/$", views.upload_picture, name="upload_picture"),
-    url(
-        r"^save_uploaded_picture/$",
-        views.save_uploaded_picture,
-        name="save_uploaded_picture",
-    ),
-    url(r'^(?P<username>[\w.@+-]+)/following/$', views.FollowingPageView.as_view(), name='view_following'),
-    url(r'^(?P<username>[\w.@+-]+)/followers/$', views.FollowersPageView.as_view(), name='view_all_followers'),
-    url(r'^follow_user/(?P<user_id>\d+)/$',
-        views.follow_user,
-        name='follow_user'),
-    url(r'^send_message_request/(?P<user_id>\d+)/$',
-        views.send_message_request,
-        name='send_message_request'),
-    url(r'^accept_message_request/(?P<user_id>\d+)/$',
-        views.accept_message_request,
-        name='accept_message_request'),
-    url(r'^block_spammer/(?P<user_id>\d+)/$',
-        views.block_spammer,
-        name='block_spammer'),
-    url(regex=r'^(?P<username>[\w.@+-]+)/friends/all/$', view=views.all_friends, name='all_friends'),
-    url(r'^(?P<username>[\w.@+-]+)/friends/requests/$', views.all_message_requests, name='all_message_requests'),
-    url(
-        regex=r"^(?P<username>[\w.@+-]+)/$",
-        view=views.UserDetailView.as_view(),
-        name="detail",
-    ),
+    re_path(r"^~users$", view=views.UserListView.as_view(), name="list"),
+    re_path(r"^~redirect/$", view=views.UserRedirectView.as_view(), name="redirect"),
+    re_path(r"^~update/$", view=views.UserUpdateView.as_view(), name="update"),
+    re_path(r"^~password/$", view=PasswordChangeView.as_view(), name="account_change_password"),
+    path("picture/", views.picture, name="picture"),
+    path("upload_picture/", views.upload_picture, name="upload_picture"),
+    path("save_uploaded_picture/", views.save_uploaded_picture, name="save_uploaded_picture"),
+    path('<str:username>/following/', views.FollowingPageView.as_view(), name='view_following'),
+    path('<str:username>/followers/', views.FollowersPageView.as_view(), name='view_all_followers'),
+    path('follow_user/<int:user_id>/', views.follow_user, name='follow_user'),
+    path('send_message_request/<int:user_id>/', views.send_message_request, name='send_message_request'),
+    path('accept_message_request/<int:user_id>/', views.accept_message_request, name='accept_message_request'),
+    path('block_spammer/<int:user_id>/', views.block_spammer, name='block_spammer'),
+    path('<str:username>/friends/all/', views.all_friends, name='all_friends'),
+    path('<str:username>/friends/requests/', views.all_message_requests, name='all_message_requests'),
+    path('<str:username>/', views.UserDetailView.as_view(), name="detail"),
 ]

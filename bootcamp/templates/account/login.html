@@ -28,11 +28,11 @@
             <span class="login100-form-title">{% trans 'Login' %}</span>
             <span class="txt3"></span>
             <form class="login" method="POST" action="{% url 'account_login' %}">
-                <a href="{% provider_login_url "facebook" method="js_sdk" %}"
-                   class="btn btn-block btn-social btn-facebook">
-                    <span class="fa fa-facebook"></span>
-                    Sign in with Facebook
-                </a>
+{#                <a href="{% provider_login_url "facebook" method="js_sdk" %}"#}
+{#                   class="btn btn-block btn-social btn-facebook">#}
+{#                    <span class="fa fa-facebook"></span>#}
+{#                    Sign in with Facebook#}
+{#                </a>#}
                 {#                <a href="#" method=""#}
                 {#                   class="btn btn-block btn-social btn-google">#}
                 {#                    <span class="fa fa-google"></span>#}
@@ -40,7 +40,7 @@
                 {#                </a>#}
                 <div class="or-seperator"><i>or</i></div>
                 {% csrf_token %}
-                {{ form|crispy }}
+                {{ form }}
                 {% if redirect_field_value %}
                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                 {% endif %}

@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import path
 
 from bootcamp.search import views
 
 app_name = "search"
 urlpatterns = [
-    url(r"^$", views.SearchListView.as_view(), name="results"),
-    url(r"^suggestions/$", views.get_suggestions, name="suggestions"),
+    path(r"^$", views.SearchListView.as_view(), name="results"),
+    path(r"^suggestions/$", views.get_suggestions, name="suggestions"),
 ]

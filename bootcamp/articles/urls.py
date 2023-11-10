@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 
 from bootcamp.articles.views import (
     ArticlesListView,
@@ -10,10 +10,11 @@ from bootcamp.articles.views import (
 
 app_name = "articles"
 urlpatterns = [
-    url(r"^$", ArticlesListView.as_view(), name="list"),
-    url(r"^write-new-article/$", CreateArticleView.as_view(), name="write_new"),
-    url(r"^drafts/$", DraftsListView.as_view(), name="drafts"),
-    url(r"^edit/(?P<pk>\d+)/$", EditArticleView.as_view(), name="edit_article"),
-    url(r"^(?P<slug>[-\w]+)/$", DetailArticleView.as_view(), name="article"),
-    url(r"^tag/(?P<tag>[-\w]+)/$", ArticlesListView.as_view(), name="tagged"),
+    path('', ArticlesListView.as_view(), name="list"),
+    path('write-new-article/', CreateArticleView.as_view(), name="write_new"),
+    path('drafts/', DraftsListView.as_view(), name="drafts"),
+    path('edit/<int:pk>/', EditArticleView.as_view(), name="edit_article"),
+    path('<slug:slug>/', DetailArticleView.as_view(), name="article"),
+    path('tag/<slug:tag>/', ArticlesListView.as_view(), name="tagged"),
 ]
+

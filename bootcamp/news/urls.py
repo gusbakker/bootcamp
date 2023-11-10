@@ -1,20 +1,16 @@
-from django.conf.urls import url
+from django.urls import path
 
 from bootcamp.news import views
 
 app_name = "news"
 urlpatterns = [
-    url(r"^$", views.NewsListView.as_view(), name="list"),
-    # url(
-    #     r"^delete/(?P<pk>[-\w]+)/$", views.NewsDeleteView.as_view(), name="delete_news"
-    # ),
-    url(r"^remove/$", views.remove_news, name="remove_news"),
-    url(r"^post-news/$", views.post_news, name="post_news"),
-    url(r"^like/$", views.like, name="like_post"),
-    url(r"^get-thread/$", views.get_thread, name="get_thread"),
-    url(r"^post-comment/$", views.post_comment, name="post_comments"),
-    url(
-        r"^update-interactions/$", views.update_interactions, name="update_interactions"
-    ),
-    url(r'^(?P<pk>[\w.@+-]+)/$', views.news, name='news'),
+    path('', views.NewsListView.as_view(), name="list"),
+    # path('delete/<slug:pk>/', views.NewsDeleteView.as_view(), name="delete_news"),
+    path('remove/', views.remove_news, name="remove_news"),
+    path('post-news/', views.post_news, name="post_news"),
+    path('like/', views.like, name="like_post"),
+    path('get-thread/', views.get_thread, name="get_thread"),
+    path('post-comment/', views.post_comment, name="post_comments"),
+    path('update-interactions/', views.update_interactions, name="update_interactions"),
+    path('<str:pk>/', views.news, name='news'),
 ]
