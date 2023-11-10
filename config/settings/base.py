@@ -221,7 +221,7 @@ EMAIL_BACKEND = env(
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL regex.
-ADMIN_URL = r"^admin/"
+ADMIN_URL = "dashboard/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
 # ADMINS = [
 #     ("""Gustavo Bakker""", 'gustavobakker@hotmail.com'),

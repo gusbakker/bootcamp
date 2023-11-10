@@ -34,11 +34,15 @@ def paginate_data(qs, page_size, page, paginated_type, **kwargs):
     )
 
 
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
 def ajax_required(f):
     """Not a mixin, but a nice decorator to validate than a request is AJAX"""
 
     def wrap(request, *args, **kwargs):
-        if not request.is_ajax():
+        if not is_ajax(request):
             return HttpResponseBadRequest()
 
         return f(request, *args, **kwargs)

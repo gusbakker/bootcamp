@@ -121,7 +121,7 @@ EMAIL_SUBJECT_PREFIX = env("EMAIL_SUBJECT_PREFIX", default="[Antisocial Network]
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL regex.
-ADMIN_URL = env("ADMIN_URL", default=r"^admin/")
+ADMIN_URL = env("ADMIN_URL", default="dashboard/")
 
 # Anymail (Mailgun)
 # ------------------------------------------------------------------------------
