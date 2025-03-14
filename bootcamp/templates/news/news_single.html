@@ -2,78 +2,216 @@
 {% load humanize static %}
 {% load thumbnail %}
 {% load urlize_target_blank %}
-<html xmlns:og="http://ogp.me/ns#">
+
 <li class="infinite-item" news-id="{{ news.uuid_id }}" csrf="{{ csrf_token }}">
-    <div class="card news-body">
-        <div class="card-header">
-            <div class="profile-picture">
+    <div class="card news-body news-card">
+        <div class="card-header d-flex align-items-center">
+            <div class="profile-picture me-3">
                 <a href="{% url 'users:detail' news.user.username %}">
-                    <img src="{{ news.user.get_picture }}" class="user-image pull-left"
-                         style="width: 60px; border-radius: 50%;"
+                    <img src="{{ news.user.get_picture }}" class="user-image rounded-circle"
+                         style="width: 50px; height: 50px; object-fit: cover;"
                          alt="{% trans 'User Image' %}">
                 </a>
             </div>
-            <a href="{% url 'users:detail' news.user.username %}">{{ news.user.username }}</a>
-            <small class="timestamp">{{ news.timestamp|naturaltime }}</small>
-            <i class="fa fa-gear pull-right" href="#" id="dotsDropdown" role="button"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            </i>
-            <div class="dropdown-menu" aria-labelledby="dotsDropdown">
-                {% if news.user == request.user %}
-                    <a class="dropdown-item remove-news" style="color: red" href="#">
-                        {% trans 'Delete' %}
-                    </a>
-                {% endif %}
-                {% if news.user != request.user %}
-                    <a class="dropdown-item" style="color: red" href="#">
-                        {% trans 'Report This' %}
-                    </a>
-                {% endif %}
+            <div class="flex-grow-1">
+                <a href="{% url 'users:detail' news.user.username %}" class="text-decoration-none fw-bold">
+                    {{ news.user.username }}
+                </a>
+                <div>
+                    <small class="timestamp text-muted">{{ news.timestamp|naturaltime }}</small>
+                    {% if news.user.location %}
+                    <small class="user-info d-block text-muted">{{ news.user.location }}</small>
+                    {% endif %}
+                </div>
             </div>
-            <p class="user-info">{{ news.user.location }}</p>
+            <div class="dropdown">
+                <i class="fa fa-gear" href="#" id="dotsDropdown" role="button"
+                   data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                </i>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dotsDropdown">
+                    {% if news.user == request.user %}
+                        <li>
+                            <a class="dropdown-item remove-news text-danger" href="#">
+                                <i class="fa fa-trash-o me-2"></i>{% trans 'Delete' %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if news.user != request.user %}
+                        <li>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa fa-flag me-2"></i>{% trans 'Report This' %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
 
         {% thumbnail news.image "750x500" as im %}
             <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="card-img-top">
         {% empty %}
         {% endthumbnail %}
+
         <div class="card-body">
-            <div class="">
+            <div class="post-content mb-3">
                 <p>{{ news|urlize|urlize_target_blank }}</p>
                 {% if news.meta_url %}
-                    <a href="{{ news.meta_url }}" target="_blank" class="card meta">
+                    <a href="{{ news.meta_url }}" target="_blank" class="card meta text-decoration-none">
                         {% if news.meta_image %}
                             <div class="card-img-top" style="background-image: url({{ news.meta_image }})"></div>
                         {% endif %}
                         <div class="card-body">
                             {% if news.meta_title %}
-                                <h5 class="card-title">{{ news.meta_title }}</h5>
+                                <h5 class="card-title h6">{{ news.meta_title }}</h5>
                             {% endif %}
-
                         </div>
                     </a>
-{#                {% elif news.meta_image %}#}
-{#                    <div class="card-img-top" style="background-image: url({{ news.meta_image }})"></div>#}
                 {% endif %}
             </div>
-            <div class="interaction" id="interaction">
-                <a href="#" class="like" title="{% for i in news.get_likers %}{{ i }}&#10;{% endfor %}">
+
+            <div class="interaction border-top pt-3" id="interaction">
+                <a href="#" class="like btn btn-sm btn-light rounded-pill me-2" title="{% for i in news.get_likers %}{{ i }}&#10;{% endfor %}">
                     {% if request.user in news.get_likers %}
-                        <i class="heart fa fa-heart" aria-hidden="true"></i>
+                        <i class="heart fa fa-heart text-danger" aria-hidden="true"></i>
                     {% else %}
                         <i class="heart fa fa-heart-o" aria-hidden="true"></i>
                     {% endif %}
-                    <span class="like-count">{{ news.count_likers }}</span>
+                    <span class="like-count ms-1">{{ news.count_likers }}</span>
                 </a>
-                <a href="#" class="comment"><i class="fa fa-comment-o" aria-hidden="true"></i>
-                    <span class="comment-count">{{ news.count_thread }}</span>
+                <a href="#" class="comment btn btn-sm btn-light rounded-pill me-2">
+                    <i class="fa fa-comment-o" aria-hidden="true"></i>
+                    <span class="comment-count ms-1">{{ news.count_thread }}</span>
                 </a>
-                <a href="#" class="share"><i class="fa fa-share" aria-hidden="true"></i>
+                <a href="#" class="share btn btn-sm btn-light rounded-pill">
+                    <i class="fa fa-share" aria-hidden="true"></i>
                 </a>
             </div>
         </div>
     </div>
 </li>
-{#<!-- Modals -->#}
-{#{% include 'news/news_confirm_delete.html' %}#}
-{#<!-- End Modals -->#}
+
+<style>
+    /* Inline styles to ensure compatibility */
+    .news-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.2s ease;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .news-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .news-card .card-header {
+        background-color: transparent;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .news-card .card-body {
+        padding: 1.25rem;
+    }
+
+    .post-content {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        overflow-wrap: break-word;
+    }
+
+    .interaction a {
+        display: inline-block;
+        text-decoration: none;
+        margin-right: 0.75rem;
+        color: #555;
+    }
+
+    .interaction a i {
+        margin-right: 0.25rem;
+    }
+
+    .btn-light {
+        background-color: #f8f9fa;
+        border-color: #f0f0f0;
+    }
+
+    .btn-light:hover {
+        background-color: #f0f0f0;
+        border-color: #e0e0e0;
+    }
+
+    /* Meta Link Styles */
+    .meta.card {
+        background-color: #f8f9fa;
+        margin-bottom: 0.75rem;
+        color: #6c757d;
+        border: none;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .meta.card:hover {
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .meta .card-body {
+        padding: 0.8rem;
+    }
+
+    .meta .card-title, .meta .card-text, .meta .card-btn {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    .meta .card-img-top {
+        height: 160px;
+        background: center no-repeat #e9ecef;
+        background-size: cover;
+    }
+
+    /* Dark mode compatibility */
+    [data-theme="dark"] .news-card {
+        background-color: #1e1e1e;
+        border-color: #333;
+    }
+
+    [data-theme="dark"] .news-card .card-header {
+        border-color: #333;
+    }
+
+    [data-theme="dark"] .meta.card {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .meta.card:hover {
+        background-color: #333;
+    }
+
+    [data-theme="dark"] .interaction .btn {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .interaction .btn:hover {
+        background-color: #3d3d3d;
+    }
+
+    [data-theme="dark"] .btn-light {
+        background-color: #2d2d2d;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .btn-light:hover {
+        background-color: #3d3d3d;
+        border-color: #444;
+        color: #fff;
+    }
+</style>

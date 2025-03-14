@@ -1,4 +1,8 @@
 [data-theme="dark"] {
+    --bg-color: #121212;
+    --card-bg: #1E1E1E;
+    --text-color: #E0E0E0;
+    --border-color: #333;
     background-color: #17191d !important;
     color: #eee !important;
 }
@@ -16,11 +20,13 @@
 }
 
 [data-theme="dark"] .modal-content {
-    background-color: #1c1e26 !important;
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color);
 }
 
 [data-theme="dark"] .card {
-    background-color: #222632 !important;
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color);
 }
 
 [data-theme="dark"] .card a {
@@ -47,6 +53,10 @@
     background-color: #2d323d !important;
 }
 
+[data-theme="dark"] .navbar-custom-style {
+    background: linear-gradient(to right, #1A1A1A, #2A2A2A);
+}
+
 [data-theme="dark"] .navbar-light .navbar-nav .nav-link {
     color: #eee;
 }
@@ -59,17 +69,44 @@
     color: #d9dadc !important;
 }
 
-[data-theme="dark"] .navbar-custom-style {
-    margin-bottom: 10px;
-    background: #fff;
-    border-top: 2px solid #1f89de;
-    box-shadow: 0 1px 0 rgba(4, 12, 21, 0.84), 0 1px 3px rgba(36, 45, 56, 0.72), 0 4px 20px rgba(48, 61, 73, 0.65), 0 1px 1px rgba(73, 89, 99, 0.74);
+[data-theme="dark"] input[name="query"]#searchInput {
+    background-color: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] input[name="query"]#searchInput:hover,
+[data-theme="dark"] input[name="query"]#searchInput:focus {
+    background-color: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
 }
 
 [data-theme="dark"] .popover {
     color: #17191f;
 }
 
+/* Dark mode footer styles */
+[data-theme="dark"] .footer-container {
+    background-color: #222632;
+    border-top: 1px solid #2c3141;
+}
 
+[data-theme="dark"] .footer-heading {
+    color: #eee;
+}
 
+[data-theme="dark"] .footer-links a {
+    color: #aaa;
+}
 
+[data-theme="dark"] .footer-links a:hover {
+    color: #2196f3;
+}
+
+[data-theme="dark"] .social-icon {
+    background-color: #333;
+    color: #eee;
+}
+
+[data-theme="dark"] hr {
+    border-color: #2c3141;
+}

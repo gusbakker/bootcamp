@@ -1,30 +1,68 @@
 {% load i18n static %}
 {% load thumbnail %}
 
-<div class="modal fade" id="newsThreadModal" tabindex="-1" role="dialog" aria-labelledby="newsThreadModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="newsThreadModal" tabindex="-1" aria-labelledby="newsThreadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <!-- Body -->
-            <div class="modal-body">
-                <ul class="stream" id="newsContent"></ul>
-                <form id="replyNewsForm" role="form" method="post" action="#" onsubmit="return false">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold" id="newsThreadModalLabel">{% trans "Comments" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Original Post -->
+            <div class="modal-body pb-0">
+                <ul class="stream p-0 m-0" id="newsContent"></ul>
+            </div>
+
+            <!-- Comments Area -->
+            <div class="modal-body pt-0">
+                <hr>
+                <h6 class="fw-semibold mb-3">{% trans "Replies" %}</h6>
+                <ul class="stream p-0 m-0" id="threadContent"></ul>
+            </div>
+
+            <!-- Reply Form -->
+            <div class="modal-footer border-top">
+                <form id="replyNewsForm" role="form" method="post" action="#" onsubmit="return false" class="w-100">
                     {% csrf_token %}
                     <input type="hidden" name="parent" value="">
-                    <div class="form-group">
-                                        <textarea id="replyInput" name="reply" rows="2" class="form-control"
-                                                  maxlength="280"></textarea>
-                        <span id="replyCounter" class="pull-right">280</span>
+                    <div class="input-group">
+                        <textarea id="replyInput" name="reply" rows="1" class="form-control"
+                                maxlength="280" placeholder="{% trans 'Write a comment...' %}"></textarea>
+                        <button type="button" id="replyNews" class="btn btn-primary">
+                            <i class="fa-regular fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-end mt-1">
+                        <small id="replyCounter" class="text-muted">280</small>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" id="replyNews" class="btn btn-primary pull-right">
-                    <i class="fa fa-paper-plane" aria-hidden="true"></i> {% trans 'Reply' %}
-                </button>
-            </div>
-            <!-- Body -->
-            <ul class="stream" id="threadContent"></ul>
         </div>
     </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Character counter for reply
+    const replyInput = document.getElementById('replyInput');
+    const replyCounter = document.getElementById('replyCounter');
+
+    replyInput.addEventListener('keyup', function() {
+      const charCount = this.value.length;
+      replyCounter.textContent = 280 - charCount;
+
+      if (charCount > 240) {
+        replyCounter.classList.add('text-danger');
+      } else {
+        replyCounter.classList.remove('text-danger');
+      }
+    });
+
+    // Auto-expand textarea
+    replyInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+  });
+</script>

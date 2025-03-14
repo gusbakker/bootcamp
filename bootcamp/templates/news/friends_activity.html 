@@ -1,0 +1,128 @@
+{% load i18n static %}
+{% load thumbnail %}
+
+<div class="card friends-activity-card mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0 font-weight-bold">{% trans 'Friends Activity' %}</h5>
+        <a href="{% url 'users:list' %}" class="text-primary">
+            <i class="fa fa-users" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="card-body p-0">
+        <div class="activity-section">
+            <h6 class="section-title">{% trans 'Recent Activity' %}</h6>
+
+            <div class="activity-item">
+                <div class="activity-avatar">
+                    <img src="{% static 'img/favicon.png' %}" alt="User">
+                </div>
+                <div class="activity-content">
+                    <p><a href="#" class="user-link">Alex Smith</a> liked your post</p>
+                    <span class="activity-time">20 min ago</span>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-avatar">
+                    <img src="{% static 'img/favicon.png' %}" alt="User">
+                </div>
+                <div class="activity-content">
+                    <p><a href="#" class="user-link">Jamie Lee</a> shared a new photo</p>
+                    <span class="activity-time">1 hour ago</span>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-avatar">
+                    <img src="{% static 'img/favicon.png' %}" alt="User">
+                </div>
+                <div class="activity-content">
+                    <p><a href="#" class="user-link">Taylor Kim</a> joined the group <a href="#">Tech Talk</a></p>
+                    <span class="activity-time">3 hours ago</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Section -->
+        <div class="activity-section">
+            <h6 class="section-title">{% trans 'Upcoming' %}</h6>
+
+            <div class="calendar-item">
+                <div class="calendar-icon">
+                    <i class="fa fa-calendar-o" aria-hidden="true"></i>
+                    <span class="calendar-date">24</span>
+                </div>
+                <div class="calendar-content">
+                    <p class="event-title">Morgan's Birthday</p>
+                    <span class="event-time">This Saturday</span>
+                </div>
+            </div>
+
+            <div class="calendar-item">
+                <div class="calendar-icon">
+                    <i class="fa fa-calendar-o" aria-hidden="true"></i>
+                    <span class="calendar-date">03</span>
+                </div>
+                <div class="calendar-content">
+                    <p class="event-title">Web Development Meetup</p>
+                    <span class="event-time">Next Tuesday</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suggested Friends Section -->
+        <div class="activity-section">
+            <h6 class="section-title">{% trans 'People You May Know' %}</h6>
+
+            <div class="suggested-friend">
+                <div class="suggestion-avatar">
+                    <img src="{% static 'img/favicon.png' %}" alt="User">
+                </div>
+                <div class="suggestion-content">
+                    <p class="suggestion-name">Chris Parker</p>
+                    <span class="mutual-friends">3 mutual connections</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary">Connect</button>
+            </div>
+
+            <div class="suggested-friend">
+                <div class="suggestion-avatar">
+                    <img src="{% static 'img/favicon.png' %}" alt="User">
+                </div>
+                <div class="suggestion-content">
+                    <p class="suggestion-name">Robin Chen</p>
+                    <span class="mutual-friends">5 mutual connections</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary">Connect</button>
+            </div>
+        </div>
+
+        <!-- Trending Topics Section -->
+        <div class="activity-section">
+            <h6 class="section-title">{% trans 'Trending Topics' %}</h6>
+
+            <div class="trending-topics">
+                <a href="#" class="trending-tag">#WebDev</a>
+                <a href="#" class="trending-tag">#MachineLearning</a>
+                <a href="#" class="trending-tag">#Python</a>
+                <a href="#" class="trending-tag">#TechNews</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Footer -->
+    <div class="card-footer">
+        <div class="quick-actions">
+            <a href="{% url 'users:list' %}" class="quick-action-btn">
+                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                <span>Find Friends</span>
+            </a>
+            <a href="{% url 'groups:list' %}" class="quick-action-btn">
+                <i class="fa fa-users" aria-hidden="true"></i>
+                <span>Join Groups</span>
+            </a>
+        </div>
+    </div>
+</div>

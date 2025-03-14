@@ -1,7 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Audiowide);
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap);
 
 body {
     padding-top: 70px;
+    font-family: 'Poppins', sans-serif;
 }
 
 header .navbar-brand {
@@ -10,19 +12,45 @@ header .navbar-brand {
     font-family: "Audiowide", cursive;
 }
 
-.navbar a{
-    font-family: Verdana !important;
+/* Override the previous navbar styles with !important where needed */
+.navbar a {
+    font-family: 'Poppins', sans-serif !important;
 }
 
 .navbar-custom-style {
-    margin-bottom: 10px;
-    background: #2e3f54;
-    box-shadow: 0 1px 0 rgba(12, 13, 14, 0.16), 0 1px 3px rgba(12, 13, 14, 0.22),
-    0 4px 20px rgba(12, 13, 14, 0.09), 0 1px 1px rgba(12, 13, 14, 0.06);
+    margin-bottom: 10px !important;
+    background: linear-gradient(to right, #2e3f54, #3c5169) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+    transition: all 0.3s ease !important;
 }
 
-.navbar-light .navbar-nav .nav-link {
-    color: white;
+.navbar-light .navbar-nav .nav-link,
+.navbar-dark .navbar-nav .nav-link {
+    color: white !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 4px !important;
+    margin: 0 2px !important;
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:hover {
+    background-color: rgba(255,255,255,0.1) !important;
+    color: white !important;
+}
+
+.navbar-brand {
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.navbar-brand img {
+    transition: transform 0.3s ease !important;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.1) !important;
 }
 
 .markdownx .markdownx-editor {
@@ -32,16 +60,26 @@ header .navbar-brand {
 }
 
 .page-header {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    padding-bottom: 9px;
-    border-bottom: 1px solid #eeeeee;
+    position: relative;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.page-header:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: #2196f3;
+    border-radius: 3px;
 }
 
 .page-header h1 {
-    margin: 0;
-    font-weight: 100;
-    font-size: 2em;
+    font-weight: 600;
+    font-size: 1.8rem;
 }
 
 .no-data {
@@ -49,42 +87,72 @@ header .navbar-brand {
     padding: 1em 0;
 }
 
-.bell-notifications {
-    font-size: 1.5em;
-    color: white;
-    text-decoration: none;
-    position: relative;
-    display: inline-block;
-    padding: 4px;
-    margin-right: 10px;
-}
-
-.bell-notifications .badge {
-    font-size: 50%;
-    position: absolute;
-    right: -5px;
-    border-radius: 50%;
-    background-color: red;
-    color: white;
-}
-
+/* Override notification styles with more specific selectors and !important where needed */
+.bell-notifications,
 .inbox-notifications {
-    font-size: 1.5em;
-    color: white;
-    text-decoration: none;
-    position: relative;
-    display: inline-block;
-    padding: 4px;
-    margin-right: 10px;
+    font-size: 1.2em !important;
+    padding: 0.5rem !important;
+    border-radius: 50% !important;
+    transition: all 0.2s !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    width: 36px !important;
+    height: 36px !important;
+    color: white !important;
+    text-decoration: none !important;
+    margin-right: 0 !important;
 }
 
+.bell-notifications:hover,
+.inbox-notifications:hover {
+    background-color: rgba(255,255,255,0.1) !important;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.bell-notifications .badge,
 .inbox-notifications .badge {
-    font-size: 50%;
-    position: absolute;
-    right: -5px;
-    border-radius: 50%;
-    background-color: red;
-    color: white;
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    border-radius: 50% !important;
+    font-size: 0.6rem !important;
+    padding: 0.25rem 0.4rem !important;
+    background-color: #FF5252 !important;
+    border: 2px solid #2e3f54 !important;
+    transition: all 0.2s !important;
+}
+
+.alert {
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: #28a745;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    border-left-color: #17a2b8;
+}
+
+.close {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.close:hover {
+    opacity: 1;
 }
 
 .alert-debug {
@@ -102,6 +170,9 @@ header .navbar-brand {
 .popover {
     max-width: 350px;
     width: 350px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: none;
 }
 
 .popover ul {
@@ -132,33 +203,481 @@ header .navbar-brand {
 }
 
 .user-image {
-  margin-right: 15px;
+    margin-right: 15px;
+    border-radius: 50% !important;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.2);
 }
 
 .user-info {
-  font-size: 0.9em;
+    font-size: 0.9em;
+}
+
+.dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: none;
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #2196f3;
+    border-color: #2196f3;
+}
+
+.btn-primary {
+    background: #2196f3;
+    border: none;
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #1976d2;
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.5);
+    transform: translateY(-1px);
 }
 
 input[name="query"]#searchInput {
-    background-color: rgb(246, 247, 248);
-    padding-left: 30px;
-    background-size: 18px;
-    width: 360px;
-    text-indent: 10px;
+    background-color: rgba(255,255,255,0.1) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.3s !important;
     margin: 0px 15px;
     outline: none;
-    border-radius: 4px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb(237, 239, 241);
+    text-indent: 10px;
     box-shadow: none;
     font-size: 14px;
     line-height: 21px;
+    width: auto;
 }
 
 input[name="query"]#searchInput:hover,
 input[name="query"]#searchInput:focus {
+    background-color: rgba(255,255,255,0.15) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+}
+
+input[name="query"]#searchInput::placeholder {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+/* Footer Styles */
+.footer-container {
+    background-color: #f8f9fa;
+    border-top: 1px solid #eaeaea;
+}
+
+.footer-heading {
+    position: relative;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.footer-heading:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 30px;
+    height: 2px;
+    background-color: #2196f3;
+}
+
+.footer-links a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: inline-block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+    color: #2196f3;
+    text-decoration: none;
+}
+
+.social-icons {
+    display: flex;
+}
+
+.social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #eee;
+    color: #555;
+    margin-right: 10px;
+    transition: all 0.3s;
+}
+
+.social-icon:hover {
+    background-color: #2196f3;
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Fix dropdown alignment in navbar */
+.navbar .dropdown-menu-right {
+    right: 0;
+    left: auto;
+}
+
+/* Fix spacing in navbar */
+.navbar .d-flex.align-items-center {
+    height: 100%;
+}
+
+.navbar .nav-item.dropdown {
+    display: flex;
+    align-items: center;
+}
+
+/* Fix navbar dropdown link padding */
+.navbar .nav-link.dropdown-toggle.p-0 {
+    padding: 0.5rem !important;
+}
+
+/* Friends Activity Widget Styles */
+.friends-activity-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.friends-activity-card .card-header {
     background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px;
+}
+
+.activity-section {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Activity Item Styles */
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.activity-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.activity-avatar img,
+.suggestion-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.activity-content {
+    margin-left: 12px;
+    flex-grow: 1;
+}
+
+.activity-content p {
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.user-link {
+    font-weight: 600;
+    color: #333;
+}
+
+.activity-time {
+    font-size: 11px;
+    color: #999;
+}
+
+/* Calendar Styles */
+.calendar-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.calendar-item:last-child {
+    margin-bottom: 0;
+}
+
+.calendar-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #f1f9ff;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #2196f3;
+}
+
+.calendar-date {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.calendar-content {
+    margin-left: 12px;
+}
+
+.event-title {
+    margin-bottom: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.event-time {
+    font-size: 11px;
+    color: #999;
+}
+
+/* Suggested Friends Styles */
+.suggested-friend {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.suggested-friend:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.suggestion-content {
+    margin-left: 12px;
+    flex-grow: 1;
+}
+
+.suggestion-name {
+    margin-bottom: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.mutual-friends {
+    font-size: 11px;
+    color: #999;
+}
+
+.btn-outline-primary {
+    border-color: #d0e8ff;
+    color: #2196f3;
+    background: transparent;
+    padding: 3px 8px;
+    font-size: 11px;
+}
+
+.btn-outline-primary:hover {
+    background-color: #2196f3;
     border-color: #2196f3;
 }
 
+/* Trending Topics */
+.trending-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.trending-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #f1f9ff;
+    border-radius: 20px;
+    color: #2196f3;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.trending-tag:hover {
+    background-color: #2196f3;
+    color: white;
+    text-decoration: none;
+}
+
+/* Quick Actions */
+.friends-activity-card .card-footer {
+    background-color: #f9f9f9;
+    padding: 12px 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.quick-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #666;
+    transition: all 0.2s;
+    font-size: 12px;
+}
+
+.quick-action-btn i {
+    font-size: 18px;
+    margin-bottom: 4px;
+    color: #2196f3;
+}
+
+.quick-action-btn:hover {
+    color: #2196f3;
+    text-decoration: none;
+}
+
+/* Popular Groups Card Styles */
+.popular-groups-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.popular-groups-card .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px;
+}
+
+.group-list {
+    padding: 8px 0;
+}
+
+.group-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    transition: background-color 0.2s;
+    color: inherit;
+    text-decoration: none;
+}
+
+.group-item:hover {
+    background-color: #f8f9fa;
+    text-decoration: none;
+    color: inherit;
+}
+
+.group-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.group-icon i {
+    font-size: 18px;
+}
+
+.group-info {
+    flex-grow: 1;
+}
+
+.group-name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.group-members {
+    font-size: 12px;
+    color: #999;
+}
+
+/* Dark Mode Styles for Widgets */
+[data-theme="dark"] .friends-activity-card,
+[data-theme="dark"] .popular-groups-card {
+    background-color: #222632;
+}
+
+[data-theme="dark"] .friends-activity-card .card-header,
+[data-theme="dark"] .popular-groups-card .card-header {
+    background-color: #2c3141;
+    border-bottom-color: #353c4e;
+}
+
+[data-theme="dark"] .activity-section {
+    border-bottom-color: #353c4e;
+}
+
+[data-theme="dark"] .user-link {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .friends-activity-card .card-footer {
+    background-color: #2c3141;
+    border-top-color: #353c4e;
+}
+
+[data-theme="dark"] .activity-item,
+[data-theme="dark"] .suggested-friend {
+    border-bottom-color: #353c4e;
+}
+
+[data-theme="dark"] .calendar-icon {
+    background-color: #353c4e;
+}
+
+[data-theme="dark"] .trending-tag {
+    background-color: #353c4e;
+}
+
+[data-theme="dark"] .quick-action-btn {
+    color: #aaa;
+}
+
+[data-theme="dark"] .group-item:hover {
+    background-color: #2a2f3a;
+}

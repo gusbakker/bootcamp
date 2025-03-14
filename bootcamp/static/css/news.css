@@ -1,196 +1,275 @@
+/*
+ * News CSS - Modernized version with Bootstrap 5 compatibility
+ */
 
+/* General Stream Styles */
 ul.stream {
   margin: 0;
   padding: 0;
-}
-
-ul.stream li {
   list-style: none;
 }
 
-.infinite-container li {
-  list-style: none;
+.infinite-container {
+  margin-top: 1.5rem;
 }
 
 .infinite-item {
-  margin-bottom: 30px;
+  margin-bottom: 1.5rem;
+  list-style: none;
 }
 
-.stream {
-  margin: 2em 0 0 0;
-  padding: 0;
+/* Post Card Styles */
+.news-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.stream li:last-child {
-  border-bottom: none;
+.news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
-ul.stream li a img.user {
-  width: 60px;
-  border-radius: 100px;
-  float: left;
+.news-card .card-header {
+  background-color: transparent;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-ul.stream li div.post {
-  padding: 0 0.1em 0 1.2em;
-  overflow-x: auto;
+.news-card .card-body {
+  padding: 1.25rem;
 }
 
-ul.stream li div.post h3 {
-  font-size: 1em;
-  margin: 0;
+/* Post Content Styles */
+.post-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
-ul.stream li div.post h3 small {
-  margin-left: .3em;
-  font-size: .8em;
+.post-content p {
+  margin-bottom: 0.75rem;
 }
 
-ul.stream li div.post p {
-  margin: 0;
+.post-content p:last-child {
+  margin-bottom: 0;
 }
 
-ul.stream li div.post div.interaction {
-  padding-top: 0;
+/* User Info */
+.user-info {
+  font-size: 0.85rem;
+  color: #6c757d;
 }
 
-ul.stream li div.post div.interaction a {
-  margin-right: .6em;
-  font-size: .8em;
-}
-
-.post {
-  margin-left: 10px;
-  padding: 0 0 0 1.2em;
-  overflow-x: auto;
-}
-
-.ads-column {
-    margin-top: 78px;
-}
-
+/* Timestamp */
 .timestamp {
-  font-size: 0.8em;
-  color: grey;
+  font-size: 0.8rem;
+  color: #6c757d;
 }
 
-.news-comment {
-  padding: 0.7rem 1.5rem 0.7rem 1.5rem;
-  overflow-x: auto;
+/* Interaction Buttons */
+.interactions .btn {
+  font-size: 0.85rem;
+  padding: 0.375rem 0.75rem;
+  transition: all 0.2s ease;
 }
 
-.interaction {
+.interactions .btn:hover {
+  background-color: #f0f0f0;
 }
 
-.interaction a {
-  margin-right: 1.3em;
-  text-decoration: none;
+.like-count, .comment-count {
+  font-size: 0.85rem;
 }
 
-.interaction a span {
-  margin-left: 0.3em;
-}
-
+/* Stream Updates */
 .stream-update {
   text-align: center;
-  border-bottom: 1px solid #eeeeee;
+  background-color: rgba(13, 110, 253, 0.1);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: none;
+}
+
+.stream-update:hover {
+  background-color: rgba(13, 110, 253, 0.15);
 }
 
 .stream-update a {
-  display: block;
-  padding: .6em 0;
-  background-color: #f5f8fa;
-}
-
-.stream-update a:hover {
+  color: #0d6efd;
   text-decoration: none;
-  background-color: #e1e8ed;
+  font-weight: 500;
+  display: block;
 }
 
-.compose {
-  display: none;
-  border-bottom: 1px solid #eee;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.col-centered {
-  float: none;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-.compose h2 {
-  font-size: 1.4em;
-}
-
-.empty {
-  margin: 0 .8em;
-  font-size: .9em;
-}
-
+/* Loading Indicator */
 .load {
   text-align: center;
-  padding-top: 1em;
-  border-top: 1px solid #eeeeee;
+  padding: 1.5rem 0;
   display: none;
-  padding: 15px 0;
 }
 
-.loadcomment {
-  text-align: center;
-}
-
-.remove-news {
-  color: #bbbbbb;
-  float: right;
-  cursor: pointer;
-}
-
-.remove-news:hover {
-  color: #333333;
-
-}
-
-.dotsmenu{
-  content: '\2807';
-  font-size: 3em;
-  color: #2e2e2e
-}
-
+/* Meta Link Styles */
 .meta.card {
-  background-color: #f8f8f8;
+  background-color: #f8f9fa;
   margin-bottom: 10px;
   color: #6c757d;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .meta.card:hover {
   background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .meta .card-body {
   padding: 0.8rem;
 }
 
-.meta .card-title, .meta .card-text, .meta .card-btn{
-  font-size: 0.8em;
-  line-height: 1.4em;
+.meta .card-title, .meta .card-text, .meta .card-btn {
+  font-size: 0.9rem;
+  line-height: 1.4;
   margin: 0;
 }
 
-.meta .card-img-top{
-  height: 100px;
-  background: center no-repeat #ccc;
+.meta .card-img-top {
+  height: 160px;
+  background: center no-repeat #e9ecef;
   background-size: cover;
 }
 
-.meta .card-text{
-  margin-bottom: 5px;
+/* Button Styles */
+.btn-compose {
+  border-radius: 0.5rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 5px rgba(13, 110, 253, 0.15);
+  transition: all 0.2s ease;
 }
 
-.meta:hover .btn{
-  background-color: #888;
-  color: #FFF;
+.btn-compose:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+}
 
+.btn-compose i {
+  margin-right: 0.5rem;
+}
+
+/* Modal Styles */
+.modal .modal-content {
+  border: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal .modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.5rem;
+}
+
+.modal .modal-body {
+  padding: 1.5rem;
+}
+
+.modal .modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.5rem;
+}
+
+/* Utility classes */
+.fs-7 {
+  font-size: 0.85rem !important;
+}
+
+.fs-8 {
+  font-size: 0.75rem !important;
+}
+
+/* Dark mode styles */
+[data-theme="dark"] .news-card {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+
+[data-theme="dark"] .news-card .card-header {
+  border-color: #333;
+}
+
+[data-theme="dark"] .meta.card {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .meta.card:hover {
+  background-color: #333;
+}
+
+[data-theme="dark"] .stream-update {
+  background-color: rgba(13, 110, 253, 0.15);
+}
+
+[data-theme="dark"] .stream-update:hover {
+  background-color: rgba(13, 110, 253, 0.25);
+}
+
+[data-theme="dark"] .interactions .btn {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .interactions .btn:hover {
+  background-color: #3d3d3d;
+}
+
+[data-theme="dark"] .btn-light {
+  background-color: #2d2d2d;
+  border-color: #333;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .btn-light:hover {
+  background-color: #3d3d3d;
+  border-color: #444;
+  color: #fff;
+}
+
+[data-theme="dark"] .modal-content {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  border-color: #333;
+}
+
+[data-theme="dark"] .form-control {
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .form-control:focus {
+  background-color: #2d2d2d;
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .badge.bg-light {
+  background-color: #2d2d2d !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] hr {
+  border-color: #333;
 }
