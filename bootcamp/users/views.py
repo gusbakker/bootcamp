@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from io import BytesIO, StringIO
@@ -97,18 +98,30 @@ def upload_picture(request):
                 destination.write(chunk)
 
         im = Image.open(filename)
+
+        # Convert RGBA to RGB if needed
+        if im.mode == 'RGBA':
+            rgb_im = Image.new('RGB', im.size, (255, 255, 255))  # White background
+            rgb_im.paste(im, mask=im.split()[3])  # Use alpha channel as mask
+            im = rgb_im
+
         width, height = im.size
         if width > 350:
             new_width = 350
             new_height = (height * 350) / width
             new_size = new_width, new_height
-            im.thumbnail(new_size, Image.ANTIALIAS)
-            im.save(filename)
+            # Replace deprecated ANTIALIAS with LANCZOS
+            im.thumbnail(new_size, Image.Resampling.LANCZOS)
+
+        im.save(filename)
 
         return redirect('/picture/?upload_picture=uploaded')
 
-    except Exception:
+    except Exception as e:
+        logging.error(f"Error uploading picture: {e}", exc_info=True)
         return redirect('/picture/')
+
+
 
 
 @login_required

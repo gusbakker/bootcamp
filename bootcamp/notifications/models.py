@@ -107,10 +107,6 @@ class Notification(models.Model):
     _LIKED_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/news/{3}/">{4}</a>'  # noqa: E501
     _REPLIED_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/news/{3}/">{4}</a>'  # noqa: E501
     _FAVORITED_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/qa/">{4}</a>'  # noqa: E501
-    _ANSWERED_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/qa/">{4}</a>'  # noqa: E501
-    _ACCEPTED_ANSWER_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/qa/">{4}</a>'  # noqa: E501
-    _UPVOTED_QUESTION_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/qa/">{4}</a>'  # noqa: E501
-    _UPVOTED_ANSWER_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/qa/">{4}</a>'  # noqa: E501
     _EDITED_ARTICLE_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/articles/">{4}</a>'  # noqa: E501
     _ALSO_COMMENTED_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/articles/">{4}</a>'  # noqa: E501
     _COMMENTED_TEMPLATE = '<a href="/{0}/">{1}</a> {2} <a href="/articles/">{4}</a>'  # noqa: E501
@@ -262,14 +258,14 @@ class Notification(models.Model):
                     escape(self.actor)
                 )
 
-            elif self.verb == self.VOTED:
-                return self._UPVOTED_QUESTION_TEMPLATE.format(
-                    escape(self.actor),
-                    escape(self.actor),
-                    escape(self.get_verb_display()),
-                    self.action_object_object_id,
-                    escape(self.get_summary(self.action_object))
-                )
+            # elif self.verb == self.VOTED:
+            #     return self._UPVOTED_QUESTION_TEMPLATE.format(
+            #         escape(self.actor),
+            #         escape(self.actor),
+            #         escape(self.get_verb_display()),
+            #         self.action_object_object_id,
+            #         escape(self.get_summary(self.action_object))
+            #     )
             return f"{self.actor} {self.get_verb_display()}... [deleted]"
 
     def get_summary(self, value):

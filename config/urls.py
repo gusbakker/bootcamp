@@ -30,7 +30,6 @@ urlpatterns = [
     path("articles/", include("bootcamp.articles.urls", namespace="articles")),
     path("news/", include("bootcamp.news.urls", namespace="news")),
     path("messages/", include("bootcamp.messager.urls", namespace="messager")),
-    path("qa/", include("bootcamp.qa.urls", namespace="qa")),
     path("search/", include("bootcamp.search.urls", namespace="search")),
     path("", include("bootcamp.users.urls", namespace="users")),
     path("groups/", include("bootcamp.groups.urls", namespace="groups")),

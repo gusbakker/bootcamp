@@ -19,7 +19,6 @@ The project has four basic apps:
 
 * Feed (A Twitter-like microblog)
 * Articles (A collaborative blog)
-* Question & Answers (A Stack Overflow-like platform)
 * Messenger (A basic chat-a-like tool for asynchronous communication.)
 
 Technology Stack

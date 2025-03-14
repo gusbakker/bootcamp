@@ -89,7 +89,6 @@ LOCAL_APPS = [
     "bootcamp.messager.apps.MessagerConfig",
     "bootcamp.news.apps.NewsConfig",
     "bootcamp.notifications.apps.NotificationsConfig",
-    "bootcamp.qa.apps.QaConfig",
     "bootcamp.search.apps.SearchConfig",
     "bootcamp.groups.apps.GroupsConfig",
 ]
@@ -171,6 +170,16 @@ MEDIA_ROOT = str(ROOT_DIR("media"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("REDIS_URL"),  # Use the env variable
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
@@ -249,7 +258,7 @@ SOCIALACCOUNT_ADAPTER = "bootcamp.users.adapters.SocialAccountAdapter"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REDIS setup
-REDIS_URL = f'{env("REDIS_URL", default="redis://127.0.0.1:6379")}/{0}'
+REDIS_URL = env("REDIS_URL", default="redis://redis:6379/1")
 
 # django-channels setup
 ASGI_APPLICATION = "config.routing.application"

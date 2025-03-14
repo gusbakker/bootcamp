@@ -1,6 +1,7 @@
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
+from asgiref.sync import async_to_sync
 
 
 class NotificationsConsumer(AsyncWebsocketConsumer):
@@ -29,3 +30,7 @@ class NotificationsConsumer(AsyncWebsocketConsumer):
         """Receive method implementation to redirect any new message received
         on the websocket to broadcast to all the clients."""
         await self.send(text_data=json.dumps(text_data))
+
+    async def send_notification(self, event):
+        """ Send notification to WebSocket """
+        await self.send(text_data=json.dumps(event["text"]))
