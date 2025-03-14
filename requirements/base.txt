@@ -7,7 +7,13 @@ pytz  # https://github.com/stub42/pytz
 redis  # https://github.com/antirez/redis
 whitenoise  # https://github.com/evansd/whitenoise
 awesome-slugify>=1.6.5
-
+django-crispy-forms>=2.3
+crispy-bootstrap4>=2024.10
+django-storages[boto3]
+boto3
+requests  # Add this line temporarily
+PyJWT>=2.0.0  # Use a recent version, 2.0.0 or later
+cryptography>=3.3.2  #  A good, compatible version
 
 # Django
 # ------------------------------------------------------------------------------

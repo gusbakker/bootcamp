@@ -36,8 +36,12 @@ class Vote(models.Model):
     class Meta:
         verbose_name = _("Vote")
         verbose_name_plural = _("Votes")
-        index_together = ("content_type", "object_id")
-        unique_together = ("user", "content_type", "object_id")
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "content_type", "object_id"], name="unique_vote"),
+        ]
 
 
 class QuestionQuerySet(models.query.QuerySet):

@@ -1,32 +1,39 @@
-FROM python:3.6-alpine
+FROM python:3.11-slim-buster
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
-RUN apk update \
-  # psycopg2 dependencies
-  && apk add --virtual build-deps gcc python3-dev musl-dev \
-  && apk add postgresql-dev \
-  # Pillow dependencies
-  && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev \
-  # CFFI dependencies
-  && apk add libffi-dev py-cffi \
-  # Translations dependencies
-  && apk add gettext \
-  # https://docs.djangoproject.com/en/2.0/ref/django-admin/#dbshell
-  && apk add postgresql-client
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libfreetype6-dev \
+    liblcms2-dev \
+    libopenjp2-7-dev \
+    libtiff5-dev \
+    libffi-dev \
+    gettext \
+    postgresql-client \
+    bash
 
-# Requirements have to be pulled and installed here, otherwise caching won't work
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Requirements are installed here to take advantage of caching
 COPY ./requirements /requirements
 RUN pip install -r /requirements/local.txt
 
+# Copy entrypoint and start scripts
 COPY ./compose/production/django/entrypoint.sh /entrypoint.sh
+COPY ./compose/local/django/start.sh /start.sh
+
+# Fix line endings and make scripts executable
 RUN sed -i 's/\r//' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-COPY ./compose/local/django/start.sh /start.sh
 RUN sed -i 's/\r//' /start.sh
 RUN chmod +x /start.sh
 
 WORKDIR /app
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["bash", "/entrypoint.sh"] # Use bash for pipefail
