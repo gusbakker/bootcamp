@@ -2,24 +2,181 @@
 {% load static i18n humanize %}
 {% load thumbnail %}
 
-
 {% block head %}
-    <link href="{% static 'css/news.css' %}?v=1" rel="stylesheet">
+    <link href="{% static 'css/news.css' %}?v=3" rel="stylesheet">
     <link href="{% static 'css/image-tools.css' %}" rel="stylesheet">
+
+    <style>
+        /* Dark mode first styles */
+        .timeline-container {
+            margin-top: 1.5rem;
+        }
+
+        .stream {
+            list-style: none;
+            padding: 0;
+        }
+
+        .news-card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            background-color: #1e1e1e;
+            border: none;
+        }
+
+        .news-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .btn-compose {
+            border-radius: 0.75rem;
+            padding: 0.6rem 1.2rem;
+            box-shadow: 0 2px 10px rgba(58, 134, 255, 0.2);
+            transition: all 0.2s ease;
+            background: linear-gradient(45deg, #3a86ff, #4361ee);
+            border: none;
+        }
+
+        .btn-compose:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+            background: linear-gradient(45deg, #4361ee, #3a0ca3);
+        }
+
+        .btn-compose i {
+            margin-right: 0.5rem;
+        }
+
+        .stream-update {
+            text-align: center;
+            background-color: rgba(58, 134, 255, 0.15);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: none;
+        }
+
+        .stream-update:hover {
+            background-color: rgba(58, 134, 255, 0.25);
+        }
+
+        .stream-update a {
+            color: #3a86ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .load {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        .widget-card {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            background-color: #1e1e1e;
+            border: none;
+        }
+
+        .widget-card:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .widget-header {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #2d2d2d;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .widget-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .fs-7 {
+            font-size: 0.85rem !important;
+        }
+
+        .fs-8 {
+            font-size: 0.75rem !important;
+        }
+
+        /* Light mode overrides */
+        [data-theme="light"] .news-card {
+            background-color: #fff;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="light"] .news-card:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .widget-card {
+            background-color: #fff;
+        }
+
+        [data-theme="light"] .widget-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .widget-title {
+            color: #212529;
+        }
+
+        [data-theme="light"] .stream-update {
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+
+        [data-theme="light"] .stream-update:hover {
+            background-color: rgba(13, 110, 253, 0.15);
+        }
+
+        [data-theme="light"] .stream-update a {
+            color: #0d6efd;
+        }
+    </style>
 {% endblock head %}
 
-
 {% block content %}
-    <!-- Container -->
-    <div class="row">
-        <div class="col-md-7 offset-md-1">
-            <div class="page-header">
-                <button type="button" class="btn btn-primary pull-right btn-compose" data-toggle="modal"
-                        data-target="#newsFormModal">
-                    <i class="fa fa-share-alt" aria-hidden="true"></i> {% trans 'Share something' %}
+    <div class="row g-4">
+        <!-- Decreased timeline width from col-lg-7 to col-lg-6 -->
+        <div class="col-lg-6 offset-lg-1">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fs-2 fw-bold mb-0">{% trans 'Timeline' %}</h1>
+                <button type="button" class="btn btn-primary btn-compose" data-bs-toggle="modal"
+                        data-bs-target="#newsFormModal">
+                    <i class="fa-solid fa-share-nodes"></i>{% trans 'Share something' %}
                 </button>
-                <h1>{% trans 'Home' %}</h1>
             </div>
+
+            <div class="timeline-container">
                 <!-- Modals -->
                 {% include 'news/news_form_modal.html' %}
                 {% include 'news/news_thread_modal.html' %}
@@ -27,11 +184,11 @@
 
                 <!-- News List -->
                 <div class="stream-update">
-                    <a href="{% url 'news:list' %}"><span
-                            class="new-posts"></span> {% trans 'There are new posts' %}
+                    <a href="{% url 'news:list' %}" class="text-decoration-none">
+                        <i class="fa-solid fa-arrow-rotate-right me-2"></i>{% trans 'There are new posts' %}
                     </a>
                 </div>
-                <div class="infinite-container ">
+                <div class="infinite-container">
                     <ul class="stream">
                         {% for news in news_list %}
                             {% include 'news/news_single.html' with news=news %}
@@ -40,29 +197,162 @@
                 </div>
                 <div class="load">
                     {% if page_obj.has_next %}
-                        <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}"><img
-                                src="{% static 'img/loading.gif' %}"></a>
+                        <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </a>
                     {% endif %}
                 </div>
                 <!-- End News List -->
+            </div>
         </div>
-        <div class="col-md-3 ads-column">
-            <!-- Ads and Recommendations Widget -->
-            <div class="card mb-4">
-                <div class="card-header mb-4">
-                    <p>{% trans 'Friends Activity' %}</p>
-                </div>
-                <div class="card-body mb-4">
 
+        <!-- Increased sidebar width from col-lg-3 to col-lg-4 -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <!-- Friends Activity Widget -->
+            <div class="widget-card mb-4">
+                <div class="widget-header">
+                    <h5 class="widget-title">{% trans 'Friends Activity' %}</h5>
+                    <a href="{% url 'users:list' %}" class="text-primary">
+                        <i class="fa-solid fa-user-group"></i>
+                    </a>
                 </div>
-                {#                <div class="card-footer">#}
-                {#                    {% include "footer.html" %}#}
-                {#                </div>#}
+
+                <div class="card-body p-0">
+                    <!-- Recent Activity -->
+                    <div class="p-3 border-bottom border-dark">
+                        <h6 class="fw-semibold text-uppercase text-muted fs-7 mb-3">{% trans 'Recent Activity' %}</h6>
+
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p class="mb-0 fs-7"><a href="#" class="fw-semibold text-decoration-none text-light">Alex Smith</a> liked your post</p>
+                                <span class="text-muted fs-8">20 min ago</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p class="mb-0 fs-7"><a href="#" class="fw-semibold text-decoration-none text-light">Jamie Lee</a> shared a new photo</p>
+                                <span class="text-muted fs-8">1 hour ago</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p class="mb-0 fs-7"><a href="#" class="fw-semibold text-decoration-none text-light">Taylor Kim</a> joined the group <a href="#" class="text-decoration-none text-primary">Tech Talk</a></p>
+                                <span class="text-muted fs-8">3 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggested Friends -->
+                    <div class="p-3 border-bottom border-dark">
+                        <h6 class="fw-semibold text-uppercase text-muted fs-7 mb-3">{% trans 'People You May Know' %}</h6>
+
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p class="mb-0 fs-7 fw-semibold">Chris Parker</p>
+                                <span class="text-muted fs-8">3 mutual connections</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary rounded-pill">Connect</button>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p class="mb-0 fs-7 fw-semibold">Robin Chen</p>
+                                <span class="text-muted fs-8">5 mutual connections</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary rounded-pill">Connect</button>
+                        </div>
+                    </div>
+
+                    <!-- Trending Topics -->
+                    <div class="p-3">
+                        <h6 class="fw-semibold text-uppercase text-muted fs-7 mb-3">{% trans 'Trending Topics' %}</h6>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#WebDev</a>
+                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#MachineLearning</a>
+                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#Python</a>
+                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#TechNews</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-dark bg-opacity-50 border-top border-dark">
+                    <div class="row g-0 text-center">
+                        <div class="col-6">
+                            <a href="{% url 'users:list' %}" class="text-decoration-none px-3 py-2 d-block text-light">
+                                <i class="fa-solid fa-user-plus text-primary mb-1"></i>
+                                <div class="fs-7">Find Friends</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'groups:list' %}" class="text-decoration-none px-3 py-2 d-block text-light">
+                                <i class="fa-solid fa-user-group text-primary mb-1"></i>
+                                <div class="fs-7">Join Groups</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Groups Widget -->
+            <div class="widget-card mb-4">
+                <div class="widget-header">
+                    <h5 class="widget-title">{% trans 'Popular Groups' %}</h5>
+                    <a href="{% url 'groups:list' %}" class="text-primary">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <a href="#" class="d-flex align-items-center p-3 text-decoration-none text-light border-bottom border-dark">
+                        <div class="rounded-3 bg-primary bg-opacity-10 p-2 me-3">
+                            <i class="fa-solid fa-code text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fs-7 fw-semibold">Web Developers</h6>
+                            <span class="text-muted fs-8">1,245 members</span>
+                        </div>
+                    </a>
+                    <a href="#" class="d-flex align-items-center p-3 text-decoration-none text-light border-bottom border-dark">
+                        <div class="rounded-3 bg-danger bg-opacity-10 p-2 me-3">
+                            <i class="fa-solid fa-camera text-danger"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fs-7 fw-semibold">Photography</h6>
+                            <span class="text-muted fs-8">892 members</span>
+                        </div>
+                    </a>
+                    <a href="#" class="d-flex align-items-center p-3 text-decoration-none text-light">
+                        <div class="rounded-3 bg-success bg-opacity-10 p-2 me-3">
+                            <i class="fa-solid fa-leaf text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fs-7 fw-semibold">Sustainability</h6>
+                            <span class="text-muted fs-8">645 members</span>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    <!-- End container -->
-
 {% endblock content %}
 
 {% block modal %}
@@ -70,6 +360,7 @@
     <script src="{% static 'js/jquery.waypoints.min.js' %}" type="text/javascript"></script>
     <script src="{% static 'js/infinite.min.js' %}" type="text/javascript"></script>
     <script src="{% static 'js/news.js' %}" type="text/javascript"></script>
+
     <script>
         var infinite = new Waypoint.Infinite({
             element: $('.infinite-container')[0],
@@ -80,5 +371,48 @@
                 $('.load').hide();
             }
         });
+
+        // Handle light mode specific styling
+        function updateThemeStyles() {
+            if (document.documentElement.getAttribute('data-theme') === 'light') {
+                // Update badge styles in light mode
+                document.querySelectorAll('.badge.bg-dark').forEach(badge => {
+                    badge.classList.remove('bg-dark');
+                    badge.classList.add('bg-light');
+                });
+
+                // Update card footer in light mode
+                document.querySelectorAll('.card-footer.bg-dark').forEach(footer => {
+                    footer.classList.remove('bg-dark');
+                    footer.classList.add('bg-light');
+                });
+
+                // Update text colors in light mode
+                document.querySelectorAll('.text-light').forEach(text => {
+                    text.classList.remove('text-light');
+                    text.classList.add('text-dark');
+                });
+
+                // Update borders in light mode
+                document.querySelectorAll('.border-dark').forEach(border => {
+                    border.classList.remove('border-dark');
+                    border.classList.add('border-light');
+                });
+            }
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', updateThemeStyles);
+
+        // Listen for theme changes
+        document.addEventListener('themeChanged', updateThemeStyles);
+
+        // Hook into the dark mode switch
+        const darkSwitch = document.getElementById('darkSwitch');
+        if (darkSwitch) {
+            darkSwitch.addEventListener('change', function() {
+                setTimeout(updateThemeStyles, 50); // Small delay to ensure DOM updates
+            });
+        }
     </script>
 {% endblock modal %}

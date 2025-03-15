@@ -1,52 +1,110 @@
 {% extends "base.html" %}
-{% load static i18n %}
-{% load thumbnail %}
-{% load humanize %}
+{% load static i18n thumbnail humanize %}
+
 {% block title %}{% trans 'Notifications' %}{% endblock %}
 
 {% block head %}
     <link href="{% static 'css/notifications.css' %}" rel="stylesheet">
-{% endblock head %}
+{% end block head %}
 
 {% block content %}
-    <div class="page-header">
-        <a class="btn btn-dark pull-right"
-           href="{% url 'notifications:mark_all_read' %}">{% trans 'Mark all as read' %}</a>
-        <h1>{% trans 'Notifications' %}</h1>
-    </div>
-    <ul class="notifications">
-        {% for notification in notification_list %}
-            <li class="notification">
-                <div class="media">
-                    <div class="media-left">
-                        <div class="media-object">
-                            <img src="{{ notification.actor.get_picture }}" id="pic" class="user-image"
-                                 style="width: 30px; border-radius: 50%;"
-                                 alt="{% trans 'User Image' %}">
-                        </div>
-                    </div>
-                    <div class="media-body">
-                        <a class="btn btn-light btn-sm pull-right" title="{% trans 'Mark as read' %}"
-                           href="{% url 'notifications:mark_as_read' notification.slug %}"><i
-                                class="fa fa-check-circle"></i></a>
-                        <strong class="notification-title">
-                            <a href="{% url 'users:detail' notification.actor.username %}">{{ notification.actor.get_profile_name|title }}</a>
-                        </strong>
-                        <p class="notification-desc">
-                            {{ notification.get_verb_display }}
-                            {% if notification.action_object %}
-                                {{ notification.action_object }}
-                            {% endif %}
-                        </p>
-                        <div class="notification-meta">
-                            <small class="timestamp">{{ notification.time_since|naturaltime }} ago</small>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        {% empty %}
-            Sorry nothing here
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <div class="page-header">
+            <h1>{% trans 'Notifications' %}</h1>
+            <div class="actions">
+                {% if notification_list %}
+                <a class="btn btn-primary" href="{% url 'notifications:mark_all_read' %}">
+                    <i class="fa fa-check-double me-1"></i>
+                    {% trans 'Mark all as read' %}
+                </a>
+                {% endif %}
+            </div>
+        </div>
 
-{% endblock content %}
+        <div class="notifications-wrapper">
+            {% if notification_list %}
+                <ul class="notifications">
+                    {% for notification in notification_list %}
+                        <li class="notification {% if not notification.read %}unread{% endif %}">
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="{% url 'users:detail' notification.actor.username %}">
+                                        <img src="{{ notification.actor.get_picture }}" class="user-image"
+                                            alt="{% trans 'User Image' %}">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <div class="notification-header">
+                                        <strong class="notification-title">
+                                            <a href="{% url 'users:detail' notification.actor.username %}">
+                                                {{ notification.actor.get_profile_name|title }}
+                                            </a>
+                                        </strong>
+                                        <a class="btn btn-light btn-sm mark-read-btn" title="{% trans 'Mark as read' %}"
+                                        href="{% url 'notifications:mark_as_read' notification.slug %}">
+                                            <i class="fa fa-check-circle"></i>
+                                        </a>
+                                    </div>
+                                    <p class="notification-desc">
+                                        {{ notification.get_verb_display }}
+                                        {% if notification.action_object %}
+                                            {{ notification.action_object }}
+                                        {% endif %}
+                                    </p>
+                                    <div class="notification-meta">
+                                        <small class="timestamp">{{ notification.time_since|naturaltime }} ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fa fa-bell-slash fa-3x"></i>
+                    </div>
+                    <h3 class="empty-state-title">{% trans 'No notifications' %}</h3>
+                    <p class="empty-state-description">
+                        {% trans 'You have no notifications at the moment.' %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% end block content %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add smooth transitions when marking notifications as read
+        document.querySelectorAll('.mark-read-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('href');
+                const notification = this.closest('.notification');
+
+                // Add a visual effect
+                notification.style.opacity = '0.5';
+
+                // Send ajax request to mark as read
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove or update the notification
+                        notification.classList.remove('unread');
+                        setTimeout(() => {
+                            notification.style.opacity = '1';
+                        }, 300);
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% end block javascript %}

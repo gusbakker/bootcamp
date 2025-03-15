@@ -13,29 +13,53 @@
     <title>Antisocial Network</title>
 
     <!-- Bootstrap core CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <!-- Custom fonts for this template -->
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- Custom fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Audiowide&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
     <!-- Custom styles for this template -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/util.css' %}">
-    <link href="{% static 'css/creative.css' %}" rel="stylesheet">
+    <link href="{% static 'css/creative.css' %}?v=2" rel="stylesheet">
   </head>
   <body id="page-top">
     <header class="masthead text-center text-white d-flex">
       <div class="container my-auto">
         <div class="row">
           <div class="col-lg-10 mx-auto">
-            <h1 class="text-uppercase"><strong>{% trans 'The Antisocial Network' %}</strong></h1>
+            <h1 class="floating">
+              {% trans 'The Antisocial Network' %}
+              <span>For those who prefer quality over quantity</span>
+            </h1>
             <hr>
           </div>
-          <div class="col-lg-4 mx-auto">
-            <p class="text-faded mb-5">{% trans 'A total new different experience.' %}</p>
-            <a class="btn btn-primary btn-xl" href="{% url 'account_login' %}">{% trans 'Start' %}</a>
+          <div class="col-lg-8 mx-auto">
+            <p class="text-faded mb-5">{% trans 'A different social experience focused on meaningful connections without the distractions of traditional social media. Join us and rediscover authentic online interactions.' %}</p>
+            <a class="btn btn-primary btn-xl" href="{% url 'account_login' %}">
+              {% trans 'Get Started' %} <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="features d-none d-md-flex">
+          <div class="feature-item">
+            <i class="fas fa-lock"></i>
+            <span>Privacy Focused</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-user-friends"></i>
+            <span>Quality Connections</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-code"></i>
+            <span>Open Source</span>
           </div>
         </div>
       </div>
     </header>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
