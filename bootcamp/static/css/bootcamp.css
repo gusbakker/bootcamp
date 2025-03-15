@@ -380,6 +380,26 @@ header .navbar-brand {
 }
 
 /* Notification styles */
+.notification-badge .badge:empty {
+    display: none;
+}
+
+.notification-badge .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.65rem;
+    transform: translate(25%, -25%);
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border: 2px solid #121212;
+    margin: 0;
+}
+
 .notification-badge {
     position: relative;
     display: flex;
@@ -455,33 +475,44 @@ header .navbar-brand {
 }
 
 /* Popover styles */
-/* Add these classes or modify existing ones */
 .popover {
     max-width: 350px;
     width: 350px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: none;
 }
 
-.popover .popover-body {
-    padding: 0.5rem;
+.popover-body {
+    padding: 0;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-.notif {
+.popover ul {
     padding: 0;
     margin: 0;
+}
+
+.popover ul li {
     list-style: none;
-}
-
-.notif li {
     border-bottom: 1px solid #eeeeee;
-    padding: 0.5rem 0;
+    padding: .4em 0;
 }
 
-.notif li:last-child {
+.popover ul li:last-child {
     border-bottom: none;
 }
 
-.notification-content p {
-    font-size: 0.9em;
+.popover ul li .user-picture {
+    width: 45px;
+    float: left;
+}
+
+.popover ul li p {
+    font-size: .9em;
+    padding: 0 0 0 .6em;
+    margin-left: 45px;
     margin-bottom: 0;
 }
 
