@@ -3,7 +3,7 @@
 {% load thumbnail %}
 {% load urlize_target_blank %}
 
-<li class="infinite-item" news-id="{{ news.uuid_id }}" csrf="{{ csrf_token }}">
+<li class="infinite-item" news-id="{{ news.uuid_id }}" data-news-uuid="{{ news.uuid_id }}">
     <div class="card news-body news-card">
         <div class="card-header d-flex align-items-center">
             <div class="profile-picture me-3">
@@ -31,7 +31,7 @@
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dotsDropdown-{{ news.uuid_id }}">
                     {% if news.user == request.user %}
                         <li>
-                            <a class="dropdown-item remove-news" href="#">
+                            <a class="dropdown-item remove-news" href="#" data-news-id="{{ news.uuid_id }}">
                                 <i class="fa fa-trash-o me-2 text-danger"></i><span class="text-danger">{% trans 'Delete' %}</span>
                             </a>
                         </li>
@@ -70,7 +70,7 @@
             </div>
 
             <div class="interaction border-top border-dark pt-3" id="interaction">
-                <a href="#" class="like">
+                <a href="#" class="like" data-news-id="{{ news.uuid_id }}">
                     {% if request.user in news.get_likers %}
                         <i class="heart fa fa-heart text-danger" aria-hidden="true"></i>
                     {% else %}
@@ -78,7 +78,7 @@
                     {% endif %}
                     <span class="like-count ms-1 text-light">{{ news.count_likers }}</span>
                 </a>
-                <a href="#" class="comment">
+                <a href="#" class="comment" data-news-id="{{ news.uuid_id }}">
                     <i class="fa fa-comment-o text-light" aria-hidden="true"></i>
                     <span class="comment-count ms-1 text-light">{{ news.count_thread }}</span>
                 </a>

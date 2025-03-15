@@ -27,6 +27,7 @@ $(function () {
 
     var csrftoken = getCookie('csrftoken');
     var page_title = $(document).attr("title");
+
     // This sets up every ajax call with proper headers.
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
@@ -41,14 +42,9 @@ $(function () {
         $('#newsInput').trigger('focus')
     });
 
-    // $('#newsDeleteModal').on('shown.bs.modal', function () {
-    //     $('#deleteNewsButton').trigger('focus')
-    // });
-
     $('#newsThreadModal').on('shown.bs.modal', function () {
         $('#replyInput').trigger('focus')
     });
-
 
     // Counts textarea characters to provide data to user.
     $("#newsInput").keyup(function () {
@@ -93,22 +89,63 @@ $(function () {
         });
     });
 
+    // Super enhanced debugging for delete functionality
+    $("ul.stream").on("click", ".remove-news", function (e) {
+        e.preventDefault();
 
-    $("ul.stream").on("click", ".remove-news", function () {
-        var li = $(this).closest("li");
-        var news = $(li).attr("news-id");
+        // Find the parent li
+        var li = $(this).closest("li.infinite-item");
+
+        // Debug output for the li
+        console.log("Parent li element:", li);
+        console.log("Parent li HTML:", li.prop('outerHTML'));
+
+        // Try multiple methods to get the news ID
+        var news_id = li.attr("news-id");
+        var data_news_id = li.data("news-id");
+        var news_uuid_attr = li.attr("data-news-uuid");
+
+        console.log("All possible IDs - attr news-id:", news_id);
+        console.log("All possible IDs - data news-id:", data_news_id);
+        console.log("All possible IDs - attr data-news-uuid:", news_uuid_attr);
+
+        // Use the first available ID
+        var news = news_id || data_news_id || news_uuid_attr;
+
+        if (!news) {
+            console.error("Could not find news ID. Please check the HTML structure.");
+            alert("Error: Could not identify the post to delete.");
+            return;
+        }
+
+        console.log("Using news ID for deletion:", news);
+
+        // Ask for confirmation
+//        if (!confirm("Are you sure you want to delete this post?")) {
+//            return;
+//        }
+
         $.ajax({
             url: '/news/remove/',
             data: {
-                'news': news,
-                'csrf_token': csrftoken
+                'news': news
             },
             type: 'post',
             cache: false,
             success: function (data) {
+                console.log("Delete successful:", data);
                 $(li).fadeOut(400, function () {
                     $(li).remove();
                 });
+            },
+            error: function(xhr, status, error) {
+                console.error("Delete failed:", status, error);
+                console.error("Response text:", xhr.responseText);
+                console.error("Status code:", xhr.status);
+                console.error("Ready state:", xhr.readyState);
+                console.error("Complete XHR object:", xhr);
+
+                alert("Error deleting post. Please try again or contact support.");
             }
         });
     });
@@ -135,8 +172,7 @@ $(function () {
         var li = $(this).closest("li");
         var news = $(li).attr("news-id");
         payload = {
-            'news': news,
-            'csrf_token': csrftoken
+            'news': news
         }
         $.ajax({
             url: '/news/like/',
@@ -178,52 +214,4 @@ $(function () {
         });
         return false;
     });
-
 });
-
-
-/* Example query for the GraphQL endpoint.
-
-  query{
-    news(uuidId: "--insert here the required uuid_id value for the lookup"){
-      uuidId
-      content
-      timestamp
-      countThread
-      countLikers
-      user {
-      name
-      picture
-      }
-      liked {
-      name
-      }
-      thread{
-      content
-      }
-    }
-    paginatedNews(page: 1){
-      page
-      pages
-      hasNext
-      hasPrev
-      objects {
-      uuidId
-      content
-      timestamp
-      countThread
-      countLikers
-      user {
-        name
-        picture
-      }
-      liked {
-        name
-      }
-      thread{
-        content
-      }
-      }
-    }
-    }
- */
