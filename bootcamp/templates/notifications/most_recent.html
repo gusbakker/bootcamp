@@ -2,30 +2,28 @@
 
 <div class="dropdown-notifications">
     {% if notifications %}
-        <ul class="notif">
-            {% for notification in notifications %}
-                <li class="notification-item {% if not notification.read %}unread{% endif %}" data-notification-slug="{{ notification.slug }}">
-                    <a href="{% url 'users:detail' notification.actor.username %}" class="notification-avatar">
-                        <img src="{{ notification.actor.get_picture }}" class="user-picture"
-                             alt="{% trans 'User avatar' %}">
-                    </a>
-                    <div class="notification-content">
-                        <p class="notification-text">{{ notification|safe }}</p>
-                        <p class="notification-time"><small>{{ notification.timestamp|naturaltime }}</small></p>
-                    </div>
-                    <a class="btn btn-light btn-sm mark-read-btn" title="{% trans 'Mark as read' %}"
-                       href="{% url 'notifications:mark_as_read' notification.slug %}">
-                        <i class="fa fa-check-circle"></i>
-                    </a>
-                </li>
-            {% endfor %}
-
-            <div class="dropdown-footer">
-                <a href="{% url 'notifications:unread' %}" class="see-all-link">
-                    {% trans 'See all notifications' %}
+<ul class="notif">
+    {% if notifications %}
+        {% for notification in notifications %}
+            <li class="d-flex" notification-slug="{{ notification.slug }}">
+                <a href="{% url 'users:detail' notification.actor.username %}" class="flex-shrink-0">
+                    <img src="{{ notification.actor.get_picture }}" class="user-picture"
+                         style="width: 45px; border-radius: 50%;"
+                         alt="{% trans 'User Image' %}">
                 </a>
-            </div>
-        </ul>
+                <div class="notification-content ms-2">
+                    <p class="mb-1">{{ notification|safe }}</p>
+                    <p class="small text-muted mb-0">{{ notification.timestamp|naturaltime }}</p>
+                </div>
+            </li>
+        {% endfor %}
+        <div class="text-center mt-2">
+            <a href="{% url 'notifications:unread' %}" class="btn btn-sm btn-link">{% trans 'See all' %}</a>
+        </div>
+    {% else %}
+        <li class="text-center" data-empty="true">{% trans 'You have no unread notification' %}</li>
+    {% endif %}
+</ul>
     {% else %}
         <div class="empty-notifications">
             <div class="empty-icon">

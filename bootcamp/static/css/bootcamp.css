@@ -455,44 +455,33 @@ header .navbar-brand {
 }
 
 /* Popover styles */
+/* Add these classes or modify existing ones */
 .popover {
     max-width: 350px;
     width: 350px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    border: none;
 }
 
-.popover-body {
-    padding: 0;
-    max-height: 400px;
-    overflow-y: auto;
+.popover .popover-body {
+    padding: 0.5rem;
 }
 
-.popover ul {
+.notif {
     padding: 0;
     margin: 0;
-}
-
-.popover ul li {
     list-style: none;
-    border-bottom: 1px solid #eeeeee;
-    padding: .4em 0;
 }
 
-.popover ul li:last-child {
+.notif li {
+    border-bottom: 1px solid #eeeeee;
+    padding: 0.5rem 0;
+}
+
+.notif li:last-child {
     border-bottom: none;
 }
 
-.popover ul li .user-picture {
-    width: 45px;
-    float: left;
-}
-
-.popover ul li p {
-    font-size: .9em;
-    padding: 0 0 0 .6em;
-    margin-left: 45px;
+.notification-content p {
+    font-size: 0.9em;
     margin-bottom: 0;
 }
 
