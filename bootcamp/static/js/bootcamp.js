@@ -131,15 +131,15 @@ $("#notifications").click(function () {
   return false;
 });
 
-    // Fix to dismiss popover when clicking outside of it
-    $("html").on("mouseup", function (e) {
-        var l = $(e.target);
-        if (l[0].className.indexOf("popover") == -1) {
-            $(".popover").each(function () {
-                $(this).popover("hide");
-            });
-        }
-    });
+// Fix to dismiss popover when clicking outside of it
+$("html").on("mouseup", function (e) {
+    var l = $(e.target);
+    if (l[0].className.indexOf("popover") == -1) {
+        $(".popover").each(function () {
+            $(this).popover("hide");
+        });
+    }
+});
 
     // Code block to manage WebSocket connections
     // Try to correctly decide between ws:// and wss://
