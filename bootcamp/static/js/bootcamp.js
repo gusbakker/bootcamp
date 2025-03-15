@@ -103,25 +103,33 @@ $(function () {
         });
     }
 
-    $('#notifications').popover({html: true, content: 'Loading...', trigger: 'manual'});
-    $("#notifications").click(function () {
-        if ($(".popover").is(":visible")) {
-            $("#notifications").popover('hide');
-        } else {
-            $("#notifications").popover('show')
-            $.ajax({
-                url: '/notifications/latest-notifications/',
-                beforeSend: function () {
-                    $(".popover-body").html("<div style='text-align:center'><img src='/static/img/loading.gif'></div>");
-                },
-                success: function (data) {
-                    $("#countnotif").text("");
-                    $(".popover-body").html(data);
-                }
-            });
-        }
-        return false;
+// Initialize the popover with Bootstrap 5
+const notificationEl = document.getElementById('notifications');
+const notificationPopover = new bootstrap.Popover(notificationEl, {
+  html: true,
+  content: 'Loading...',
+  trigger: 'manual'
+});
+
+// Click handler
+$("#notifications").click(function () {
+  if ($(".popover").is(":visible")) {
+    notificationPopover.hide();
+  } else {
+    notificationPopover.show();
+    $.ajax({
+      url: '/notifications/latest-notifications/',
+      beforeSend: function () {
+        $(".popover-body").html("<div style='text-align:center'><img src='/static/img/loading.gif'></div>");
+      },
+      success: function (data) {
+        $("#countnotif").text("");
+        $(".popover-body").html(data);
+      }
     });
+  }
+  return false;
+});
 
     // Fix to dismiss popover when clicking outside of it
     $("html").on("mouseup", function (e) {
