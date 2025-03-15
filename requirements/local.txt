@@ -27,3 +27,5 @@ django-coverage-plugin  # https://github.com/nedbat/django_coverage_plugin
 django-debug-toolbar  # https://github.com/jazzband/django-debug-toolbar
 django-extensions  # https://github.com/django-extensions/django-extensions
 django-test-plus  # https://github.com/revsys/django-test-plus
+daphne==4.0.0  # Or the latest compatible version
+channels_redis==4.1.0  # Make sure this is included as well

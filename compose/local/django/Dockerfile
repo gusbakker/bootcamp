@@ -24,6 +24,9 @@ RUN pip install --upgrade pip
 COPY ./requirements /requirements
 RUN pip install -r /requirements/local.txt
 
+# Create directory for static files and ensure proper permissions
+RUN mkdir -p /app/staticfiles && chmod -R 755 /app/staticfiles
+
 # Copy entrypoint and start scripts
 COPY ./compose/production/django/entrypoint.sh /entrypoint.sh
 COPY ./compose/local/django/start.sh /start.sh
