@@ -2,16 +2,16 @@
 
 <div class="modal fade" id="newsFormModal" tabindex="-1" aria-labelledby="newsFormModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-bottom">
-        <h5 class="modal-title fw-bold" id="newsFormModalTitle">{% trans "Share something new!" %}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content bg-dark">
+      <div class="modal-header border-bottom border-dark">
+        <h5 class="modal-title fw-bold text-light" id="newsFormModalTitle">{% trans "Share something new!" %}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form enctype="multipart/form-data" id="postNewsForm" role="form" method="post" action="">
           {% csrf_token %}
           <div class="mb-3">
-            <textarea id="newsInput" name="post" rows="3" class="form-control" maxlength="280" placeholder="{% trans 'What\'s on your mind?' %}"></textarea>
+            <textarea id="newsInput" name="post" rows="3" class="form-control bg-dark text-light border-dark" maxlength="280" placeholder="{% trans 'What\'s on your mind?' %}"></textarea>
             <div class="d-flex justify-content-end mt-2">
               <span id="newsCounter" class="text-muted small">280</span>
             </div>
@@ -19,8 +19,8 @@
             <!-- Upload image input-->
             <div class="mt-3">
               <div class="input-group">
-                <input id="imageInput" type="file" name="image" class="form-control" accept="image/*">
-                <label class="input-group-text" for="imageInput">
+                <input id="imageInput" type="file" name="image" class="form-control bg-dark text-light border-dark" accept="image/*">
+                <label class="input-group-text bg-dark text-light border-dark" for="imageInput">
                   <i class="fa-regular fa-image me-2"></i>
                   {% trans 'Image' %}
                 </label>
@@ -37,7 +37,7 @@
           </div>
         </form>
       </div>
-      <div class="modal-footer border-top">
+      <div class="modal-footer border-top border-dark">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel' %}</button>
         <button type="button" id="postNews" class="btn btn-primary">
           <i class="fa-regular fa-paper-plane me-2"></i>{% trans 'Post' %}
@@ -89,5 +89,64 @@
         newsCounter.classList.remove('text-danger');
       }
     });
+
+    // Light/Dark mode adaptation
+    function updateModalTheme() {
+      const isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
+      const modal = document.querySelector('#newsFormModal .modal-content');
+      const inputs = document.querySelectorAll('#newsFormModal .form-control, #newsFormModal .input-group-text');
+      const modalTitle = document.querySelector('#newsFormModal .modal-title');
+      const borders = document.querySelectorAll('#newsFormModal .border-dark');
+      const closeBtn = document.querySelector('#newsFormModal .btn-close');
+
+      if (isLightMode) {
+        modal.classList.remove('bg-dark');
+        modal.classList.add('bg-white');
+
+        inputs.forEach(input => {
+          input.classList.remove('bg-dark', 'text-light', 'border-dark');
+          input.classList.add('bg-white', 'text-dark', 'border-light');
+        });
+
+        modalTitle.classList.remove('text-light');
+        modalTitle.classList.add('text-dark');
+
+        borders.forEach(border => {
+          border.classList.remove('border-dark');
+          border.classList.add('border-light');
+        });
+
+        closeBtn.classList.remove('btn-close-white');
+      } else {
+        modal.classList.add('bg-dark');
+        modal.classList.remove('bg-white');
+
+        inputs.forEach(input => {
+          input.classList.add('bg-dark', 'text-light', 'border-dark');
+          input.classList.remove('bg-white', 'text-dark', 'border-light');
+        });
+
+        modalTitle.classList.add('text-light');
+        modalTitle.classList.remove('text-dark');
+
+        borders.forEach(border => {
+          border.classList.add('border-dark');
+          border.classList.remove('border-light');
+        });
+
+        closeBtn.classList.add('btn-close-white');
+      }
+    }
+
+    // Run on initial load
+    updateModalTheme();
+
+    // Listen for theme changes
+    const darkSwitch = document.getElementById('darkSwitch');
+    if (darkSwitch) {
+      darkSwitch.addEventListener('change', function() {
+        setTimeout(updateModalTheme, 50);
+      });
+    }
   });
 </script>

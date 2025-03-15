@@ -1,5 +1,5 @@
 {% load static i18n thumbnail %}<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -27,36 +27,58 @@
 
         <style>
             :root {
-                --bs-primary: #0d6efd;
+                --bs-body-bg: #121212;
+                --bs-body-color: #e0e0e0;
+                --bs-primary: #3a86ff;
+                --bs-primary-rgb: 58, 134, 255;
                 --bs-secondary: #6c757d;
-                --bs-success: #198754;
-                --bs-info: #0dcaf0;
-                --bs-warning: #ffc107;
-                --bs-danger: #dc3545;
-                --bs-light: #f8f9fa;
-                --bs-dark: #212529;
-                --bs-body-bg: #f8f9fa;
+                --bs-success: #2ecc71;
+                --bs-info: #3498db;
+                --bs-warning: #f39c12;
+                --bs-danger: #e74c3c;
+                --bs-light: #343a40;
+                --bs-dark: #f8f9fa;
+                --bs-card-bg: #1e1e1e;
+                --bs-card-border-color: #2d2d2d;
+                --bs-border-color: #2d2d2d;
                 --bs-nav-link-font-weight: 500;
                 --bs-border-radius: 0.5rem;
                 --bs-border-radius-sm: 0.25rem;
                 --bs-border-radius-lg: 0.75rem;
                 --bs-border-radius-xl: 1rem;
+                --text-muted: #adb5bd;
+            }
+
+            [data-theme="light"] {
+                --bs-body-bg: #f8f9fa;
+                --bs-body-color: #212529;
+                --bs-primary: #0d6efd;
+                --bs-primary-rgb: 13, 110, 253;
+                --bs-card-bg: #ffffff;
+                --bs-card-border-color: #dee2e6;
+                --bs-border-color: #dee2e6;
+                --bs-light: #f8f9fa;
+                --bs-dark: #212529;
+                --text-muted: #6c757d;
             }
 
             body {
                 font-family: 'Poppins', sans-serif;
                 padding-top: 70px;
                 background-color: var(--bs-body-bg);
+                color: var(--bs-body-color);
             }
 
             .navbar {
-                box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 15px rgba(0,0,0,0.2);
                 padding: 0.75rem 0;
+                background: linear-gradient(45deg, #121212, #1a1a1a) !important;
             }
 
             .navbar-brand {
                 font-family: 'Audiowide', cursive;
                 font-weight: 500;
+                color: #fff !important;
             }
 
             .navbar .nav-link {
@@ -75,6 +97,7 @@
             .navbar-toggler {
                 border: none;
                 padding: 0.25rem;
+                color: #fff;
             }
 
             .navbar-toggler:focus {
@@ -83,19 +106,23 @@
 
             .dropdown-menu {
                 border: none;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
                 border-radius: 1rem;
                 padding: 0.75rem 0.5rem;
+                background-color: #1a1a1a;
+                border-color: #2d2d2d;
             }
 
             .dropdown-item {
                 padding: 0.6rem 1rem;
                 border-radius: 0.5rem;
                 transition: all 0.2s;
+                color: #e0e0e0;
             }
 
             .dropdown-item:hover {
-                background-color: rgba(13, 110, 253, 0.1);
+                background-color: #2a2a2a;
+                color: #fff;
             }
 
             .dropdown-item i {
@@ -107,7 +134,7 @@
 
             .page-header {
                 margin-bottom: 1.5rem;
-                border-bottom: 1px solid rgba(0,0,0,0.1);
+                border-bottom: 1px solid var(--bs-border-color);
                 padding-bottom: 1rem;
             }
 
@@ -115,6 +142,7 @@
                 font-weight: 600;
                 font-size: 1.75rem;
                 margin-bottom: 0;
+                color: var(--bs-body-color);
             }
 
             .btn {
@@ -125,88 +153,109 @@
             }
 
             .btn-primary {
-                background: linear-gradient(45deg, #0d6efd, #0a58ca);
+                background: linear-gradient(45deg, #3a86ff, #4361ee);
                 border: none;
-                box-shadow: 0 2px 10px rgba(13, 110, 253, 0.25);
+                box-shadow: 0 2px 10px rgba(58, 134, 255, 0.3);
             }
 
             .btn-primary:hover {
-                background: linear-gradient(45deg, #0a58ca, #084298);
+                background: linear-gradient(45deg, #4361ee, #3a0ca3);
                 transform: translateY(-1px);
-                box-shadow: 0 4px 15px rgba(13, 110, 253, 0.35);
+                box-shadow: 0 4px 15px rgba(58, 134, 255, 0.4);
+            }
+
+            .btn-secondary {
+                background-color: #2d2d2d;
+                border-color: #3d3d3d;
+            }
+
+            .btn-secondary:hover {
+                background-color: #3d3d3d;
+                border-color: #4d4d4d;
             }
 
             .alert {
                 border-radius: 0.75rem;
                 border: none;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             }
 
             .card {
                 border: none;
                 border-radius: 1rem;
-                box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+                box-shadow: 0 2px 15px rgba(0,0,0,0.1);
                 overflow: hidden;
+                background-color: var(--bs-card-bg);
+                border-color: var(--bs-card-border-color);
             }
 
             .card-header {
-                background-color: transparent;
-                border-bottom: 1px solid rgba(0,0,0,0.08);
+                background-color: rgba(0,0,0,0.15);
+                border-bottom: 1px solid var(--bs-border-color);
                 padding: 1rem 1.25rem;
+            }
+
+            .card-footer {
+                background-color: rgba(0,0,0,0.15);
+                border-top: 1px solid var(--bs-border-color);
             }
 
             .form-control {
                 border-radius: 0.5rem;
                 padding: 0.6rem 1rem;
-                border: 1px solid rgba(0,0,0,0.1);
+                border: 1px solid #3d3d3d;
+                background-color: #2d2d2d;
+                color: #e0e0e0;
                 transition: all 0.2s;
             }
 
             .form-control:focus {
-                border-color: rgba(13, 110, 253, 0.4);
-                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-            }
-
-            [data-theme="dark"] {
-                --bs-body-bg: #121212;
-                --bs-body-color: #e0e0e0;
-                --bs-border-color: #333;
-            }
-
-            [data-theme="dark"] .navbar {
-                background: linear-gradient(45deg, #1f1f1f, #2d2d2d) !important;
-            }
-
-            [data-theme="dark"] .dropdown-menu {
+                border-color: rgba(58, 134, 255, 0.4);
+                box-shadow: 0 0 0 0.25rem rgba(58, 134, 255, 0.15);
                 background-color: #2d2d2d;
-                border-color: #444;
             }
 
-            [data-theme="dark"] .dropdown-item {
-                color: #e0e0e0;
+            .form-control::placeholder {
+                color: #adb5bd;
             }
 
-            [data-theme="dark"] .dropdown-item:hover {
-                background-color: #3d3d3d;
+            /* Light mode overrides */
+            [data-theme="light"] .navbar {
+                background: linear-gradient(45deg, #0d6efd, #0a58ca) !important;
             }
 
-            [data-theme="dark"] .page-header {
-                border-color: #333;
+            [data-theme="light"] .dropdown-menu {
+                background-color: #fff;
+                border-color: rgba(0,0,0,0.1);
             }
 
-            [data-theme="dark"] .card {
-                background-color: #1e1e1e;
-                border-color: #333;
+            [data-theme="light"] .dropdown-item {
+                color: #212529;
             }
 
-            [data-theme="dark"] .card-header {
-                border-color: #333;
+            [data-theme="light"] .dropdown-item:hover {
+                background-color: rgba(13, 110, 253, 0.1);
+                color: #0d6efd;
             }
 
-            [data-theme="dark"] .form-control {
-                background-color: #2d2d2d;
-                border-color: #444;
-                color: #e0e0e0;
+            [data-theme="light"] .btn-secondary {
+                background-color: #6c757d;
+                border-color: #6c757d;
+            }
+
+            [data-theme="light"] .btn-secondary:hover {
+                background-color: #5c636a;
+                border-color: #565e64;
+            }
+
+            [data-theme="light"] .form-control {
+                background-color: #fff;
+                border-color: #ced4da;
+                color: #212529;
+            }
+
+            [data-theme="light"] .form-control:focus {
+                background-color: #fff;
             }
 
             /* Notification badges */
@@ -221,10 +270,12 @@
                 background-color: rgba(255,255,255,0.1);
                 margin: 0 0.25rem;
                 transition: all 0.2s;
+                color: #fff;
             }
 
             .notification-badge:hover {
                 background-color: rgba(255,255,255,0.2);
+                color: #fff;
             }
 
             .notification-badge .badge {
@@ -233,7 +284,7 @@
                 right: 0;
                 font-size: 0.65rem;
                 transform: translate(25%, -25%);
-                background-color: #dc3545;
+                background-color: #e74c3c;
                 color: white;
                 border-radius: 50%;
                 min-width: 18px;
@@ -242,7 +293,7 @@
                 align-items: center;
                 justify-content: center;
                 padding: 0.25rem;
-                border: 2px solid var(--bs-primary);
+                border: 2px solid #121212;
             }
 
             .avatar {
@@ -251,6 +302,11 @@
                 border-radius: 50%;
                 object-fit: cover;
                 border: 2px solid rgba(255,255,255,0.2);
+            }
+
+            /* Text utilities */
+            .text-muted {
+                color: var(--text-muted) !important;
             }
 
             /* Add some animation for alerts */
@@ -268,6 +324,27 @@
             .alert {
                 animation: fadeInDown 0.3s ease forwards;
             }
+
+            hr {
+                border-color: var(--bs-border-color);
+                opacity: 0.15;
+            }
+
+            /* Form switch styling */
+            .form-check-input {
+                background-color: #2d2d2d;
+                border-color: #3d3d3d;
+            }
+
+            .form-check-input:checked {
+                background-color: var(--bs-primary);
+                border-color: var(--bs-primary);
+            }
+
+            [data-theme="light"] .form-check-input {
+                background-color: #dee2e6;
+                border-color: #ced4da;
+            }
         </style>
     {% endblock css %}
     {% block head %}{% endblock head %}
@@ -276,7 +353,7 @@
 {% block body %}
     <div class="mb-3">
         {% if request.user.is_authenticated %}
-            <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
                 <div class="container">
                     <a class="navbar-brand d-flex align-items-center" href="{% url 'news:list' %}">
                         <img src="{% static 'img/favicon.png' %}" alt="Antisocial Network" height="30" class="me-2">
@@ -305,13 +382,13 @@
                                 </form>
                             {% endif %}
                             <div class="d-flex align-items-center ms-2">
-                                <a class="notification-badge" href="#" id="notifications" data-bs-container="body"
+                                <a class="notification-badge text-decoration-none" href="#" id="notifications" data-bs-container="body"
                                    data-bs-toggle="popover" data-bs-placement="bottom"
                                    data-bs-title="{% trans 'Notifications' %}">
                                     <i class="fa-regular fa-bell" aria-hidden="true"></i>
                                     <span id="countnotif" class="badge"></span>
                                 </a>
-                                <a class="notification-badge" href="{% url 'messager:messages_list' %}" id="inbox"
+                                <a class="notification-badge text-decoration-none" href="{% url 'messager:messages_list' %}" id="inbox"
                                    data-bs-toggle="popover" data-bs-title="{% trans 'Inbox' %}">
                                     <i class="fa-regular fa-comment" aria-hidden="true"></i>
                                     <span id="countmsg" class="badge"></span>
@@ -337,7 +414,7 @@
                                         <li>
                                             <div class="dropdown-item">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="darkSwitch">
+                                                    <input class="form-check-input" type="checkbox" id="darkSwitch" checked>
                                                     <label class="form-check-label" for="darkSwitch">
                                                         {% trans 'Dark Mode' %}
                                                     </label>
@@ -402,11 +479,10 @@
             document.addEventListener('DOMContentLoaded', () => {
                 const darkSwitch = document.getElementById('darkSwitch');
 
-                // Check for saved theme preference or respect OS theme setting
-                if (localStorage.getItem('darkMode') === 'true' ||
-                    (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    darkSwitch.checked = true;
+                // Dark mode is now default
+                if (localStorage.getItem('darkMode') === 'false') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    darkSwitch.checked = false;
                 }
 
                 // Add toggle event

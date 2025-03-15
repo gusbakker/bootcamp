@@ -14,7 +14,7 @@
                 </a>
             </div>
             <div class="flex-grow-1">
-                <a href="{% url 'users:detail' news.user.username %}" class="text-decoration-none fw-bold">
+                <a href="{% url 'users:detail' news.user.username %}" class="text-decoration-none fw-bold text-light">
                     {{ news.user.username }}
                 </a>
                 <div>
@@ -25,21 +25,21 @@
                 </div>
             </div>
             <div class="dropdown">
-                <i class="fa fa-gear" href="#" id="dotsDropdown" role="button"
+                <i class="fa fa-gear text-light" href="#" id="dotsDropdown-{{ news.uuid_id }}" role="button"
                    data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
                 </i>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dotsDropdown">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dotsDropdown-{{ news.uuid_id }}">
                     {% if news.user == request.user %}
                         <li>
-                            <a class="dropdown-item remove-news text-danger" href="#">
-                                <i class="fa fa-trash-o me-2"></i>{% trans 'Delete' %}
+                            <a class="dropdown-item remove-news" href="#">
+                                <i class="fa fa-trash-o me-2 text-danger"></i><span class="text-danger">{% trans 'Delete' %}</span>
                             </a>
                         </li>
                     {% endif %}
                     {% if news.user != request.user %}
                         <li>
-                            <a class="dropdown-item text-danger" href="#">
-                                <i class="fa fa-flag me-2"></i>{% trans 'Report This' %}
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-flag me-2 text-danger"></i><span class="text-danger">{% trans 'Report This' %}</span>
                             </a>
                         </li>
                     {% endif %}
@@ -53,7 +53,7 @@
         {% endthumbnail %}
 
         <div class="card-body">
-            <div class="post-content mb-3">
+            <div class="post-content mb-3 text-light">
                 <p>{{ news|urlize|urlize_target_blank }}</p>
                 {% if news.meta_url %}
                     <a href="{{ news.meta_url }}" target="_blank" class="card meta text-decoration-none">
@@ -62,28 +62,28 @@
                         {% endif %}
                         <div class="card-body">
                             {% if news.meta_title %}
-                                <h5 class="card-title h6">{{ news.meta_title }}</h5>
+                                <h5 class="card-title h6 text-light">{{ news.meta_title }}</h5>
                             {% endif %}
                         </div>
                     </a>
                 {% endif %}
             </div>
 
-            <div class="interaction border-top pt-3" id="interaction">
-                <a href="#" class="like btn btn-sm btn-light rounded-pill me-2" title="{% for i in news.get_likers %}{{ i }}&#10;{% endfor %}">
+            <div class="interaction border-top border-dark pt-3" id="interaction">
+                <a href="#" class="like">
                     {% if request.user in news.get_likers %}
                         <i class="heart fa fa-heart text-danger" aria-hidden="true"></i>
                     {% else %}
-                        <i class="heart fa fa-heart-o" aria-hidden="true"></i>
+                        <i class="heart fa fa-heart-o text-light" aria-hidden="true"></i>
                     {% endif %}
-                    <span class="like-count ms-1">{{ news.count_likers }}</span>
+                    <span class="like-count ms-1 text-light">{{ news.count_likers }}</span>
                 </a>
-                <a href="#" class="comment btn btn-sm btn-light rounded-pill me-2">
-                    <i class="fa fa-comment-o" aria-hidden="true"></i>
-                    <span class="comment-count ms-1">{{ news.count_thread }}</span>
+                <a href="#" class="comment">
+                    <i class="fa fa-comment-o text-light" aria-hidden="true"></i>
+                    <span class="comment-count ms-1 text-light">{{ news.count_thread }}</span>
                 </a>
-                <a href="#" class="share btn btn-sm btn-light rounded-pill">
-                    <i class="fa fa-share" aria-hidden="true"></i>
+                <a href="#" class="share">
+                    <i class="fa fa-share text-light" aria-hidden="true"></i>
                 </a>
             </div>
         </div>
@@ -91,29 +91,31 @@
 </li>
 
 <style>
-    /* Inline styles to ensure compatibility */
+    /* Dark mode first styles */
     .news-card {
         border-radius: 1rem;
         overflow: hidden;
         transition: all 0.2s ease;
         border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         margin-bottom: 1.5rem;
+        background-color: #1e1e1e;
     }
 
     .news-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
     .news-card .card-header {
-        background-color: transparent;
+        background-color: rgba(0, 0, 0, 0.2);
         padding: 1rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid #2d2d2d;
     }
 
     .news-card .card-body {
         padding: 1.25rem;
+        background-color: #1e1e1e;
     }
 
     .post-content {
@@ -126,28 +128,26 @@
         display: inline-block;
         text-decoration: none;
         margin-right: 0.75rem;
-        color: #555;
+        color: #aaa;
+        padding: 0.375rem 0.75rem;
+        border-radius: 1.5rem;
+        background-color: #2d2d2d;
+        transition: all 0.2s ease;
+    }
+
+    .interaction a:hover {
+        background-color: #3d3d3d;
     }
 
     .interaction a i {
         margin-right: 0.25rem;
     }
 
-    .btn-light {
-        background-color: #f8f9fa;
-        border-color: #f0f0f0;
-    }
-
-    .btn-light:hover {
-        background-color: #f0f0f0;
-        border-color: #e0e0e0;
-    }
-
     /* Meta Link Styles */
     .meta.card {
-        background-color: #f8f9fa;
+        background-color: #2d2d2d;
         margin-bottom: 0.75rem;
-        color: #6c757d;
+        color: #e0e0e0;
         border: none;
         border-radius: 0.5rem;
         overflow: hidden;
@@ -155,12 +155,13 @@
     }
 
     .meta.card:hover {
-        background-color: #fff;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        background-color: #3d3d3d;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .meta .card-body {
         padding: 0.8rem;
+        background-color: #2d2d2d;
     }
 
     .meta .card-title, .meta .card-text, .meta .card-btn {
@@ -171,47 +172,75 @@
 
     .meta .card-img-top {
         height: 160px;
-        background: center no-repeat #e9ecef;
+        background: center no-repeat #3d3d3d;
         background-size: cover;
     }
 
-    /* Dark mode compatibility */
-    [data-theme="dark"] .news-card {
-        background-color: #1e1e1e;
-        border-color: #333;
+    /* Light mode overrides */
+    [data-theme="light"] .news-card {
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
-    [data-theme="dark"] .news-card .card-header {
-        border-color: #333;
+    [data-theme="light"] .news-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    [data-theme="dark"] .meta.card {
-        background-color: #2d2d2d;
-        color: #e0e0e0;
+    [data-theme="light"] .news-card .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     }
 
-    [data-theme="dark"] .meta.card:hover {
-        background-color: #333;
+    [data-theme="light"] .news-card .card-body {
+        background-color: #fff;
     }
 
-    [data-theme="dark"] .interaction .btn {
-        background-color: #2d2d2d;
-        color: #e0e0e0;
+    [data-theme="light"] .post-content.text-light {
+        color: #212529 !important;
     }
 
-    [data-theme="dark"] .interaction .btn:hover {
-        background-color: #3d3d3d;
+    [data-theme="light"] .text-light {
+        color: #212529 !important;
     }
 
-    [data-theme="dark"] .btn-light {
-        background-color: #2d2d2d;
-        border-color: #333;
-        color: #e0e0e0;
+    [data-theme="light"] .interaction a {
+        background-color: #f0f0f0;
+        color: #555;
     }
 
-    [data-theme="dark"] .btn-light:hover {
-        background-color: #3d3d3d;
-        border-color: #444;
-        color: #fff;
+    [data-theme="light"] .interaction a:hover {
+        background-color: #e0e0e0;
+    }
+
+    [data-theme="light"] .interaction .fa-heart-o.text-light,
+    [data-theme="light"] .interaction .fa-comment-o.text-light,
+    [data-theme="light"] .interaction .fa-share.text-light {
+        color: #555 !important;
+    }
+
+    [data-theme="light"] .interaction .like-count.text-light,
+    [data-theme="light"] .interaction .comment-count.text-light {
+        color: #555 !important;
+    }
+
+    [data-theme="light"] .meta.card {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+
+    [data-theme="light"] .meta.card:hover {
+        background-color: #fff;
+    }
+
+    [data-theme="light"] .meta .card-body {
+        background-color: #f8f9fa;
+    }
+
+    [data-theme="light"] .meta .card-title.text-light {
+        color: #212529 !important;
+    }
+
+    [data-theme="light"] .border-dark {
+        border-color: #dee2e6 !important;
     }
 </style>
