@@ -4,107 +4,545 @@
 {% block title %}{% trans 'Notifications' %}{% endblock %}
 
 {% block head %}
-    <link href="{% static 'css/notifications.css' %}" rel="stylesheet">
+    <style>
+        /* Notification styles */
+        .notification-container {
+            margin-top: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .notification-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .notification-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .notification-filter {
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            background-color: var(--bs-card-bg);
+            border: 1px solid var(--bs-border-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--bs-body-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-filter i {
+            margin-right: 0.5rem;
+            opacity: 0.7;
+        }
+
+        .notification-filter:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+            border-color: var(--bs-primary);
+            color: var(--bs-primary);
+        }
+
+        .notification-filter.active {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        .notification-card {
+            position: relative;
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-card.unread {
+            border-left: 4px solid var(--bs-primary);
+        }
+
+        .notification-card.unread::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--bs-primary);
+        }
+
+        .notification-card .card-body {
+            display: flex;
+            padding: 1.25rem;
+            gap: 1rem;
+        }
+
+        .notification-avatar {
+            flex-shrink: 0;
+        }
+
+        .notification-avatar img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .notification-content {
+            flex-grow: 1;
+            padding-right: 2rem;
+        }
+
+        .notification-user {
+            font-weight: 600;
+            color: var(--bs-body-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .notification-user:hover {
+            color: var(--bs-primary);
+        }
+
+        .notification-text {
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            font-size: 0.85rem;
+            color: var(--bs-text-muted);
+        }
+
+        .notification-action {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .notification-card:hover .notification-action {
+            opacity: 1;
+        }
+
+        .empty-state {
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-state-icon {
+            font-size: 3.5rem;
+            color: var(--bs-text-muted);
+            opacity: 0.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state-description {
+            color: var(--bs-text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Animation for notification deletion */
+        @keyframes fadeOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+        }
+
+        .notification-card.removing {
+            animation: fadeOutRight 0.5s ease forwards;
+        }
+
+        /* Badge for notification types */
+        .notification-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .notification-badge-like {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .notification-badge-comment {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .notification-badge-follow {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .notification-badge-message {
+            background-color: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+
+        /* Pagination styling */
+        .pagination {
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pagination .page-item .page-link {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 0.5rem;
+            color: var(--bs-primary);
+            background-color: var(--bs-card-bg);
+            border: 1px solid var(--bs-border-color);
+            transition: all 0.2s ease;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+            border-color: var(--bs-primary);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .notification-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .notification-filters {
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                white-space: nowrap;
+                width: 100%;
+            }
+
+            .notification-filter {
+                flex-shrink: 0;
+            }
+
+            .notification-action {
+                opacity: 1;
+            }
+        }
+    </style>
 {% endblock head %}
 
 {% block content %}
-    <div class="container">
-        <div class="page-header">
-            <h1>{% trans 'Notifications' %}</h1>
-            <div class="actions">
+    <div class="container notification-container">
+        <div class="notification-header">
+            <h1 class="notification-title">{% trans 'Notifications' %}</h1>
+
+            <div class="notification-actions">
                 {% if notification_list %}
-                <a class="btn btn-primary" href="{% url 'notifications:mark_all_read' %}">
-                    <i class="fa fa-check-double me-1"></i>
-                    {% trans 'Mark all as read' %}
-                </a>
+                    <a class="btn btn-primary" href="{% url 'notifications:mark_all_read' %}">
+                        <i class="fa-solid fa-check-double me-1"></i>
+                        {% trans 'Mark all as read' %}
+                    </a>
                 {% endif %}
             </div>
         </div>
 
-        <div class="notifications-wrapper">
+        <div class="notification-filters">
+            <div class="notification-filter active" data-filter="all">
+                <i class="fa-solid fa-bell"></i>{% trans 'All' %}
+            </div>
+            <div class="notification-filter" data-filter="unread">
+                <i class="fa-solid fa-circle-dot"></i>{% trans 'Unread' %}
+                <span class="badge bg-primary rounded-pill ms-1">
+                    {{ unread_count|default:"0" }}
+                </span>
+            </div>
+            <div class="notification-filter" data-filter="like">
+                <i class="fa-solid fa-heart"></i>{% trans 'Likes' %}
+            </div>
+            <div class="notification-filter" data-filter="comment">
+                <i class="fa-solid fa-comment"></i>{% trans 'Comments' %}
+            </div>
+            <div class="notification-filter" data-filter="follow">
+                <i class="fa-solid fa-user-plus"></i>{% trans 'Follows' %}
+            </div>
+        </div>
+
+        <div class="notification-list">
             {% if notification_list %}
-                <ul class="notifications">
-                    {% for notification in notification_list %}
-                        <li class="notification {% if not notification.read %}unread{% endif %}">
-                            <div class="media">
-                                <div class="media-left">
-                                    <a href="{% url 'users:detail' notification.actor.username %}">
-                                        <img src="{{ notification.actor.get_picture }}" class="user-image"
-                                            alt="{% trans 'User Image' %}">
+                {% for notification in notification_list %}
+                    <div class="notification-card {% if not notification.read %}unread{% endif %}"
+                         data-type="{{ notification.verb }}" data-id="{{ notification.slug }}">
+                        <div class="card-body">
+                            <div class="notification-avatar">
+                                <a href="{% url 'users:detail' notification.actor.username %}">
+                                    <img src="{{ notification.actor.get_picture }}" alt="{{ notification.actor.username }}">
+                                </a>
+                            </div>
+                            <div class="notification-content">
+                                {% if notification.verb == 'liked' %}
+                                    <span class="notification-badge notification-badge-like">
+                                        <i class="fa-solid fa-heart me-1"></i>{% trans 'Like' %}
+                                    </span>
+                                {% elif notification.verb == 'commented' %}
+                                    <span class="notification-badge notification-badge-comment">
+                                        <i class="fa-solid fa-comment me-1"></i>{% trans 'Comment' %}
+                                    </span>
+                                {% elif notification.verb == 'followed' %}
+                                    <span class="notification-badge notification-badge-follow">
+                                        <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Follow' %}
+                                    </span>
+                                {% elif notification.verb == 'messaged' %}
+                                    <span class="notification-badge notification-badge-message">
+                                        <i class="fa-solid fa-envelope me-1"></i>{% trans 'Message' %}
+                                    </span>
+                                {% endif %}
+
+                                <div class="notification-text">
+                                    <a href="{% url 'users:detail' notification.actor.username %}" class="notification-user">
+                                        {{ notification.actor.get_profile_name|title }}
                                     </a>
+                                    {{ notification.get_verb_display }}
+                                    {% if notification.action_object %}
+                                        {{ notification.action_object }}
+                                    {% endif %}
                                 </div>
-                                <div class="media-body">
-                                    <div class="notification-header">
-                                        <strong class="notification-title">
-                                            <a href="{% url 'users:detail' notification.actor.username %}">
-                                                {{ notification.actor.get_profile_name|title }}
-                                            </a>
-                                        </strong>
-                                        <a class="btn btn-light btn-sm mark-read-btn" title="{% trans 'Mark as read' %}"
-                                        href="{% url 'notifications:mark_as_read' notification.slug %}">
-                                            <i class="fa fa-check-circle"></i>
-                                        </a>
-                                    </div>
-                                    <p class="notification-desc">
-                                        {{ notification.get_verb_display }}
-                                        {% if notification.action_object %}
-                                            {{ notification.action_object }}
-                                        {% endif %}
-                                    </p>
-                                    <div class="notification-meta">
-                                        <small class="timestamp">{{ notification.time_since|naturaltime }} ago</small>
-                                    </div>
+                                <div class="notification-time">
+                                    {{ notification.time_since|naturaltime }}
                                 </div>
                             </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+
+                            {% if not notification.read %}
+                                <div class="notification-action">
+                                    <a href="{% url 'notifications:mark_as_read' notification.slug %}"
+                                       class="btn btn-sm btn-light mark-read-btn"
+                                       title="{% trans 'Mark as read' %}">
+                                        <i class="fa-solid fa-check"></i>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if is_paginated %}
+                    <nav aria-label="Notification pagination">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ i }}</span>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
             {% else %}
                 <div class="empty-state">
                     <div class="empty-state-icon">
-                        <i class="fa fa-bell-slash fa-3x"></i>
+                        <i class="fa-solid fa-bell-slash"></i>
                     </div>
                     <h3 class="empty-state-title">{% trans 'No notifications' %}</h3>
                     <p class="empty-state-description">
                         {% trans 'You have no notifications at the moment.' %}
                     </p>
+                    <a href="{% url 'news:list' %}" class="btn btn-primary">
+                        <i class="fa-solid fa-home me-1"></i>{% trans 'Back to Home' %}
+                    </a>
                 </div>
             {% endif %}
         </div>
     </div>
 {% endblock content %}
 
-{% block javascript %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add smooth transitions when marking notifications as read
-        document.querySelectorAll('.mark-read-btn').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const url = this.getAttribute('href');
-                const notification = this.closest('.notification');
+{% block modal %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Notification filters functionality
+            const filters = document.querySelectorAll('.notification-filter');
+            const notificationCards = document.querySelectorAll('.notification-card');
 
-                // Add a visual effect
-                notification.style.opacity = '0.5';
+            filters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    // Update active filter
+                    filters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
 
-                // Send ajax request to mark as read
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Remove or update the notification
-                        notification.classList.remove('unread');
-                        setTimeout(() => {
-                            notification.style.opacity = '1';
-                        }, 300);
-                    }
+                    const filterType = this.getAttribute('data-filter');
+
+                    // Filter notifications
+                    notificationCards.forEach(card => {
+                        if (filterType === 'all') {
+                            card.style.display = 'block';
+                        } else if (filterType === 'unread') {
+                            card.style.display = card.classList.contains('unread') ? 'block' : 'none';
+                        } else if (filterType === 'like' || filterType === 'comment' || filterType === 'follow') {
+                            card.style.display = card.getAttribute('data-type') === filterType ? 'block' : 'none';
+                        }
+                    });
                 });
             });
+
+            // Add smooth transitions when marking notifications as read
+            document.querySelectorAll('.mark-read-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const notificationCard = this.closest('.notification-card');
+
+                    // Add a visual effect
+                    notificationCard.classList.add('removing');
+
+                    // Send ajax request to mark as read
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Wait for animation to complete
+                            setTimeout(() => {
+                                notificationCard.classList.remove('unread', 'removing');
+                                notificationCard.style.opacity = '1';
+                                notificationCard.style.transform = 'translateX(0)';
+
+                                // Remove the action button
+                                const actionBtn = notificationCard.querySelector('.notification-action');
+                                if (actionBtn) {
+                                    actionBtn.remove();
+                                }
+                            }, 500);
+
+                            // Update unread count in badge
+                            const unreadBadge = document.querySelector('.notification-filter[data-filter="unread"] .badge');
+                            if (unreadBadge) {
+                                let count = parseInt(unreadBadge.textContent);
+                                if (count > 0) {
+                                    unreadBadge.textContent = count - 1;
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Handle light mode specific styling
+            function updateThemeStyles() {
+                if (document.documentElement.getAttribute('data-theme') === 'light') {
+                    // Update badge colors for light mode
+                    document.querySelectorAll('.notification-badge').forEach(badge => {
+                        if (badge.classList.contains('notification-badge-like')) {
+                            badge.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+                            badge.style.color = '#e74c3c';
+                        } else if (badge.classList.contains('notification-badge-comment')) {
+                            badge.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+                            badge.style.color = '#3498db';
+                        } else if (badge.classList.contains('notification-badge-follow')) {
+                            badge.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+                            badge.style.color = '#2ecc71';
+                        } else if (badge.classList.contains('notification-badge-message')) {
+                            badge.style.backgroundColor = 'rgba(155, 89, 182, 0.1)';
+                            badge.style.color = '#9b59b6';
+                        }
+                    });
+                }
+            }
+
+            // Run on page load
+            updateThemeStyles();
+
+            // Listen for theme changes
+            document.addEventListener('themeChanged', updateThemeStyles);
+
+            // Hook into the dark mode switch
+            const darkSwitch = document.getElementById('darkSwitch');
+            if (darkSwitch) {
+                darkSwitch.addEventListener('change', function() {
+                    setTimeout(updateThemeStyles, 50);
+                });
+            }
         });
-    });
-</script>
-{% endblock javascript %}
+    </script>
+{% endblock modal %}

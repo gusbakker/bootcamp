@@ -238,7 +238,7 @@ body {
 
 /* Badge styling */
 .badge.bg-light {
-    background-color: #2d2d2d !important;
+    background-color: #fff !important;
     color: var(--bs-body-color);
 }
 

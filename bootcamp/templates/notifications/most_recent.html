@@ -2,38 +2,162 @@
 
 <div class="dropdown-notifications">
     {% if notifications %}
-<ul class="notif">
-    {% if notifications %}
-        {% for notification in notifications %}
-            <li class="d-flex" notification-slug="{{ notification.slug }}">
-                <a href="{% url 'users:detail' notification.actor.username %}" class="flex-shrink-0">
-                    <img src="{{ notification.actor.get_picture }}" class="user-picture"
-                         style="width: 45px; border-radius: 50%;"
-                         alt="{% trans 'User Image' %}">
-                </a>
-                <div class="notification-content ms-2">
-                    <p class="mb-1">{{ notification|safe }}</p>
-                    <p class="small text-muted mb-0">{{ notification.timestamp|naturaltime }}</p>
-                </div>
-            </li>
-        {% endfor %}
-        <div class="text-center mt-2">
-            <a href="{% url 'notifications:unread' %}" class="btn btn-sm btn-link">{% trans 'See all' %}</a>
+        <div class="notifications-body" style="max-height: 400px; overflow-y: auto;">
+            <ul class="notification-list p-0 m-0 list-unstyled">
+                {% for notification in notifications %}
+                    <li class="notification-item d-flex align-items-start p-2 border-bottom border-dark position-relative" notification-slug="{{ notification.slug }}">
+                        <a href="{% url 'users:detail' notification.actor.username %}" class="flex-shrink-0 me-2">
+                            <img src="{{ notification.actor.get_picture }}" class="rounded-circle"
+                                 style="width: 38px; height: 38px; object-fit: cover;"
+                                 alt="{% trans 'User Image' %}">
+                        </a>
+                        <div class="notification-content">
+                            {% if notification.verb == 'liked' %}
+                                <span class="notification-badge-sm bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
+                                    <i class="fa-solid fa-heart fa-xs"></i>
+                                </span>
+                            {% elif notification.verb == 'commented' %}
+                                <span class="notification-badge-sm bg-info bg-opacity-10 text-info rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
+                                    <i class="fa-solid fa-comment fa-xs"></i>
+                                </span>
+                            {% elif notification.verb == 'followed' %}
+                                <span class="notification-badge-sm bg-success bg-opacity-10 text-success rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
+                                    <i class="fa-solid fa-user-plus fa-xs"></i>
+                                </span>
+                            {% elif notification.verb == 'messaged' %}
+                                <span class="notification-badge-sm bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
+                                    <i class="fa-solid fa-envelope fa-xs"></i>
+                                </span>
+                            {% endif %}
+
+                            <span class="notification-text small">
+                                <a href="{% url 'users:detail' notification.actor.username %}" class="fw-bold text-decoration-none text-light">
+                                    {{ notification.actor.get_profile_name|title }}
+                                </a>
+                                {% with verb_display=notification.get_verb_display %}
+                                    {{ verb_display }}
+                                    {% if notification %}
+                                        {{ notification.action_object }}
+                                    {% endif %}
+                                {% endwith %}
+                            </span>
+                            <div class="notification-time text-muted mt-1" style="font-size: 0.7rem;">
+                                {{ notification.timestamp|naturaltime }}
+                            </div>
+                        </div>
+
+                        <a href="{% url 'notifications:mark_as_read' notification.slug %}"
+                           class="pop-notification position-absolute top-0 end-0 m-2 text-decoration-none"
+                           title="{% trans 'Mark as read' %}">
+                            <i class="fa-solid fa-times text-muted" style="font-size: 0.8rem;"></i>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="notifications-footer p-2 text-center border-top border-dark">
+            <a href="{% url 'notifications:unread' %}" class="btn btn-primary btn-sm w-100">
+                <i class="fa-solid fa-bell me-1"></i>{% trans 'View All' %}
+            </a>
         </div>
     {% else %}
-        <li class="text-center" data-empty="true">{% trans 'You have no unread notification' %}</li>
-    {% endif %}
-</ul>
-    {% else %}
-        <div class="empty-notifications">
-            <div class="empty-icon">
-                <i class="fa fa-bell-slash"></i>
+        <div class="empty-notifications p-3 text-center">
+            <div class="empty-icon mb-2">
+                <i class="fa-solid fa-bell-slash fa-2x text-muted opacity-50"></i>
             </div>
-            <p class="empty-text">{% trans 'You have no unread notifications' %}</p>
+            <h6 class="mb-1">{% trans 'No Notifications' %}</h6>
+            <p class="text-muted small mb-0">{% trans 'Your notifications will appear here' %}</p>
         </div>
     {% endif %}
 </div>
 
-{% block modal %}
-    {% include "users/includes/partial_user_js.html" %}
-{% endblock modal %}
+<style>
+    /* Dropdown notification styles */
+    .dropdown-notifications {
+        width: 320px;
+        overflow: hidden;
+        border-radius: 0.75rem;
+    }
+
+    .notification-item {
+        transition: all 0.2s ease;
+    }
+
+    .notification-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .notification-item .pop-notification {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .notification-item:hover .pop-notification {
+        opacity: 1;
+    }
+
+    .notifications-body::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .notifications-body::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .notifications-body::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+    }
+
+    .mark-all-read {
+        color: var(--bs-text-muted);
+        transition: color 0.2s ease;
+    }
+
+    .mark-all-read:hover {
+        color: var(--bs-primary);
+    }
+
+    /* Fix popover placement */
+    .popover {
+        max-width: 320px;
+        padding: 0;
+    }
+
+    .popover-body {
+        padding: 0;
+    }
+
+    /* Ensure notification badges don't take too much space */
+    .notification-badge-sm {
+        line-height: 1;
+    }
+</style>
+
+<script>
+    // Light mode adaptation for dropdown
+    function updateDropdownTheme() {
+        if (document.documentElement.getAttribute('data-theme') === 'light') {
+            // Update borders
+            document.querySelectorAll('.border-dark').forEach(el => {
+                el.classList.remove('border-dark');
+                el.classList.add('border-light');
+            });
+
+            // Update text colors
+            document.querySelectorAll('.text-light').forEach(el => {
+                el.classList.remove('text-light');
+                el.classList.add('text-dark');
+            });
+
+            // Update scrollbar for light mode
+            document.querySelector('.notifications-body').style.scrollbarColor = 'rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05)';
+        }
+    }
+
+    // Run when dropdown is shown
+    document.querySelector('#notifications').addEventListener('shown.bs.popover', function () {
+        updateDropdownTheme();
+    });
+</script>

@@ -213,6 +213,22 @@ header .navbar-brand {
 }
 
 .btn-outline-primary {
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+    background: transparent;
+    box-shadow: 0 2px 5px rgba(58, 134, 255, 0.15);
+}
+
+.btn-outline-primary:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(58, 134, 255, 0.2);
+}
+
+/* Small outline button - create a new class for these */
+.btn-outline-primary-sm {
     border-color: #d0e8ff;
     color: #2196f3;
     background: transparent;
@@ -220,7 +236,7 @@ header .navbar-brand {
     font-size: 11px;
 }
 
-.btn-outline-primary:hover {
+.btn-outline-primary-sm:hover {
     background-color: #2196f3;
     border-color: #2196f3;
 }

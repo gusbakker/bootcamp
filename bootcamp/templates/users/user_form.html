@@ -7,30 +7,237 @@
 {% block head_title %}{% trans "Update Profile" %}{% endblock %}
 
 {% block head %}
-<link href="{% static 'css/user_form.css' %}?v=1" rel="stylesheet">
+    <style>
+        /* Account settings styles */
+        .settings-container {
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .settings-header {
+            margin-bottom: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-subtitle {
+            color: var(--bs-text-muted);
+            margin-bottom: 0;
+        }
+
+        .settings-nav {
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-nav .list-group-item {
+            background-color: transparent;
+            border-color: var(--bs-border-color);
+            color: var(--bs-body-color);
+            padding: 1rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .settings-nav .list-group-item:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.05);
+        }
+
+        .settings-nav .list-group-item.active {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        .settings-nav .list-group-item i {
+            margin-right: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .settings-card {
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .settings-card .card-header {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 1.25rem;
+        }
+
+        .settings-card .card-title {
+            margin-bottom: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .settings-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-text {
+            color: var(--bs-text-muted);
+            font-size: 0.875rem;
+        }
+
+        .btn-save {
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+        }
+    </style>
 {% endblock head %}
 
 {% block content %}
+    <div class="container settings-container">
+        <div class="settings-header">
+            <h1 class="settings-title">{% trans 'Account Settings' %}</h1>
+            <p class="settings-subtitle">{% trans 'Manage your profile information and account preferences' %}</p>
+        </div>
 
-<div class="page-header">
-    <h1>{% trans 'Account Settings' %}</h1>
-</div>
-<div class="row profile">
-    <div class="col-md-3">
-        {% include 'users/user_account_menu.html' with active='profile' %}
-    </div>
-    <div class="col-md-8">
-        <h3 style="margin-bottom: 15px">{% trans 'Edit Profile' %}</h3>
-        <form enctype="multipart/form-data" class="form-horizontal" method="post" action="{% url 'users:update' %}">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <div class="control-group">
-                <div class="controls">
-                    <button type="submit" class="btn btn-primary">{% trans 'Update Profile' %}</button>
+        <div class="row">
+            <div class="col-lg-3 mb-4 mb-lg-0">
+                <div class="settings-nav">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'users:update' %}" class="list-group-item list-group-item-action active">
+                            <i class="fa-solid fa-user"></i>{% trans 'Profile Information' %}
+                        </a>
+                        <a href="{% url 'users:picture' %}" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-image"></i>{% trans 'Profile Picture' %}
+                        </a>
+                        <a href="{% url 'users:account_change_password' %}" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-key"></i>{% trans 'Password' %}
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-bell"></i>{% trans 'Notifications' %}
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-shield"></i>{% trans 'Privacy' %}
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card settings-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ user.get_picture }}" alt="{{ user.username }}"
+                                 class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                            <div>
+                                <h6 class="mb-0">{{ user.get_profile_name }}</h6>
+                                <p class="text-muted small mb-0">@{{ user.username }}</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'users:detail' user.username %}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fa-solid fa-eye me-1"></i>{% trans 'View Profile' %}
+                        </a>
+                    </div>
                 </div>
             </div>
-        </form>
-    </div>
-</div>
 
+            <div class="col-lg-9">
+                <div class="card settings-card">
+                    <div class="card-header">
+                        <h5 class="card-title">{% trans 'Profile Information' %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" class="form" method="post" action="{% url 'users:update' %}">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary btn-save">
+                                    <i class="fa-solid fa-save me-1"></i>{% trans 'Save Changes' %}
+                                </button>
+                                <a href="{% url 'users:detail' user.username %}" class="btn btn-outline-secondary ms-2">
+                                    {% trans 'Cancel' %}
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+{% block modal %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhance textarea fields
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.setAttribute('rows', '4');
+
+                // Auto-resize functionality
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+
+                // Initial trigger for auto-height
+                const event = new Event('input');
+                textarea.dispatchEvent(event);
+            });
+
+            // Enhance select fields
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                select.classList.add('form-select');
+            });
+
+            // Add icons to form fields where appropriate
+            const jobTitleField = document.querySelector('#id_job_title');
+            if (jobTitleField) {
+                const jobTitleWrapper = jobTitleField.closest('.mb-3');
+                const jobTitleLabel = jobTitleWrapper.querySelector('label');
+                if (jobTitleLabel) {
+                    jobTitleLabel.innerHTML = '<i class="fa-solid fa-briefcase me-1"></i> ' + jobTitleLabel.innerHTML;
+                }
+            }
+
+            const locationField = document.querySelector('#id_location');
+            if (locationField) {
+                const locationWrapper = locationField.closest('.mb-3');
+                const locationLabel = locationWrapper.querySelector('label');
+                if (locationLabel) {
+                    locationLabel.innerHTML = '<i class="fa-solid fa-location-dot me-1"></i> ' + locationLabel.innerHTML;
+                }
+            }
+
+            const bioField = document.querySelector('#id_bio');
+            if (bioField) {
+                const bioWrapper = bioField.closest('.mb-3');
+                const bioLabel = bioWrapper.querySelector('label');
+                if (bioLabel) {
+                    bioLabel.innerHTML = '<i class="fa-solid fa-pen me-1"></i> ' + bioLabel.innerHTML;
+                }
+            }
+
+            const urlField = document.querySelector('#id_personal_url');
+            if (urlField) {
+                const urlWrapper = urlField.closest('.mb-3');
+                const urlLabel = urlWrapper.querySelector('label');
+                if (urlLabel) {
+                    urlLabel.innerHTML = '<i class="fa-solid fa-globe me-1"></i> ' + urlLabel.innerHTML;
+                }
+            }
+        });
+    </script>
+{% endblock modal %}

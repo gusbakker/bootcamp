@@ -3,80 +3,350 @@
 {% load crispy_forms_tags %}
 {% load thumbnail %}
 
-{% block head_title %}{% trans "Update Profile" %}{% endblock %}
+{% block head_title %}{% trans "Update Profile Picture" %}{% endblock %}
 
 {% block head %}
     <link href="{% static 'css/jquery.Jcrop.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/user_form.css' %}?v=1" rel="stylesheet">
+    <style>
+        /* Profile picture upload styles */
+        .picture-upload-container {
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .picture-preview {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .picture-preview img {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 5px solid var(--bs-card-bg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+        }
+
+        .upload-card {
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .upload-card .card-header {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 1.25rem;
+        }
+
+        .upload-card .card-title {
+            margin-bottom: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .upload-card .card-body {
+            padding: 2rem;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--bs-border-color);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--bs-primary);
+            background-color: rgba(var(--bs-primary-rgb), 0.05);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: var(--bs-primary);
+            margin-bottom: 1rem;
+        }
+
+        .upload-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtitle {
+            color: var(--bs-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .crop-container {
+            margin-top: 2rem;
+        }
+
+        .crop-preview {
+            max-width: 100%;
+            max-height: 400px;
+            display: block;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Modal styles */
+        .modal-content {
+            border-radius: 1rem;
+            border: none;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background-color: var(--bs-primary);
+            color: #fff;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--bs-border-color);
+            padding: 1rem 1.5rem;
+        }
+
+        .settings-nav {
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-nav .list-group-item {
+            background-color: transparent;
+            border-color: var(--bs-border-color);
+            color: var(--bs-body-color);
+            padding: 1rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .settings-nav .list-group-item:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.05);
+        }
+
+        .settings-nav .list-group-item.active {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        .settings-nav .list-group-item i {
+            margin-right: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .settings-header {
+            margin-bottom: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-subtitle {
+            color: var(--bs-text-muted);
+            margin-bottom: 0;
+        }
+    </style>
 {% endblock head %}
 
 {% block content %}
-
-    <div class="page-header">
-        <h1>{% trans 'Account Settings' %}</h1>
-    </div>
-    <div class="row profile">
-        <div class="col-md-3">
-            {% include 'users/user_account_menu.html' with active='picture' %}
+    <div class="container picture-upload-container">
+        <div class="settings-header">
+            <h1 class="settings-title">{% trans 'Account Settings' %}</h1>
+            <p class="settings-subtitle">{% trans 'Manage your profile information and account preferences' %}</p>
         </div>
-        <div class="col-md-8">
-            <img src="{{ user.get_picture }}" class="user-image" style="width: 150px; border-radius: 50%; margin-bottom: 1em;" alt="{% trans 'User Image' %}">
-            <form enctype="multipart/form-data" method="post" action="{% url 'users:upload_picture' %}"
-                  id="picture-upload-form">
-                {% csrf_token %}
-                <input type="file" name="picture" style="display: none">
-                <button type="button" class="btn btn-primary"
-                        id="btn-upload-picture">{% trans 'Upload Photo' %}</button>
-            </form>
 
-            {% if uploaded_picture %}
-                <form method="post" action="{% url 'users:save_uploaded_picture' %}">
-                    {% csrf_token %}
-                    <div class="modal fade" id="modal-upload-picture">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                        &times;
-                                    </button>
-                                    <h4 class="modal-title">{% trans 'Crop Picture' %}</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="selected-picture">
-                                        <p>{% trans 'Crop the profile picture and then click on the' %}
-                                            <strong>{% trans 'Save Picture' %}</strong> {% trans 'button' %}</p>
-                                        <img src="{% get_media_prefix %}profile_pics/{{ user.username }}_tmp.jpg?_={% now 'U' %}"
-                                             id="crop-picture">
-                                        <input type="hidden" id="x" name="x"/>
-                                        <input type="hidden" id="y" name="y"/>
-                                        <input type="hidden" id="w" name="w"/>
-                                        <input type="hidden" id="h" name="h"/>
-                                    </div>
+        <div class="row">
+            <div class="col-lg-3 mb-4 mb-lg-0">
+                <div class="settings-nav">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'users:update' %}" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-user"></i>{% trans 'Profile Information' %}
+                        </a>
+                        <a href="{% url 'users:picture' %}" class="list-group-item list-group-item-action active">
+                            <i class="fa-solid fa-image"></i>{% trans 'Profile Picture' %}
+                        </a>
+                        <a href="{% url 'users:account_change_password' %}" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-key"></i>{% trans 'Password' %}
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-bell"></i>{% trans 'Notifications' %}
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fa-solid fa-shield"></i>{% trans 'Privacy' %}
+                        </a>
+                    </div>
+                </div>
 
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default"
-                                            data-dismiss="modal">{% trans 'Close' %}</button>
-                                    <button type="submit" class="btn btn-primary">{% trans 'Save changes' %}</button>
-                                </div>
+                <div class="card upload-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ user.get_picture }}" alt="{{ user.username }}"
+                                 class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                            <div>
+                                <h6 class="mb-0">{{ user.get_profile_name }}</h6>
+                                <p class="text-muted small mb-0">@{{ user.username }}</p>
                             </div>
                         </div>
+                        <a href="{% url 'users:detail' user.username %}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fa-solid fa-eye me-1"></i>{% trans 'View Profile' %}
+                        </a>
                     </div>
-                </form>
-            {% endif %}
+                </div>
+            </div>
 
+            <div class="col-lg-9">
+                <div class="card upload-card">
+                    <div class="card-header">
+                        <h5 class="card-title">{% trans 'Profile Picture' %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="picture-preview">
+                            <img src="{{ user.get_picture }}" alt="{{ user.username }}">
+                        </div>
+
+                        <form enctype="multipart/form-data" method="post" action="{% url 'users:upload_picture' %}"
+                              id="picture-upload-form">
+                            {% csrf_token %}
+                            <input type="file" name="picture" style="display: none" id="id_picture" accept="image/*">
+
+                            <div class="upload-zone" id="upload-zone">
+                                <div class="upload-icon">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                </div>
+                                <h5 class="upload-title">{% trans 'Upload a new profile picture' %}</h5>
+                                <p class="upload-subtitle">
+                                    {% trans 'Drag & drop a file here, or click to select a file' %}
+                                </p>
+                                <button type="button" class="btn btn-primary" id="btn-upload-picture">
+                                    <i class="fa-solid fa-upload me-1"></i>{% trans 'Choose a file' %}
+                                </button>
+                            </div>
+
+                            <div class="text-muted small text-center">
+                                <i class="fa-solid fa-circle-info me-1"></i>
+                                {% trans 'Recommended: Square image, at least 400x400 pixels' %}
+                            </div>
+                        </form>
+
+                        {% if uploaded_picture %}
+                            <form method="post" action="{% url 'users:save_uploaded_picture' %}">
+                                {% csrf_token %}
+                                <input type="hidden" id="x" name="x"/>
+                                <input type="hidden" id="y" name="y"/>
+                                <input type="hidden" id="w" name="w"/>
+                                <input type="hidden" id="h" name="h"/>
+
+                                <div class="modal fade" id="crop-modal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title" id="cropModalLabel">{% trans 'Crop Profile Picture' %}</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="text-center mb-4">
+                                                    {% trans 'Drag the selection to crop your profile picture.' %}
+                                                </p>
+                                                <div class="crop-container">
+                                                    <img src="{% get_media_prefix %}profile_pics/{{ user.username }}_tmp.jpg?_={% now 'U' %}"
+                                                         id="crop-picture" class="crop-preview">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                    {% trans 'Cancel' %}
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fa-solid fa-crop me-1"></i>{% trans 'Save Picture' %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block modal %}
     <script src="{% static 'js/jquery.Jcrop.min.js' %}"></script>
     <script src="{% static 'js/picture.js' %}"></script>
-    <script type="text/javascript">
+    <script>
         $(function () {
-            $("#modal-upload-picture").modal();
-            window.history.pushState("", "", "/users/picture/");
+            // Initialize crop modal
+            {% if uploaded_picture %}
+                const cropModal = new bootstrap.Modal(document.getElementById('crop-modal'));
+                cropModal.show();
+                window.history.pushState("", "", "/users/picture/");
+            {% endif %}
+
+            // Handle file upload zone
+            const uploadZone = document.getElementById('upload-zone');
+            const fileInput = document.getElementById('id_picture');
+            const uploadForm = document.getElementById('picture-upload-form');
+
+            uploadZone.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            uploadZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadZone.classList.add('bg-light');
+            });
+
+            uploadZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadZone.classList.remove('bg-light');
+            });
+
+            uploadZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadZone.classList.remove('bg-light');
+
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    uploadForm.submit();
+                }
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length) {
+                    uploadForm.submit();
+                }
+            });
+
+            // Legacy code for backwards compatibility
+            $("#btn-upload-picture").click(function () {
+                $("#id_picture").click();
+            });
         });
     </script>
 {% endblock modal %}

@@ -1,33 +1,531 @@
 {% extends 'base.html' %}
-{% load crispy_forms_filters %}
 {% load static i18n %}
 {% load crispy_forms_tags %}
 
+{% block title %}{% trans 'Write New Article' %}{% endblock %}
+
 {% block head %}
+    <style>
+        /* Article editor styles */
+        .editor-container {
+            margin-top: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .editor-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .editor-card {
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .editor-card .card-header {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 1.25rem;
+        }
+
+        .editor-card .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .editor-card .card-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-text {
+            color: var(--bs-text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin-top: 1rem;
+            background-color: var(--bs-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bs-text-muted);
+            border: 2px dashed var(--bs-border-color);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--bs-border-color);
+            background-color: var(--bs-card-bg);
+            color: var(--bs-body-color);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+        }
+
+        .ck-editor__editable {
+            min-height: 400px;
+            max-height: 600px;
+        }
+
+        /* CKEditor theme override for dark mode */
+        .ck.ck-editor__main>.ck-editor__editable {
+            background-color: var(--bs-card-bg) !important;
+            color: var(--bs-body-color) !important;
+        }
+
+        .ck.ck-toolbar {
+            background-color: var(--bs-light) !important;
+            border-color: var(--bs-border-color) !important;
+        }
+
+        .ck.ck-button {
+            color: var(--bs-body-color) !important;
+        }
+
+        .ck.ck-button.ck-on {
+            background-color: var(--bs-primary) !important;
+            color: #fff !important;
+        }
+
+        .ck.ck-list {
+            background-color: var(--bs-card-bg) !important;
+            border-color: var(--bs-border-color) !important;
+        }
+
+        .ck.ck-list__item .ck-button {
+            color: var(--bs-body-color) !important;
+        }
+
+        .ck.ck-list__item .ck-button.ck-on {
+            background-color: var(--bs-primary) !important;
+            color: #fff !important;
+        }
+
+        .ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
+            border-color: var(--bs-primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25) !important;
+        }
+
+        .editor-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .editor-format-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .format-button {
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            background-color: var(--bs-light);
+            color: var(--bs-body-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .format-button:hover {
+            background-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        .editor-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-save-draft, .btn-publish {
+            font-weight: 500;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+        }
+
+        .tagging-widget {
+            background-color: var(--bs-light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tagging-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+            color: var(--bs-primary);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .tag-close {
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag-suggestion {
+            background-color: var(--bs-light);
+            border: 1px solid var(--bs-border-color);
+            color: var(--bs-body-color);
+            border-radius: 50px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tag-suggestion:hover {
+            background-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        /* Markdown formatting help */
+        .markdown-help {
+            background-color: var(--bs-light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .markdown-help-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-help-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .markdown-help-item {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .markdown-help-item code {
+            background-color: var(--bs-dark);
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .markdown-help-text {
+            font-size: 0.85rem;
+            color: var(--bs-text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .markdown-help-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar card for tips */
+        .sidebar-card {
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-card .card-header {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 1.25rem;
+            font-weight: 600;
+        }
+
+        .sidebar-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .tips-list {
+            padding-left: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .tips-list li {
+            margin-bottom: 0.75rem;
+            color: var(--bs-text-muted);
+        }
+
+        .tips-list li:last-child {
+            margin-bottom: 0;
+        }
+    </style>
 {% endblock head %}
 
 {% block content %}
+    <div class="container editor-container">
+        <div class="editor-header">
+            <h1 class="editor-title">{% trans 'Write a New Article' %}</h1>
+        </div>
 
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'news:list' %}">{% trans 'Home' %}</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'articles:list' %}">{% trans 'Articles' %}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{% trans 'Write a new article' %}</li>
-    </ol>
-  </nav>
-  <form action="{% url 'articles:write_new' %}" enctype="multipart/form-data"  id="article-form" method="post" role="form">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <div class="form-group">
-      <button type="button" class="btn btn-primary publish">{% trans 'Publish' %}</button>
-      <button type="button" class="btn btn-default draft">{% trans 'Save as draft' %}</button>
-      <a href="{% url 'articles:list' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="editor-card">
+                    <div class="card-header">
+                        <h2 class="card-title">{% trans 'Article Editor' %}</h2>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'articles:write_new' %}" enctype="multipart/form-data" id="article-form" method="post" role="form">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="P">
+
+                            {{ form|crispy }}
+
+                            <div class="image-preview mt-3 mb-4" id="image-preview">
+                                <i class="fa-solid fa-image fa-2x"></i>
+                            </div>
+
+                            <div class="editor-actions">
+                                <button type="button" class="btn btn-outline-primary draft">{% trans 'Save Draft' %}</button>
+                                <button type="button" class="btn btn-primary publish">{% trans 'Publish' %}</button>
+                                <a href="{% url 'articles:list' %}" class="btn btn-outline-secondary">{% trans 'Cancel' %}</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Writing Tips -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-lightbulb me-2"></i>{% trans 'Writing Tips' %}
+                    </div>
+                    <div class="card-body">
+                        <ul class="tips-list">
+                            <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
+                            <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
+                            <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
+                            <li>{% trans 'Use examples to illustrate your points.' %}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Preview Link -->
+                <div class="text-center mb-4">
+                    <button type="button" class="btn btn-outline-primary" id="preview-button">
+                        <i class="fa-solid fa-eye me-1"></i>{% trans 'Preview Article' %}
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </form>
-  {{ form.media }}
-
 {% endblock content %}
 
 {% block modal %}
-  <script src="{% static 'js/articles.js' %}"></script>
+    <script src="{% static 'js/articles.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image preview
+            const imageInput = document.querySelector('input[type="file"]');
+            const imagePreview = document.getElementById('image-preview');
+
+            imageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.innerHTML = '<i class="fa-solid fa-image fa-2x"></i>';
+                }
+            });
+
+            // Preview button
+            const previewButton = document.getElementById('preview-button');
+            previewButton.addEventListener('click', function() {
+                const title = document.getElementById('{{ form.title.id_for_label }}').value;
+                const content = document.getElementById('{{ form.content.id_for_label }}').value;
+
+                if (!title || !content) {
+                    alert('{% trans "Please add a title and content to preview your article." %}');
+                    return;
+                }
+
+                // Create a preview in a new tab
+                const previewWindow = window.open('', '_blank');
+                previewWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${title} - Preview</title>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+                        <style>
+                            body {
+                                font-family: 'Poppins', sans-serif;
+                                padding: 2rem;
+                                background-color: ${document.documentElement.getAttribute('data-theme') === 'dark' ? '#121212' : '#f8f9fa'};
+                                color: ${document.documentElement.getAttribute('data-theme') === 'dark' ? '#e0e0e0' : '#212529'};
+                            }
+                            .preview-container {
+                                max-width: 800px;
+                                margin: 0 auto;
+                                background-color: ${document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e1e1e' : '#ffffff'};
+                                padding: 2rem;
+                                border-radius: 1rem;
+                                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                            }
+                            .preview-header {
+                                text-align: center;
+                                margin-bottom: 2rem;
+                            }
+                            .preview-title {
+                                font-size: 2rem;
+                                font-weight: 700;
+                                margin-bottom: 1rem;
+                            }
+                            .preview-badge {
+                                display: inline-block;
+                                padding: 0.5rem 1rem;
+                                background-color: #ff9800;
+                                color: white;
+                                border-radius: 50px;
+                                font-weight: 500;
+                                margin-bottom: 1rem;
+                            }
+                            .preview-content {
+                                font-size: 1.1rem;
+                                line-height: 1.8;
+                            }
+                            .preview-notice {
+                                text-align: center;
+                                margin-top: 2rem;
+                                color: ${document.documentElement.getAttribute('data-theme') === 'dark' ? '#adb5bd' : '#6c757d'};
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="preview-container">
+                            <div class="preview-header">
+                                <div class="preview-badge">Preview Mode</div>
+                                <h1 class="preview-title">${title}</h1>
+                            </div>
+                            <div class="preview-content">
+                                ${marked.parse(content)}
+                            </div>
+                            <div class="preview-notice">
+                                <p>This is a preview of your article. Changes won't be saved until you publish or save as draft.</p>
+                            </div>
+                        </div>
+                        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+                    </body>
+                    </html>
+                `);
+                previewWindow.document.close();
+            });
+
+            // Dark mode support for form elements
+            function updateThemeStyles() {
+                if (document.documentElement.getAttribute('data-theme') === 'light') {
+                    document.querySelectorAll('.form-control, .form-select').forEach(el => {
+                        el.style.backgroundColor = '#ffffff';
+                        el.style.color = '#212529';
+                    });
+
+                    document.querySelectorAll('.markdown-help-item code').forEach(el => {
+                        el.style.backgroundColor = '#f0f0f0';
+                        el.style.color = '#212529';
+                    });
+                } else {
+                    document.querySelectorAll('.form-control, .form-select').forEach(el => {
+                        el.style.backgroundColor = '#1e1e1e';
+                        el.style.color = '#e0e0e0';
+                    });
+
+                    document.querySelectorAll('.markdown-help-item code').forEach(el => {
+                        el.style.backgroundColor = '#343a40';
+                        el.style.color = '#ffffff';
+                    });
+                }
+            }
+
+            // Run on page load
+            updateThemeStyles();
+
+            // Listen for theme changes
+            document.addEventListener('themeChanged', updateThemeStyles);
+
+            // Hook into the dark mode switch
+            const darkSwitch = document.getElementById('darkSwitch');
+            if (darkSwitch) {
+                darkSwitch.addEventListener('change', function() {
+                    setTimeout(updateThemeStyles, 50);
+                });
+            }
+        });
+    </script>
 {% endblock modal %}
