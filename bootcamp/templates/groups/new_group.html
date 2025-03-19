@@ -3,12 +3,25 @@
 
 {% block title %}<title>Create Group</title>{% endblock %}
 
-{% block form_content %}
-{#{% include "groups/includes/page_heading.html" with text="Create Group" %}#}
-
-<form action="{% url 'new_group' %}" method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ group_form|crispy }}
- <button type="submit" class="btn btn-success btn-block">Submit</button>
-</form>
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent">
+          <h5 class="card-title mb-0">Create a New Group</h5>
+        </div>
+        <div class="card-body">
+          <form action="{% url 'groups:new_group' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ group_form|crispy }}
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fa-solid fa-users me-2"></i>Create Group
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

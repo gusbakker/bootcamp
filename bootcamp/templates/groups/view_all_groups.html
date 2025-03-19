@@ -1,19 +1,557 @@
 {% extends "base.html" %}
 {% load static i18n %}
-{% load thumbnail %}
+{% load thumbnail humanize %}
+
 {% block title %}{% trans 'Groups' %}{% endblock %}
 
+{% block head %}
+    <style>
+        /* Groups list styles */
+        .groups-container {
+            margin-top: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-create-group {
+            border-radius: 0.75rem;
+            padding: 0.6rem 1.2rem;
+            box-shadow: 0 2px 10px rgba(var(--bs-primary-rgb), 0.2);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-create-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.3);
+        }
+
+        .btn-create-group i {
+            margin-right: 0.5rem;
+        }
+
+        .group-card {
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+            background-color: var(--bs-card-bg);
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .group-card .card-img-top {
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .group-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .group-card .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .group-card .card-title a {
+            color: var(--bs-body-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .group-card .card-title a:hover {
+            color: var(--bs-primary);
+        }
+
+        .group-card .card-text {
+            color: var(--bs-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .group-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--bs-text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .group-subscribers {
+            display: flex;
+            align-items: center;
+        }
+
+        .group-subscribers i {
+            margin-right: 0.5rem;
+        }
+
+        .group-timestamp {
+            color: var(--bs-text-muted);
+        }
+
+        .sidebar-card {
+            border-radius: 1rem;
+            overflow: hidden;
+            background-color: var(--bs-card-bg);
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-card .card-header {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 1.25rem;
+            font-weight: 600;
+        }
+
+        .sidebar-card .card-body {
+            padding: 1.25rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background-color: var(--bs-card-bg);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .empty-state-icon {
+            margin-bottom: 1.5rem;
+            font-size: 3rem;
+            color: var(--bs-text-muted);
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-description {
+            color: var(--bs-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Search box styling */
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box .form-control {
+            padding-left: 3rem;
+            height: 48px;
+            border-radius: 0.75rem;
+            background-color: var(--bs-card-bg);
+            border: 1px solid var(--bs-border-color);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--bs-text-muted);
+        }
+
+        /* Pagination styling */
+        .pagination {
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pagination .page-item .page-link {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 0.5rem;
+            color: var(--bs-primary);
+            background-color: var(--bs-card-bg);
+            border: 1px solid var(--bs-border-color);
+            transition: all 0.2s ease;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+            border-color: var(--bs-primary);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Categories filter */
+        .categories-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-pill {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            background-color: var(--bs-card-bg);
+            border: 1px solid var(--bs-border-color);
+            color: var(--bs-body-color);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .category-pill:hover, .category-pill.active {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: #fff;
+        }
+    </style>
+{% endblock head %}
+
 {% block content %}
+    <div class="container groups-container">
+        <div class="section-header">
+            <h1 class="section-title">
+            </h1>
 
-{% if groups %}
-  {% include "groups/includes/partial_group.html" with groups=groups %}
-{% else %}
-  <div class="card p-4 my-4 mx-0">
-    <h6 class="text-center">No Groups Found</h6>
-    <div style="margin:0 auto;">
-    <p class="text-muted">There are no groups created yet.</p>
+            <div class="section-actions">
+                {% if request.user.is_authenticated %}
+                    <a class="btn btn-primary btn-create-group" href="{% url 'groups:new_group' %}">
+                        <i class="fa-solid fa-users"></i>{% trans 'Create Group' %}
+                    </a>
+                    <a class="btn btn-outline-primary btn-create-group" href="{% url 'groups:user_created_groups' request.user.username %}">
+                        <i class="fa-solid fa-folder me-1"></i>{% trans 'My Groups' %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Groups and Sidebar -->
+        <div class="row">
+            <!-- Groups Column -->
+            <div class="col-lg-8">
+                <!-- Search Bar -->
+                <div class="search-box">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" class="form-control" placeholder="{% trans 'Search for groups...' %}">
+                </div>
+
+                <!-- Categories Filter -->
+                <div class="categories-filter">
+                    <span class="category-pill active">{% trans 'All' %}</span>
+                    <span class="category-pill">{% trans 'Technology' %}</span>
+                    <span class="category-pill">{% trans 'Arts & Culture' %}</span>
+                    <span class="category-pill">{% trans 'Sports' %}</span>
+                    <span class="category-pill">{% trans 'Science' %}</span>
+                    <span class="category-pill">{% trans 'Business' %}</span>
+                </div>
+
+                <!-- Groups Grid -->
+                {% if groups %}
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for group in groups %}
+                            <div class="col">
+                                <div class="card group-card h-100 shadow-sm">
+                                    <!-- Group Cover Image -->
+                                    <div class="card-img-top" style="background: url('{{ group.get_picture }}') center/cover no-repeat; height: 120px;"></div>
+
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="{{ group.get_absolute_url }}" class="text-decoration-none">
+                                                {{ group.title }}
+                                            </a>
+                                        </h5>
+
+                                        <div class="group-meta">
+                                            <div class="group-subscribers">
+                                                <i class="fa-solid fa-users"></i>
+                                                <span>{{ group.subscribers.count }} {% trans 'subscribers' %}</span>
+                                            </div>
+                                            <div class="group-timestamp">
+                                                <i class="fa-regular fa-clock me-1"></i>
+                                                {{ group.created|naturaltime }}
+                                            </div>
+                                        </div>
+
+                                        <p class="card-text">
+                                            {{ group.description|truncatewords:25 }}
+                                        </p>
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="{{ group.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                                                {% trans 'View Group' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+                                            </a>
+
+                                            {% if group in request.user.subscribed_groups.all %}
+                                                <a href="{% url 'groups:subscribe' group.slug %}" class="btn btn-secondary btn-sm" id="subscribe_group">
+                                                    <i class="fa-solid fa-user-minus me-1"></i>{% trans 'Unsubscribe' %}
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'groups:subscribe' group.slug %}" class="btn btn-primary btn-sm" id="subscribe_group">
+                                                    <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Subscribe' %}
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true"><i class="fa-solid fa-arrow-left"></i></span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fa-solid fa-arrow-left"></i></span>
+                                    </li>
+                                {% endif %}
+
+                                {% for i in paginator.page_range %}
+                                    {% if page_obj.number == i %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ i }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fa-solid fa-arrow-right"></i></span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fa-solid fa-users-slash"></i>
+                        </div>
+                        <h3 class="empty-state-title">{% trans 'No Groups Yet' %}</h3>
+                        <p class="empty-state-description">
+                            {% trans 'There are no groups created yet. Be the first to create one!' %}
+                        </p>
+                        <a href="{% url 'groups:new_group' %}" class="btn btn-primary">
+                            <i class="fa-solid fa-users me-2"></i>{% trans 'Create First Group' %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Your Groups Widget -->
+                <div class="card sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-folder me-2"></i>{% trans 'Your Groups' %}
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for group in request.user.subscribed_groups.all|slice:":5" %}
+                                <a href="{{ group.get_absolute_url }}" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                                    <div class="flex-shrink-0 me-3">
+                                        <div class="rounded bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fa-solid fa-users"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fs-6">{{ group.title }}</h6>
+                                        <small class="text-muted">
+                                            <i class="fa-solid fa-user-group me-1"></i>{{ group.subscribers.count }} {% trans 'subscribers' %}
+                                        </small>
+                                    </div>
+                                </a>
+                            {% empty %}
+                                <div class="list-group-item text-center p-3 text-muted">
+                                    {% trans 'You have not joined any groups yet.' %}
+                                </div>
+                            {% endfor %}
+
+                            <div class="card-footer bg-transparent text-center p-3">
+                                <a href="{% url 'groups:user_subscription_list' %}" class="btn btn-sm btn-primary">
+                                    {% trans 'View All Subscriptions' %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trending Groups Widget -->
+                <div class="card sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-fire me-2"></i>{% trans 'Popular Groups' %}
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for group in groups|slice:":5" %}
+                                <a href="{{ group.get_absolute_url }}" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                                    <div class="flex-shrink-0 me-3">
+                                        <div class="rounded" style="width: 40px; height: 40px; background: url('{{ group.get_picture }}') center/cover no-repeat;"></div>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fs-6">{{ group.title }}</h6>
+                                        <div class="d-flex align-items-center text-muted">
+                                            <small>
+                                                <i class="fa-solid fa-users me-1"></i>{{ group.subscribers.count }}
+                                            </small>
+                                            <span class="mx-2">•</span>
+                                            <small>
+                                                <i class="fa-solid fa-clock me-1"></i>{{ group.created|naturaltime }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% empty %}
+                                <div class="list-group-item text-center p-3 text-muted">
+                                    {% trans 'No groups available yet.' %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Group Card -->
+                <div class="card sidebar-card bg-primary bg-opacity-10 border-0">
+                    <div class="card-body text-center py-4">
+                        <i class="fa-solid fa-users-gear fa-3x mb-3 text-primary"></i>
+                        <h5 class="mb-3">{% trans 'Start Your Own Community' %}</h5>
+                        <p class="mb-4 text-muted">{% trans 'Create a group around your interests and connect with others.' %}</p>
+                        <a href="{% url 'groups:new_group' %}" class="btn btn-primary">
+                            <i class="fa-solid fa-circle-plus me-2"></i>{% trans 'Create a Group' %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-{% endif %}
-
 {% endblock content %}
+
+{% block modal %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category filter functionality
+        const categoryPills = document.querySelectorAll('.category-pill');
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', function() {
+                categoryPills.forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                // Here you would add filter logic
+            });
+        });
+
+        // Subscribe group functionality
+        document.querySelectorAll('a#subscribe_group').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                {% if not request.user.is_authenticated %}
+                    window.location.href = "{% url 'login' %}";
+                {% else %}
+                    const subscribeBtn = this;
+                    const subscribeUrl = this.getAttribute("href");
+
+                    fetch(subscribeUrl)
+                        .then(response => response.text())
+                        .then(data => {
+                            if (subscribeBtn.textContent.trim().includes('Subscribe')) {
+                                subscribeBtn.classList.remove('btn-primary');
+                                subscribeBtn.classList.add('btn-secondary');
+                                subscribeBtn.innerHTML = '<i class="fa-solid fa-user-minus me-1"></i>{% trans "Unsubscribe" %}';
+                            } else {
+                                subscribeBtn.classList.remove('btn-secondary');
+                                subscribeBtn.classList.add('btn-primary');
+                                subscribeBtn.innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>{% trans "Subscribe" %}';
+                            }
+                        });
+                {% endif %}
+            });
+        });
+
+        // Handle light mode specific styling
+        function updateThemeStyles() {
+            if (document.documentElement.getAttribute('data-theme') === 'light') {
+                // Update any elements that need light-mode specific styling
+                document.querySelectorAll('.bg-opacity-10').forEach(el => {
+                    el.classList.remove('bg-opacity-10');
+                    el.classList.add('bg-opacity-25');
+                });
+            }
+        }
+
+        // Run on page load
+        updateThemeStyles();
+
+        // Listen for theme changes
+        document.addEventListener('themeChanged', updateThemeStyles);
+
+        // Hook into the dark mode switch
+        const darkSwitch = document.getElementById('darkSwitch');
+        if (darkSwitch) {
+            darkSwitch.addEventListener('change', function() {
+                setTimeout(updateThemeStyles, 50);
+            });
+        }
+    });
+</script>
+{% endblock modal %}
