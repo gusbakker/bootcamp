@@ -31,8 +31,8 @@ urlpatterns = [
     path("news/", include("bootcamp.news.urls", namespace="news")),
     path("messages/", include("bootcamp.messager.urls", namespace="messager")),
     path("search/", include("bootcamp.search.urls", namespace="search")),
-    path("", include("bootcamp.users.urls", namespace="users")),
     path("groups/", include("bootcamp.groups.urls", namespace="groups")),
+    path("", include("bootcamp.users.urls", namespace="users")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

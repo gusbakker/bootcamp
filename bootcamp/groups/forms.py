@@ -14,7 +14,6 @@ class GroupForm(forms.ModelForm):
             'placeholder': _('Enter a name for your group'),
             'class': 'form-control'
         }),
-        help_text=_('Choose a clear, specific name for your group.')
     )
 
     description = forms.CharField(
@@ -23,7 +22,6 @@ class GroupForm(forms.ModelForm):
             'placeholder': _('Describe what your group is about...'),
             'class': 'form-control'
         }),
-        help_text=_('Provide details about the purpose and focus of your group.')
     )
 
     category = forms.ChoiceField(

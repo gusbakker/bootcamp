@@ -244,19 +244,14 @@
                             {% csrf_token %}
 
                             <div class="mb-4">
-                                <label for="{{ group_form.title.id_for_label }}" class="form-label">{% trans 'Group Title' %} <span class="text-danger">*</span></label>
                                 {{ group_form.title|as_crispy_field }}
-                                <div class="form-text">{% trans 'Choose a clear, specific name for your group.' %}</div>
                             </div>
 
                             <div class="mb-4">
-                                <label for="{{ group_form.description.id_for_label }}" class="form-label">{% trans 'Group Description' %} <span class="text-danger">*</span></label>
                                 {{ group_form.description|as_crispy_field }}
-                                <div class="form-text">{% trans 'Describe what your group is about to help people decide if they want to join.' %}</div>
                             </div>
 
                             <div class="mb-4">
-                                <label for="{{ group_form.cover.id_for_label }}" class="form-label">{% trans 'Cover Photo' %}</label>
                                 <input type="file" class="form-control d-none" id="{{ group_form.cover.id_for_label }}" name="cover" accept="image/*">
 
                                 <div class="cover-upload-area" id="cover-upload-area">
@@ -301,7 +296,7 @@
                                 </div>
                                 <div class="guidelines-item-content">
                                     <h5>{% trans 'Be Specific' %}</h5>
-                                    <p>{% trans 'Choose a clear title that accurately represents your group's purpose.' %}</p>
+                                    <p>{% trans 'Choose a clear title that accurately represents your group purpose.' %}</p>
                                 </div>
                             </li>
                             <li class="guidelines-item">
@@ -328,7 +323,7 @@
                                 </div>
                                 <div class="guidelines-item-content">
                                     <h5>{% trans 'Group Admins' %}</h5>
-                                    <p>{% trans 'You'll automatically become the first admin. You can add up to 2 more later.' %}</p>
+                                    <p>{% trans 'You will automatically become the first admin. You can add up to 2 more later.' %}</p>
                                 </div>
                             </li>
                         </ul>
@@ -342,7 +337,7 @@
                     </div>
                     <div class="card-body">
                         <ol class="ps-3">
-                            <li class="mb-2">{% trans 'You'll be redirected to your new group page.' %}</li>
+                            <li class="mb-2">{% trans 'You will be redirected to your new group page.' %}</li>
                             <li class="mb-2">{% trans 'Start by creating your first post to get the conversation going.' %}</li>
                             <li class="mb-2">{% trans 'Invite friends to join and participate in your group.' %}</li>
                             <li class="mb-2">{% trans 'Customize group settings and moderate content as needed.' %}</li>

@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}<title>{% trans 'Group Settings' %}</title>{% endblock %}
+
+{% block head %}
+<style>
+  .settings-container {
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .settings-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    background-color: var(--bs-card-bg);
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+  }
+
+  .settings-card .card-header {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding: 1.25rem;
+  }
+
+  .settings-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+
+  .settings-card .card-body {
+    padding: 2rem;
+  }
+
+  .sidebar-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    background-color: var(--bs-card-bg);
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-card .card-header {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding: 1.25rem;
+    font-weight: 600;
+  }
+
+  .sidebar-card .card-body {
+    padding: 1.25rem;
+  }
+
+  .admin-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .admin-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  .admin-item:last-child {
+    border-bottom: none;
+  }
+
+  .admin-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 1rem;
+  }
+
+  .admin-name {
+    font-weight: 500;
+  }
+
+  .admin-tools-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  .admin-tools-link:last-child {
+    border-bottom: none;
+  }
+
+  .admin-tools-link:hover {
+    transform: translateX(5px);
+    color: var(--bs-primary);
+  }
+
+  .admin-tools-link i {
+    width: 20px;
+    text-align: center;
+    margin-right: 1rem;
+    color: var(--bs-primary);
+  }
+
+  .section-title {
+    font-weight: 600;
+    color: var(--bs-text-muted);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    margin: 1.5rem 0 1rem;
+  }
+
+  /* Custom styles for form controls */
+  .custom-control-label {
+    font-weight: 500;
+  }
+
+  .bg-warning-soft {
+    background-color: rgba(var(--bs-warning-rgb), 0.1);
+  }
+
+  .bg-danger-soft {
+    background-color: rgba(var(--bs-danger-rgb), 0.1);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container settings-container">
+  <div class="row">
+    <div class="col-lg-8">
+      <!-- Group Settings Form -->
+      <div class="settings-card">
+        <div class="card-header">
+          <h2 class="card-title">{% trans 'Group Settings' %}</h2>
+        </div>
+        <div class="card-body">
+          <form method="post" action="{% url 'groups:group_settings' group.slug %}">
+            {% csrf_token %}
+
+            <div class="mb-4">
+              <label for="{{ form.title.id_for_label }}" class="form-label">{% trans 'Group Title' %} <span class="text-danger">*</span></label>
+              {{ form.title|as_crispy_field }}
+              <div class="form-text">{% trans 'Choose a clear, specific name for your group.' %}</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="{{ form.description.id_for_label }}" class="form-label">{% trans 'Group Description' %} <span class="text-danger">*</span></label>
+              {{ form.description|as_crispy_field }}
+              <div class="form-text">{% trans 'Describe what your group is about to help people decide if they want to join.' %}</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="{{ form.category.id_for_label }}" class="form-label">{% trans 'Category' %}</label>
+              {{ form.category|as_crispy_field }}
+              <div class="form-text">{% trans 'Categorizing your group helps people find it more easily.' %}</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="{{ form.is_private.id_for_label }}" class="form-label d-block">{% trans 'Privacy' %}</label>
+              <div class="form-check">
+                {{ form.is_private }}
+                <label class="form-check-label" for="{{ form.is_private.id_for_label }}">
+                  {% trans 'Make this group private' %}
+                </label>
+              </div>
+              <div class="form-text">{% trans 'Private groups are only visible to members.' %}</div>
+            </div>
+
+            <h3 class="section-title">{% trans 'Danger Zone' %}</h3>
+
+            <div class="alert bg-warning-soft mb-4">
+              <div class="d-flex">
+                <div class="me-3">
+                  <i class="fa-solid fa-triangle-exclamation text-warning fa-2x"></i>
+                </div>
+                <div>
+                  <h5 class="alert-heading">{% trans 'Transfer Ownership' %}</h5>
+                  <p class="mb-0">{% trans 'Transfer this group to another admin. You will remain as an admin but will no longer be the owner.' %}</p>
+                  <a href="#" class="btn btn-warning btn-sm mt-2">{% trans 'Transfer Ownership' %}</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert bg-danger-soft mb-4">
+              <div class="d-flex">
+                <div class="me-3">
+                  <i class="fa-solid fa-trash text-danger fa-2x"></i>
+                </div>
+                <div>
+                  <h5 class="alert-heading">{% trans 'Delete Group' %}</h5>
+                  <p class="mb-0">{% trans 'Once you delete a group, there is no going back. Please be certain.' %}</p>
+                  <a href="#" class="btn btn-danger btn-sm mt-2">{% trans 'Delete Group' %}</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-save me-2"></i>{% trans 'Save Changes' %}
+              </button>
+              <a href="{% url 'groups:group' group.slug %}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-times me-2"></i>{% trans 'Cancel' %}
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <!-- Admins Card -->
+      <div class="sidebar-card">
+        <div class="card-header">
+          <i class="fa-solid fa-user-shield me-2"></i>{% trans 'Group Admins' %}
+        </div>
+        <div class="card-body">
+          <ul class="admin-list">
+            {% for admin in group.admins.all %}
+              <li class="admin-item">
+                <img src="{{ admin.get_picture }}" alt="{{ admin.username }}" class="admin-avatar">
+                <div class="admin-name">
+                  {{ admin.username }}
+                  {% if forloop.first %}
+                    <span class="badge bg-primary ms-2">{% trans 'Owner' %}</span>
+                  {% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+
+          <div class="d-grid mt-3">
+            <button class="btn btn-outline-primary btn-sm">
+              <i class="fa-solid fa-user-plus me-2"></i>{% trans 'Manage Admins' %}
+            </button>
+          </div>
+
+          <div class="form-text mt-2">{% trans 'A group can have up to 3 admins.' %}</div>
+        </div>
+      </div>
+
+      <!-- Admin Tools Card -->
+      <div class="sidebar-card">
+        <div class="card-header">
+          <i class="fa-solid fa-tools me-2"></i>{% trans 'Admin Tools' %}
+        </div>
+        <div class="card-body">
+          <a href="{% url 'groups:edit_group_cover' group.slug %}" class="admin-tools-link">
+            <i class="fa-solid fa-image"></i>
+            <span>{% trans 'Change Group Cover' %}</span>
+          </a>
+
+          <a href="{% url 'groups:banned_users' group.slug %}" class="admin-tools-link">
+            <i class="fa-solid fa-user-slash"></i>
+            <span>{% trans 'Manage Banned Users' %}</span>
+          </a>
+
+          <a href="#" class="admin-tools-link">
+            <i class="fa-solid fa-flag"></i>
+            <span>{% trans 'View Reports' %}</span>
+          </a>
+
+          <a href="#" class="admin-tools-link">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>{% trans 'Group Analytics' %}</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Group Stats Card -->
+      <div class="sidebar-card">
+        <div class="card-header">
+          <i class="fa-solid fa-chart-pie me-2"></i>{% trans 'Group Stats' %}
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6 mb-3">
+              <h5 class="text-primary mb-1">{{ group.subscribers.count }}</h5>
+              <div class="text-muted small">{% trans 'Members' %}</div>
+            </div>
+            <div class="col-6 mb-3">
+              <h5 class="text-primary mb-1">{{ group.subjects.count }}</h5>
+              <div class="text-muted small">{% trans 'Posts' %}</div>
+            </div>
+            <div class="col-6">
+              <h5 class="text-primary mb-1">{{ group.recent_posts }}</h5>
+              <div class="text-muted small">{% trans 'Recent' %}</div>
+            </div>
+            <div class="col-6">
+              <h5 class="text-primary mb-1">{{ group.created|date:"M Y" }}</h5>
+              <div class="text-muted small">{% trans 'Created' %}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
