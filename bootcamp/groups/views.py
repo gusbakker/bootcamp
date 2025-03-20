@@ -160,12 +160,12 @@ def new_group(request):
     if request.method == 'POST':
         group_form = GroupForm(request.POST, request.FILES)
         if group_form.is_valid():
-            new_group = group_form.save()
+            group = group_form.save()
             # Make creator an admin and subscriber
-            new_group.admins.add(request.user)
-            new_group.subscribers.add(request.user)
+            group.admins.add(request.user)
+            group.subscribers.add(request.user)
             messages.success(request, _('Your group has been created successfully!'))
-            return redirect(new_group.get_absolute_url())
+            return redirect(group.get_absolute_url())
         else:
             messages.error(request, _('Please correct the errors below.'))
     else:

@@ -75,11 +75,11 @@ class Group(models.Model):
         """
         Counts number of posts posted within last 3 days in a group.
         """
-        return self.subjects.filter(created__gte=timezone.now() - timedelta(days=3)).count()
+        return self.submitted_news.filter(created__gte=timezone.now() - timedelta(days=3)).count()
 
     def total_posts(self):
         """Return total number of posts in the group."""
-        return self.subjects.count()
+        return self.submitted_news.count()
 
     def get_subscribers_count(self):
         """Return number of subscribers to the group."""

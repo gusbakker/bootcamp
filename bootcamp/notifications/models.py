@@ -126,7 +126,7 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
     )
     unread = models.BooleanField(default=True, db_index=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     uuid_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     slug = models.SlugField(max_length=210, null=True, blank=True)
     verb = models.CharField(max_length=1, choices=NOTIFICATION_TYPES)
@@ -146,7 +146,7 @@ class Notification(models.Model):
     class Meta:
         verbose_name = _("Notification")
         verbose_name_plural = _("Notifications")
-        ordering = ("-timestamp",)
+        ordering = ("-created",)
 
     def __str__(self):
         if self.action_object:
@@ -293,7 +293,7 @@ class Notification(models.Model):
         """
         from django.utils.timesince import timesince
 
-        return timesince(self.timestamp, now)
+        return timesince(self.created, now)
 
     def mark_as_read(self):
         if self.unread:

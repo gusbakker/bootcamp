@@ -380,7 +380,7 @@
                         <div class="group-stat-label">{% trans 'subscribers' %}</div>
                     </div>
                     <div class="group-stat">
-                        <div class="group-stat-value">{{ group.submitted_subjects.count }}</div>
+                        <div class="group-stat-value">{{ group.submitted_news.count }}</div>
                         <div class="group-stat-label">{% trans 'posts' %}</div>
                     </div>
                     <div class="group-stat">
@@ -448,8 +448,8 @@
                             {% endif %}
 
                             <!-- Posts/Subjects List -->
-                            {% if subjects %}
-                                {% for subject in subjects %}
+                            {% if submitted_news %}
+                                {% for subject in submitted_news %}
                                     <div class="card subject-card">
                                         <div class="card-body">
                                             <h5 class="card-title">
@@ -570,7 +570,7 @@
                                                     <strong>{% trans 'Members' %}:</strong> {{ group.subscribers.count }}
                                                 </li>
                                                 <li class="list-group-item bg-transparent px-0">
-                                                    <strong>{% trans 'Posts' %}:</strong> {{ group.submitted_subjects.count }}
+                                                    <strong>{% trans 'Posts' %}:</strong> {{ group.submitted_news.count }}
                                                 </li>
                                             </ul>
                                         </div>
@@ -614,7 +614,7 @@
                             </li>
                             <li class="group-info-item">
                                 <span class="group-info-label">{% trans 'Posts' %}</span>
-                                <span class="group-info-value">{{ group.submitted_subjects.count }}</span>
+                                <span class="group-info-value">{{ group.submitted_news.count }}</span>
                             </li>
                             <li class="group-info-item">
                                 <span class="group-info-label">{% trans 'Activity' %}</span>
