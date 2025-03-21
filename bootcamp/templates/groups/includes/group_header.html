@@ -1,0 +1,183 @@
+{% load i18n humanize %}
+
+<div class="group-header mb-4">
+  <div class="card rounded-4 overflow-hidden border-0 shadow-sm">
+    <div class="position-relative">
+      <!-- Responsive cover image with different heights for different screen sizes -->
+      <div class="group-cover-image" style="background-image: url('{{ group.get_picture }}');"></div>
+
+      <!-- Gradient overlay and content -->
+      <div class="group-cover-overlay">
+        <div class="container-fluid px-3 px-md-4">
+          <div class="row align-items-end">
+            <!-- Group title and description - takes more space on mobile -->
+            <div class="col-12 col-md-8 mb-3 mb-md-0">
+              <h1 class="group-title">{{ group.title }}</h1>
+              <p class="group-description d-none d-sm-block">{{ group.description|truncatewords:20 }}</p>
+            </div>
+
+            <!-- Subscribe button - full width on mobile, right-aligned otherwise -->
+            <div class="col-12 col-md-4 text-center text-md-end">
+              {% if group in request.user.subscribed_groups.all %}
+                <a href="{% url 'groups:subscribe' group.slug %}" class="btn btn-secondary btn-responsive" id="subscribe_group">
+                  <i class="fa-solid fa-user-minus me-2"></i>{% trans 'Unsubscribe' %}
+                </a>
+              {% else %}
+                <a href="{% url 'groups:subscribe' group.slug %}" class="btn btn-primary btn-responsive" id="subscribe_group">
+                  <i class="fa-solid fa-user-plus me-2"></i>{% trans 'Subscribe' %}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group Stats - Stacks to 2x2 on small screens -->
+  <div class="row g-3 mb-4 group-stats">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center p-2 p-md-3">
+          <h3 class="text-primary mb-1 stats-number">{{ group.subscribers.count }}</h3>
+          <div class="text-muted small">{% trans 'Subscribers' %}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center p-2 p-md-3">
+          <h3 class="text-primary mb-1 stats-number">{{ news_list.paginator.count }}</h3>
+          <div class="text-muted small">{% trans 'Posts' %}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center p-2 p-md-3">
+          <h3 class="text-primary mb-1 stats-number">{{ group.admins.count }}</h3>
+          <div class="text-muted small">{% trans 'Admins' %}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center p-2 p-md-3">
+          <h3 class="text-primary mb-1 stats-number">{{ group.recent_posts }}</h3>
+          <div class="text-muted small">{% trans 'Recent Activity' %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Responsive group header styling */
+  .group-cover-image {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 150px; /* Default height for mobile */
+  }
+
+  .group-cover-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.4), transparent);
+    padding: 2rem 0 1rem;
+  }
+
+  .group-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+  }
+
+  .group-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .btn-responsive {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    width: 100%; /* Full width on mobile */
+    max-width: 200px;
+  }
+
+  .stats-number {
+    font-size: 1.5rem; /* Smaller font on mobile */
+  }
+
+  /* Responsive breakpoints */
+  @media (min-width: 576px) {
+    .group-cover-image {
+      height: 180px;
+    }
+
+    .group-title {
+      font-size: 1.75rem;
+    }
+
+    .group-description {
+      font-size: 1rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .group-cover-image {
+      height: 200px;
+    }
+
+    .group-cover-overlay {
+      padding: 3rem 0 1.5rem;
+    }
+
+    .group-title {
+      font-size: 2rem;
+    }
+
+    .btn-responsive {
+      width: auto;
+    }
+
+    .stats-number {
+      font-size: 1.75rem;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .group-cover-image {
+      height: 250px;
+    }
+
+    .group-title {
+      font-size: 2.25rem;
+    }
+
+    .group-description {
+      font-size: 1.1rem;
+      -webkit-line-clamp: 3;
+    }
+
+    .stats-number {
+      font-size: 2rem;
+    }
+  }
+
+  /* Dark/light mode compatibility */
+  [data-theme="light"] .group-cover-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.3), transparent);
+  }
+</style>

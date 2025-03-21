@@ -28,7 +28,7 @@ class GroupsPageView(ListView):
     model = Group
     queryset = Group.objects.all()
     paginate_by = 20
-    template_name = 'groups/view_all_groups.html'
+    template_name = 'groups/group_list.html'
     context_object_name = 'groups'
 
     def get_queryset(self):
@@ -70,10 +70,10 @@ class GroupsPageView(ListView):
 
 class GroupPageView(DetailView):
     """
-    DetailView implementation to display group details and content.
+    DetailView implementation to display group details and content using news templates.
     """
     model = Group
-    template_name = 'groups/group.html'
+    template_name = 'news/news_list.html'  # Changed from 'groups/group.html'
     context_object_name = 'group'
     slug_url_kwarg = 'group'
 
@@ -88,26 +88,27 @@ class GroupPageView(DetailView):
 
         # Check if group is private and user is not subscribed
         if group.is_private and (not self.request.user.is_authenticated or
-                                 self.request.user not in group.subscribers.all()):
+                                self.request.user not in group.subscribers.all()):
             context['is_private'] = True
             return context
 
-        # Get subjects/posts
-        subjects = group.subjects.all()
-        paginator = Paginator(subjects, 10)
+        # Get news for this group instead of subjects
+        news_list = News.objects.filter(group=group, reply=False)
+        paginator = Paginator(news_list, 10)
         page = self.request.GET.get('page')
 
         try:
-            subjects = paginator.page(page)
+            news_list = paginator.page(page)
         except PageNotAnInteger:
-            subjects = paginator.page(1)
+            news_list = paginator.page(1)
         except EmptyPage:
-            subjects = paginator.page(paginator.num_pages)
+            news_list = paginator.page(paginator.num_pages)
 
-        context['subjects'] = subjects
+        context['news_list'] = news_list
+        context['page_obj'] = news_list  # For pagination
         context['admins'] = group.admins.all()
-        context['subject_form'] = GroupSubjectForm() if self.request.user.is_authenticated else None
-        context['similar_groups'] = group.get_similar_groups()
+        context['is_group_context'] = True  # Flag to indicate group context
+        context['groups_list'] = self.request.user.subscribed_groups.all()[:5] if self.request.user.is_authenticated else []
 
         # Check if user is member/admin
         if self.request.user.is_authenticated:

@@ -9,6 +9,8 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView, DeleteView
+
+from bootcamp.groups.models import Group
 from bootcamp.helpers import ajax_required, AuthorRequiredMixin
 from bootcamp.news.models import News
 from sightengine.client import SightengineClient
@@ -21,7 +23,8 @@ class NewsListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self, **kwargs):
-        return News.objects.filter(reply=False)
+        # Only show posts that don't belong to any group (public posts)
+        return News.objects.filter(reply=False, group=None)
 
 
 class NewsDeleteView(LoginRequiredMixin, AuthorRequiredMixin, DeleteView):
@@ -62,6 +65,20 @@ def post_news(request):
                     f"or you will be banned.")
             )
 
+    # Support for group posts
+    group_id = request.POST.get("group")
+    group = None
+    if group_id:
+        try:
+            group = Group.objects.get(pk=group_id)
+            # Check if user is a member of the group
+            if user not in group.subscribers.all():
+                return HttpResponseBadRequest(
+                    content=_("You must be a member of this group to post.")
+                )
+        except Group.DoesNotExist:
+            pass
+
     post_url = re.search("(?P<url>https?://[^\s]+)", post)
     if post_url and r_image.match(post_url.group("url")):
         client = SightengineClient('137076993', 'XHSoBHy4jQM2yn8YEn8Y')
@@ -76,7 +93,7 @@ def post_news(request):
             )
 
     if len(post) <= 280:
-        posted = News.objects.create(user=user, content=post, image=image)
+        posted = News.objects.create(user=user, content=post, image=image, group=group)
         html = render_to_string(
             "news/news_single.html", {"news": posted, "request": request}
         )

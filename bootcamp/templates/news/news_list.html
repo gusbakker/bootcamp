@@ -17,6 +17,30 @@
             padding: 0;
         }
 
+        /* Group-specific styles */
+        {% if is_group_context %}
+        .group-header .card {
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .group-stats .card {
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .group-stats .card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Light mode overrides */
+        [data-theme="light"] .group-header .card-body {
+            background-color: #fff;
+        }
+        {% endif %}
+
+        /* Original styles kept for consistency */
         .news-card {
             border-radius: 1rem;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
@@ -165,11 +189,17 @@
 {% endblock head %}
 
 {% block content %}
+    <!-- Group header section if in group context -->
+    {% if is_group_context and group %}
+        {% include 'groups/includes/group_header.html' %}
+    {% endif %}
+
     <div class="row g-4">
         <!-- Decreased timeline width from col-lg-7 to col-lg-6 -->
         <div class="col-lg-6 offset-lg-1">
             <div class="d-flex justify-content-between align-items-center">
-                <h1 class="fs-2 fw-bold mb-0"></h1>
+                <h1 class="fs-2 fw-bold mb-0">
+                </h1>
                 <button type="button" class="btn btn-primary btn-compose" data-bs-toggle="modal"
                         data-bs-target="#newsFormModal">
                     <i class="fa-solid fa-share-nodes"></i>{% trans 'Share something' %}
@@ -178,13 +208,13 @@
 
             <div class="timeline-container">
                 <!-- Modals -->
-                {% include 'news/news_form_modal.html' %}
+                {% include 'news/news_form_modal.html' with group=group %}
                 {% include 'news/news_thread_modal.html' %}
                 <!-- End Modals -->
 
                 <!-- News List -->
                 <div class="stream-update">
-                    <a href="{% url 'news:list' %}" class="text-decoration-none">
+                    <a href="{% if is_group_context %}{% url 'groups:group' group.slug %}{% else %}{% url 'news:list' %}{% endif %}" class="text-decoration-none">
                         <i class="fa-solid fa-arrow-rotate-right me-2"></i>{% trans 'There are new posts' %}
                     </a>
                 </div>
@@ -210,147 +240,14 @@
 
         <!-- Increased sidebar width from col-lg-3 to col-lg-4 -->
         <div class="col-lg-4 mt-4">
-            <!-- Friends Activity Widget -->
-            <div class="widget-card mb-4">
-                <div class="widget-header">
-                    <h5 class="widget-title">{% trans 'Friends Activity' %}</h5>
-                    <a href="{% url 'users:list' %}" class="text-primary">
-                        <i class="fa-solid fa-user-group"></i>
-                    </a>
-                </div>
-
-                <div class="card-body p-0">
-                    <!-- Recent Activity -->
-                    <div class="p-3 border-bottom border-dark">
-                        <h6 class="fw-semibold text-uppercase text-muted fs-7 mb-3">{% trans 'Recent Activity' %}</h6>
-
-                        <div class="d-flex mb-3">
-                            <div class="flex-shrink-0">
-                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <p class="mb-0 fs-7"><a href="#" class="fw-semibold text-decoration-none text-light">Alex Smith</a> liked your post</p>
-                                <span class="text-muted fs-8">20 min ago</span>
-                            </div>
-                        </div>
-
-                        <div class="d-flex mb-3">
-                            <div class="flex-shrink-0">
-                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <p class="mb-0 fs-7"><a href="#" class="fw-semibold text-decoration-none text-light">Jamie Lee</a> shared a new photo</p>
-                                <span class="text-muted fs-8">1 hour ago</span>
-                            </div>
-                        </div>
-
-                        <div class="d-flex">
-                            <div class="flex-shrink-0">
-                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <p class="mb-0 fs-7"><a href="#" class="fw-semibold text-decoration-none text-light">Taylor Kim</a> joined the group <a href="#" class="text-decoration-none text-primary">Tech Talk</a></p>
-                                <span class="text-muted fs-8">3 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Suggested Friends -->
-                    <div class="p-3 border-bottom border-dark">
-                        <h6 class="fw-semibold text-uppercase text-muted fs-7 mb-3">{% trans 'People You May Know' %}</h6>
-
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="flex-shrink-0">
-                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <p class="mb-0 fs-7 fw-semibold">Chris Parker</p>
-                                <span class="text-muted fs-8">3 mutual connections</span>
-                            </div>
-                            <button class="btn btn-sm btn-outline-primary rounded-pill">Connect</button>
-                        </div>
-
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <img src="{% static 'img/favicon.png' %}" class="rounded-circle" width="40" height="40" alt="User">
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <p class="mb-0 fs-7 fw-semibold">Robin Chen</p>
-                                <span class="text-muted fs-8">5 mutual connections</span>
-                            </div>
-                            <button class="btn btn-sm btn-outline-primary rounded-pill">Connect</button>
-                        </div>
-                    </div>
-
-                    <!-- Trending Topics -->
-                    <div class="p-3">
-                        <h6 class="fw-semibold text-uppercase text-muted fs-7 mb-3">{% trans 'Trending Topics' %}</h6>
-
-                        <div class="d-flex flex-wrap gap-2">
-                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#WebDev</a>
-                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#MachineLearning</a>
-                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#Python</a>
-                            <a href="#" class="badge bg-dark text-primary rounded-pill text-decoration-none px-3 py-2">#TechNews</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-footer bg-dark bg-opacity-50 border-top border-dark">
-                    <div class="row g-0 text-center">
-                        <div class="col-6">
-                            <a href="{% url 'users:list' %}" class="text-decoration-none px-3 py-2 d-block text-light">
-                                <i class="fa-solid fa-user-plus text-primary mb-1"></i>
-                                <div class="fs-7">Find Friends</div>
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{% url 'groups:list' %}" class="text-decoration-none px-3 py-2 d-block text-light">
-                                <i class="fa-solid fa-user-group text-primary mb-1"></i>
-                                <div class="fs-7">Join Groups</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Popular Groups Widget -->
-            <div class="widget-card mb-4">
-                <div class="widget-header">
-                    <h5 class="widget-title">{% trans 'Popular Groups' %}</h5>
-                    <a href="{% url 'groups:list' %}" class="text-primary">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    <a href="#" class="d-flex align-items-center p-3 text-decoration-none text-light border-bottom border-dark">
-                        <div class="rounded-3 bg-primary bg-opacity-10 p-2 me-3">
-                            <i class="fa-solid fa-code text-primary"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 fs-7 fw-semibold">Web Developers</h6>
-                            <span class="text-muted fs-8">1,245 members</span>
-                        </div>
-                    </a>
-                    <a href="#" class="d-flex align-items-center p-3 text-decoration-none text-light border-bottom border-dark">
-                        <div class="rounded-3 bg-danger bg-opacity-10 p-2 me-3">
-                            <i class="fa-solid fa-camera text-danger"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 fs-7 fw-semibold">Photography</h6>
-                            <span class="text-muted fs-8">892 members</span>
-                        </div>
-                    </a>
-                    <a href="#" class="d-flex align-items-center p-3 text-decoration-none text-light">
-                        <div class="rounded-3 bg-success bg-opacity-10 p-2 me-3">
-                            <i class="fa-solid fa-leaf text-success"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 fs-7 fw-semibold">Sustainability</h6>
-                            <span class="text-muted fs-8">645 members</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
+            {% if is_group_context %}
+                {% include 'groups/includes/group_sidebar.html' %}
+            {% else %}
+                <!-- Groups Widget -->
+                {% if groups_list %}
+                    {% include 'groups/includes/groups_container.html' with groups_list=groups_list %}
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 {% endblock content %}
@@ -360,6 +257,63 @@
     <script src="{% static 'js/jquery.waypoints.min.js' %}" type="text/javascript"></script>
     <script src="{% static 'js/infinite.min.js' %}" type="text/javascript"></script>
     <script src="{% static 'js/news.js' %}" type="text/javascript"></script>
+
+    {% if is_group_context %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Subscribe group functionality
+            const subscribeButtons = document.querySelectorAll('#subscribe_group, #sidebar_subscribe_group');
+
+            subscribeButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    {% if not request.user.is_authenticated %}
+                        window.location.href = "{% url 'login' %}";
+                    {% else %}
+                        const subscribeUrl = this.getAttribute("href");
+                        const groupSubscribers = document.querySelector('#group_subscribers');
+
+                        fetch(subscribeUrl)
+                            .then(response => response.text())
+                            .then(data => {
+                                // Update all subscribe buttons
+                                subscribeButtons.forEach(btn => {
+                                    if (btn.textContent.includes('Subscribe')) {
+                                        btn.classList.remove('btn-primary');
+                                        btn.classList.add('btn-secondary');
+                                        btn.innerHTML = '<i class="fa-solid fa-user-minus me-2"></i>{% trans "Unsubscribe" %}';
+                                    } else {
+                                        btn.classList.remove('btn-secondary');
+                                        btn.classList.add('btn-primary');
+                                        btn.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>{% trans "Subscribe" %}';
+                                    }
+                                });
+
+                                // Update subscribers count
+                                if (groupSubscribers) {
+                                    groupSubscribers.textContent = data;
+                                }
+                            });
+                    {% endif %}
+                });
+            });
+
+            // Add group ID to form post
+            const postNewsForm = document.getElementById('postNewsForm');
+            if (postNewsForm) {
+                // Add hidden group input if not already present
+                if (!postNewsForm.querySelector('input[name="group"]')) {
+                    const groupInput = document.createElement('input');
+                    groupInput.type = 'hidden';
+                    groupInput.name = 'group';
+                    groupInput.value = '{{ group.id }}';
+                    postNewsForm.appendChild(groupInput);
+                }
+            }
+        });
+    </script>
+    {% endif %}
 
     <script>
         var infinite = new Waypoint.Infinite({

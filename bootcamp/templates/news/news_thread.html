@@ -3,27 +3,36 @@
 {% load thumbnail %}
 {% load urlize_target_blank %}
 
-
 {% for reply in thread %}
-    <li class="infinite-item" news-id="{{ reply.uuid_id }}">
-        <div class="news-comment">
-            <div class="profile-picture">
-                <img src="{{ reply.user.get_picture }}" class="user-image pull-left"
-                     style="width: 60px; border-radius: 50%;"
-                     alt="{% trans 'User Image' %}">
+    <li class="infinite-item comment-item" news-id="{{ reply.uuid_id }}">
+        <div class="comment-container">
+            <div class="comment-avatar">
+                <a href="{% url 'users:detail' reply.user.username %}">
+                    <img src="{{ reply.user.get_picture }}" class="rounded-circle"
+                         alt="{% trans 'User Image' %}">
+                </a>
             </div>
-            <div class="post">
-                {% if reply.user == request.user %}
-                    <a href="#">
-                        <i class="fa fa-times pull-right remove-news" aria-hidden="true"
-                           title="{% trans 'Click to remove this news' %}"></i>
-                    </a>
-                {% endif %}
-                <h3>
-                    <a href="{% url 'users:detail' reply.user.username %}">{{ reply.user.username }}</a>
-                    <small class="timestamp">{{ reply.timestamp|naturaltime }}</small>
-                </h3>
-                <p>{{ reply|urlize|urlize_target_blank }}</p>
+            <div class="comment-content">
+                <div class="comment-header">
+                    <div class="comment-author">
+                        <a href="{% url 'users:detail' reply.user.username %}" class="fw-semibold text-decoration-none">
+                            {{ reply.user.username }}
+                        </a>
+                    </div>
+                    <div class="comment-actions">
+                        <span class="comment-time text-muted small">{{ reply.created|naturaltime }}</span>
+                        {% if reply.user == request.user %}
+                            <a href="#" class="text-danger ms-2 remove-news" data-news-id="{{ reply.uuid_id }}" title="{% trans 'Delete' %}">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="comment-body">
+                    <p>{{ reply.content|urlize|urlize_target_blank }}</p>
+                </div>
+
                 {% if reply.meta_url %}
                     <a href="{{ reply.meta_url }}" target="_blank" class="card meta">
                         {% if reply.meta_image %}
@@ -42,17 +51,130 @@
                         </div>
                     </a>
                 {% endif %}
-                <div class="interaction" id="interaction">
-                    <a href="#" class="like" title="{% for i in reply.get_likers %}{{ i }}&#10;{% endfor %}">
-                        {% if request.user in reply.get_likers %}
-                            <i class="heart fa fa-heart" aria-hidden="true"></i>
-                        {% else %}
-                            <i class="heart fa fa-heart-o" aria-hidden="true"></i>
-                        {% endif %}
-                        <span class="like-count">{{ reply.count_likers }}</span>
-                    </a>
+
+                {% if reply.image %}
+                    {% thumbnail reply.image "300x200" crop="center" as im %}
+                        <div class="comment-image mt-2">
+                            <img src="{{ im.url }}" class="img-fluid rounded" alt="Comment image">
+                        </div>
+                    {% empty %}
+                        <div class="comment-image mt-2">
+                            <img src="{{ reply.image.url }}" class="img-fluid rounded" alt="Comment image">
+                        </div>
+                    {% endthumbnail %}
+                {% endif %}
+
+                <div class="comment-footer">
+                    <div class="comment-interactions">
+                        <a href="#" class="like" title="{% for i in reply.get_likers %}{{ i }}&#10;{% endfor %}">
+                            {% if request.user in reply.get_likers %}
+                                <i class="heart fa fa-heart text-danger" aria-hidden="true"></i>
+                            {% else %}
+                                <i class="heart fa fa-heart-o" aria-hidden="true"></i>
+                            {% endif %}
+                            <span class="like-count">{{ reply.count_likers }}</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </li>
 {% endfor %}
+
+<style>
+    /* Comment styling */
+    .comment-item {
+        margin-bottom: 1.5rem;
+        list-style-type: none;
+    }
+
+    .comment-container {
+        display: flex;
+        background-color: rgba(var(--bs-secondary-bg-rgb), 0.3);
+        border-radius: 1rem;
+        padding: 1rem;
+        transition: background-color 0.2s ease;
+    }
+
+    .comment-container:hover {
+        background-color: rgba(var(--bs-secondary-bg-rgb), 0.5);
+    }
+
+    .comment-avatar {
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .comment-avatar img {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border: 2px solid rgba(var(--bs-primary-rgb), 0.5);
+    }
+
+    .comment-content {
+        flex-grow: 1;
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-author {
+        font-weight: bold;
+    }
+
+    .comment-body p {
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-image img {
+        max-height: 200px;
+        width: auto;
+    }
+
+    .comment-footer {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .comment-interactions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .comment-interactions a {
+        color: var(--bs-body-color);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .comment-interactions a:hover {
+        color: var(--bs-primary);
+        transform: translateY(-1px);
+    }
+
+    /* Dark/Light mode compatibility */
+    [data-theme="light"] .comment-container {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .comment-container:hover {
+        background-color: rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="dark"] .comment-container {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-theme="dark"] .comment-container:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+</style>

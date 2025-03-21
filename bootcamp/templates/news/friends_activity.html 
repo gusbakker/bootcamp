@@ -1,128 +1,237 @@
-{% load i18n static %}
-{% load thumbnail %}
+{% load i18n static humanize thumbnail %}
 
-<div class="card friends-activity-card mb-4">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="mb-0 font-weight-bold">{% trans 'Friends Activity' %}</h5>
-        <a href="{% url 'users:list' %}" class="text-primary">
-            <i class="fa fa-users" aria-hidden="true"></i>
+<!-- Friends Activity Widget -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-transparent">
+    <h5 class="card-title mb-0"><i class="fa-solid fa-users me-2"></i>{% trans 'Friends Activity' %}</h5>
+  </div>
+  <div class="card-body p-0">
+    {% if user.is_authenticated %}
+      {% if friends_activity %}
+        <div class="list-group list-group-flush">
+          {% for activity in friends_activity %}
+            <div class="list-group-item bg-transparent">
+              <div class="d-flex align-items-start">
+                <!-- User Avatar -->
+                <div class="flex-shrink-0 me-3">
+                  <a href="{% url 'users:detail' activity.user.username %}">
+                    <img src="{{ activity.user.get_picture }}" class="rounded-circle" width="40" height="40" alt="{{ activity.user.get_profile_name }}" style="object-fit: cover;">
+                  </a>
+                </div>
+                <!-- Activity Content -->
+                <div class="flex-grow-1 min-w-0">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <h6 class="mb-0 text-truncate">
+                      <a href="{% url 'users:detail' activity.user.username %}" class="text-decoration-none fw-bold">
+                        {{ activity.user.get_profile_name }}
+                      </a>
+                    </h6>
+                    <small class="text-muted ms-2 flex-shrink-0">{{ activity.created|naturaltime }}</small>
+                  </div>
+
+                  {% if activity.activity_type == 'post' %}
+                    <p class="mb-1 small">{% trans 'shared a post' %}</p>
+                    <a href="{% url 'news:detail' activity.news.pk %}" class="text-decoration-none">
+                      <div class="border border-dark-subtle rounded-3 p-2 mt-1 small">
+                        {% if activity.news.image %}
+                          <div class="mb-2">
+                            <img src="{% thumbnail activity.news.image 400x300 crop %}" class="img-fluid rounded-2" alt="{{ activity.news.content|truncatechars:50 }}">
+                          </div>
+                        {% endif %}
+                        <p class="mb-0 text-body-secondary">{{ activity.news.content|truncatechars:100 }}</p>
+                      </div>
+                    </a>
+                  {% elif activity.activity_type == 'like' %}
+                    <p class="mb-1 small">{% trans 'liked a post' %}</p>
+                    <a href="{% url 'news:detail' activity.news.pk %}" class="text-decoration-none">
+                      <div class="border border-dark-subtle rounded-3 p-2 mt-1 small">
+                        <p class="mb-0 text-body-secondary">{{ activity.news.content|truncatechars:100 }}</p>
+                      </div>
+                    </a>
+                  {% elif activity.activity_type == 'comment' %}
+                    <p class="mb-1 small">{% trans 'commented on a post' %}</p>
+                    <a href="{% url 'news:detail' activity.news.pk %}" class="text-decoration-none">
+                      <div class="border border-dark-subtle rounded-3 p-2 mt-1 small">
+                        <p class="mb-1 text-body-secondary">{{ activity.comment.body|truncatechars:100 }}</p>
+                        <div class="text-muted smaller">{% trans 'On' %}: {{ activity.news.content|truncatechars:50 }}</div>
+                      </div>
+                    </a>
+                  {% elif activity.activity_type == 'group_join' %}
+                    <p class="mb-1 small">{% trans 'joined a group' %}</p>
+                    <a href="{% url 'groups:group' activity.group.slug %}" class="text-decoration-none">
+                      <div class="border border-dark-subtle rounded-3 p-2 mt-1 small">
+                        <div class="d-flex align-items-center">
+                          <div class="flex-shrink-0 me-2">
+                            <div class="rounded" style="width: 30px; height: 30px; background: url('{{ activity.group.get_picture }}') center/cover;"></div>
+                          </div>
+                          <div>
+                            <p class="mb-0 text-body-secondary">{{ activity.group.title }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  {% elif activity.activity_type == 'follow' %}
+                    <p class="mb-1 small">
+                      {% trans 'started following' %}
+                      <a href="{% url 'users:detail' activity.target_user.username %}" class="text-decoration-none fw-medium">
+                        {{ activity.target_user.get_profile_name }}
+                      </a>
+                    </p>
+                  {% endif %}
+
+                  <!-- Interaction Stats if available -->
+                  {% if activity.news and activity.activity_type in 'post,like,comment' %}
+                    <div class="d-flex mt-2 text-muted small">
+                      <div class="me-3">
+                        <i class="fa-regular fa-heart me-1"></i>{{ activity.news.liked_by.count }}
+                      </div>
+                      <div class="me-3">
+                        <i class="fa-regular fa-comment me-1"></i>{{ activity.news.comments.count }}
+                      </div>
+                      <div>
+                        <i class="fa-solid fa-share-nodes me-1"></i>{{ activity.news.shares_count }}
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- View More Link -->
+        {% if more_activities %}
+          <div class="card-footer text-center bg-transparent py-2">
+            <a href="{% url 'users:activity_feed' %}" class="text-decoration-none">
+              <small>{% trans 'View more activity' %}</small>
+            </a>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="text-center py-4">
+          <div class="mb-3">
+            <i class="fa-regular fa-face-smile text-muted" style="font-size: 2.5rem;"></i>
+          </div>
+          <p class="text-muted">{% trans "Start following people to see their activity here!" %}</p>
+          <a href="{% url 'users:list' %}" class="btn btn-sm btn-primary mt-2">
+            <i class="fa-solid fa-user-plus me-2"></i>{% trans 'Find people to follow' %}
+          </a>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="text-center py-4">
+        <div class="mb-3">
+          <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem;"></i>
+        </div>
+        <p class="text-muted">{% trans "Sign in to see activity from friends" %}</p>
+        <a href="{% url 'login' %}" class="btn btn-sm btn-primary mt-2">
+          <i class="fa-solid fa-right-to-bracket me-2"></i>{% trans 'Sign in' %}
         </a>
-    </div>
-
-    <!-- Recent Activity Section -->
-    <div class="card-body p-0">
-        <div class="activity-section">
-            <h6 class="section-title">{% trans 'Recent Activity' %}</h6>
-
-            <div class="activity-item">
-                <div class="activity-avatar">
-                    <img src="{% static 'img/favicon.png' %}" alt="User">
-                </div>
-                <div class="activity-content">
-                    <p><a href="#" class="user-link">Alex Smith</a> liked your post</p>
-                    <span class="activity-time">20 min ago</span>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-avatar">
-                    <img src="{% static 'img/favicon.png' %}" alt="User">
-                </div>
-                <div class="activity-content">
-                    <p><a href="#" class="user-link">Jamie Lee</a> shared a new photo</p>
-                    <span class="activity-time">1 hour ago</span>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-avatar">
-                    <img src="{% static 'img/favicon.png' %}" alt="User">
-                </div>
-                <div class="activity-content">
-                    <p><a href="#" class="user-link">Taylor Kim</a> joined the group <a href="#">Tech Talk</a></p>
-                    <span class="activity-time">3 hours ago</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Upcoming Section -->
-        <div class="activity-section">
-            <h6 class="section-title">{% trans 'Upcoming' %}</h6>
-
-            <div class="calendar-item">
-                <div class="calendar-icon">
-                    <i class="fa fa-calendar-o" aria-hidden="true"></i>
-                    <span class="calendar-date">24</span>
-                </div>
-                <div class="calendar-content">
-                    <p class="event-title">Morgan's Birthday</p>
-                    <span class="event-time">This Saturday</span>
-                </div>
-            </div>
-
-            <div class="calendar-item">
-                <div class="calendar-icon">
-                    <i class="fa fa-calendar-o" aria-hidden="true"></i>
-                    <span class="calendar-date">03</span>
-                </div>
-                <div class="calendar-content">
-                    <p class="event-title">Web Development Meetup</p>
-                    <span class="event-time">Next Tuesday</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Suggested Friends Section -->
-        <div class="activity-section">
-            <h6 class="section-title">{% trans 'People You May Know' %}</h6>
-
-            <div class="suggested-friend">
-                <div class="suggestion-avatar">
-                    <img src="{% static 'img/favicon.png' %}" alt="User">
-                </div>
-                <div class="suggestion-content">
-                    <p class="suggestion-name">Chris Parker</p>
-                    <span class="mutual-friends">3 mutual connections</span>
-                </div>
-                <button class="btn btn-sm btn-outline-primary">Connect</button>
-            </div>
-
-            <div class="suggested-friend">
-                <div class="suggestion-avatar">
-                    <img src="{% static 'img/favicon.png' %}" alt="User">
-                </div>
-                <div class="suggestion-content">
-                    <p class="suggestion-name">Robin Chen</p>
-                    <span class="mutual-friends">5 mutual connections</span>
-                </div>
-                <button class="btn btn-sm btn-outline-primary">Connect</button>
-            </div>
-        </div>
-
-        <!-- Trending Topics Section -->
-        <div class="activity-section">
-            <h6 class="section-title">{% trans 'Trending Topics' %}</h6>
-
-            <div class="trending-topics">
-                <a href="#" class="trending-tag">#WebDev</a>
-                <a href="#" class="trending-tag">#MachineLearning</a>
-                <a href="#" class="trending-tag">#Python</a>
-                <a href="#" class="trending-tag">#TechNews</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions Footer -->
-    <div class="card-footer">
-        <div class="quick-actions">
-            <a href="{% url 'users:list' %}" class="quick-action-btn">
-                <i class="fa fa-user-plus" aria-hidden="true"></i>
-                <span>Find Friends</span>
-            </a>
-            <a href="{% url 'groups:list' %}" class="quick-action-btn">
-                <i class="fa fa-users" aria-hidden="true"></i>
-                <span>Join Groups</span>
-            </a>
-        </div>
-    </div>
+      </div>
+    {% endif %}
+  </div>
 </div>
+
+<!-- Friend Suggestions Card -->
+{% if user.is_authenticated and friend_suggestions %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-transparent">
+    <h5 class="card-title mb-0"><i class="fa-solid fa-user-plus me-2"></i>{% trans 'People You May Know' %}</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      {% for suggestion in friend_suggestions %}
+        <div class="list-group-item bg-transparent">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <a href="{% url 'users:detail' suggestion.username %}" class="me-3">
+                <img src="{{ suggestion.get_picture }}" class="rounded-circle" width="36" height="36" alt="{{ suggestion.get_profile_name }}" style="object-fit: cover;">
+              </a>
+              <div>
+                <h6 class="mb-0 fs-7">
+                  <a href="{% url 'users:detail' suggestion.username %}" class="text-decoration-none">
+                    {{ suggestion.get_profile_name }}
+                  </a>
+                </h6>
+                {% if suggestion.mutual_friends_count %}
+                  <small class="text-muted">{{ suggestion.mutual_friends_count }} {% trans 'mutual friends' %}</small>
+                {% else %}
+                  <small class="text-muted">{{ suggestion.profile.location|default:"" }}</small>
+                {% endif %}
+              </div>
+            </div>
+            <a href="{% url 'users:follow' suggestion.username %}" class="btn btn-sm btn-outline-primary follow-button" data-username="{{ suggestion.username }}">
+              <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Follow' %}
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="card-footer text-center bg-transparent py-2">
+      <a href="{% url 'users:suggestions' %}" class="text-decoration-none">
+        <small>{% trans 'View more suggestions' %}</small>
+      </a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle follow buttons dynamically
+    const followButtons = document.querySelectorAll('.follow-button');
+
+    followButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const username = this.getAttribute('data-username');
+        const followUrl = this.getAttribute('href');
+
+        fetch(followUrl)
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'followed') {
+              this.innerHTML = '<i class="fa-solid fa-user-check me-1"></i>{% trans "Following" %}';
+              this.classList.remove('btn-outline-primary');
+              this.classList.add('btn-primary');
+            } else if (data.status === 'unfollowed') {
+              this.innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>{% trans "Follow" %}';
+              this.classList.remove('btn-primary');
+              this.classList.add('btn-outline-primary');
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      });
+    });
+
+    // Light/Dark mode adaptation
+    function updateThemeStyles() {
+      if (document.documentElement.getAttribute('data-theme') === 'light') {
+        document.querySelectorAll('.border-dark-subtle').forEach(elem => {
+          elem.classList.remove('border-dark-subtle');
+          elem.classList.add('border-light-subtle');
+        });
+      } else {
+        document.querySelectorAll('.border-light-subtle').forEach(elem => {
+          elem.classList.remove('border-light-subtle');
+          elem.classList.add('border-dark-subtle');
+        });
+      }
+    }
+
+    // Run on page load
+    updateThemeStyles();
+
+    // Listen for theme changes
+    document.addEventListener('themeChanged', updateThemeStyles);
+
+    // Hook into the dark mode switch
+    const darkSwitch = document.getElementById('darkSwitch');
+    if (darkSwitch) {
+      darkSwitch.addEventListener('change', function() {
+        setTimeout(updateThemeStyles, 50);
+      });
+    }
+  });
+</script>

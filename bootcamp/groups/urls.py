@@ -18,12 +18,12 @@ urlpatterns = [
 
     # Group interaction
     path('<slug:group>/subscription/', views.subscribe, name='subscribe'),
-    path('<slug:group>/create-subject/', views.create_subject, name='create_subject'),
 
-    # Subject/Post viewing and interaction
-    path('<slug:group>/subject/<slug:subject>/', views.SubjectDetailView.as_view(), name='subject_detail'),
-    path('<slug:group>/subject/<slug:subject>/like/', views.like_subject, name='like_subject'),
-    path('<slug:group>/subject/<slug:subject>/comment/', views.add_comment, name='add_comment'),
+    # Removed subject-related URLs:
+    # path('<slug:group>/create-subject/', views.create_subject, name='create_subject'),
+    # path('<slug:group>/subject/<slug:subject>/', views.SubjectDetailView.as_view(), name='subject_detail'),
+    # path('<slug:group>/subject/<slug:subject>/like/', views.like_subject, name='like_subject'),
+    # path('<slug:group>/subject/<slug:subject>/comment/', views.add_comment, name='add_comment'),
 
     # Group detail - keep at the end to avoid URL pattern conflicts
     path('<slug:group>/', views.GroupPageView.as_view(), name='group'),
