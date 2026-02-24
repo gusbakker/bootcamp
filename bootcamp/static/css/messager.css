@@ -1,58 +1,136 @@
+/* Messager Styles - Dark Mode Compatible */
 
 .timestamp {
-  font-size: 0.8em;
-  color: grey;
+    font-size: 0.8em;
+    color: var(--text-muted, #6c757d);
 }
 
 .users-list {
-  height: 83vh;
-  overflow-y: auto;
+    height: 75vh;
+    overflow-y: auto;
+    border-radius: var(--bs-border-radius, 0.5rem);
+}
+
+.users-list .list-group-item {
+    background-color: var(--bs-card-bg, #1e1e1e);
+    border-color: var(--bs-border-color, #2d2d2d);
+    color: var(--bs-body-color, #e0e0e0);
+    transition: all 0.2s ease;
+}
+
+.users-list .list-group-item:hover {
+    background-color: rgba(var(--bs-primary-rgb, 58, 134, 255), 0.1);
+}
+
+.users-list .list-group-item.active {
+    background-color: var(--bs-primary, #3a86ff);
+    border-color: var(--bs-primary, #3a86ff);
+    color: #fff;
 }
 
 .chat-status {
-  text-align: center;
-  vertical-align: middle;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .messages-list {
-  margin: 0;
-  padding: 0;
-  height: 78vh;
-  overflow-y: auto;
+    margin: 0;
+    padding: 1rem;
+    height: 68vh;
+    overflow-y: auto;
+    background-color: var(--bs-card-bg, #1e1e1e);
+    border-radius: var(--bs-border-radius, 0.5rem);
+    border: 1px solid var(--bs-border-color, #2d2d2d);
 }
 
-.messages-list li {
-  list-style: none;
-  padding: .2em 0;
+.messages-list .message-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--bs-border-color, #2d2d2d);
 }
 
-.messages-list li h5 {
-  margin: 0;
-  margin-bottom: .2em;
-}
-
-.messages-list li div {
-  margin-left: 25px;
+.messages-list .message-item:last-of-type {
+    border-bottom: none;
 }
 
 .messages-list .picture {
-  border-radius: 5px;
-  float: left;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .message {
-  position: relative;
-  background: #f8f9fa;
-  border-radius: 0.4em;
-  padding: 10px;
+    position: relative;
+    background: var(--bs-card-bg, #1e1e1e);
+    border: 1px solid var(--bs-border-color, #2d2d2d);
+    border-radius: var(--bs-border-radius, 0.5rem);
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    word-wrap: break-word;
+}
+
+[data-theme="light"] .message {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.message-header a {
+    color: var(--bs-primary, #3a86ff);
+}
+
+.message-header a:hover {
+    color: var(--bs-primary, #3a86ff);
+    text-decoration: underline !important;
 }
 
 .chat-box {
-  position: fixed;
-  bottom: 20px;
-  width: 43%;
+    position: sticky;
+    bottom: 0;
+    padding: 1rem 0;
+    background-color: var(--bs-body-bg, #121212);
+}
+
+.chat-box .form-control {
+    background-color: var(--bs-card-bg, #1e1e1e);
+    border-color: var(--bs-border-color, #2d2d2d);
+    color: var(--bs-body-color, #e0e0e0);
+}
+
+.chat-box .form-control:focus {
+    background-color: var(--bs-card-bg, #1e1e1e);
+    border-color: var(--bs-primary, #3a86ff);
+    color: var(--bs-body-color, #e0e0e0);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 58, 134, 255), 0.25);
+}
+
+.chat-box .btn-primary {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .chat-user .badge {
-  margin-top: 5px;
+    font-size: 0.75em;
+}
+
+.empty-conversation {
+    color: var(--text-muted, #6c757d);
+}
+
+.empty-conversation h4 {
+    color: var(--bs-body-color, #e0e0e0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .users-list {
+        height: auto;
+        max-height: 200px;
+        margin-bottom: 1rem;
+    }
+    
+    .messages-list {
+        height: 50vh;
+    }
+    
+    .chat-box {
+        position: relative;
+    }
 }

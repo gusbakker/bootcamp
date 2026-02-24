@@ -196,7 +196,7 @@
         }
 
         /* Badge for notification types */
-        .notification-badge {
+        .notification-type-badge {
             display: inline-block;
             padding: 0.25rem 0.5rem;
             border-radius: 50px;
@@ -205,22 +205,22 @@
             margin-right: 0.5rem;
         }
 
-        .notification-badge-like {
+        .notification-type-badge-like {
             background-color: rgba(231, 76, 60, 0.1);
             color: #e74c3c;
         }
 
-        .notification-badge-comment {
+        .notification-type-badge-comment {
             background-color: rgba(52, 152, 219, 0.1);
             color: #3498db;
         }
 
-        .notification-badge-follow {
+        .notification-type-badge-follow {
             background-color: rgba(46, 204, 113, 0.1);
             color: #2ecc71;
         }
 
-        .notification-badge-message {
+        .notification-type-badge-message {
             background-color: rgba(155, 89, 182, 0.1);
             color: #9b59b6;
         }
@@ -332,19 +332,19 @@
                             </div>
                             <div class="notification-content">
                                 {% if notification.verb == 'liked' %}
-                                    <span class="notification-badge notification-badge-like">
+                                    <span class="notification-type-badge notification-type-badge-like">
                                         <i class="fa-solid fa-heart me-1"></i>{% trans 'Like' %}
                                     </span>
                                 {% elif notification.verb == 'commented' %}
-                                    <span class="notification-badge notification-badge-comment">
+                                    <span class="notification-type-badge notification-type-badge-comment">
                                         <i class="fa-solid fa-comment me-1"></i>{% trans 'Comment' %}
                                     </span>
                                 {% elif notification.verb == 'followed' %}
-                                    <span class="notification-badge notification-badge-follow">
+                                    <span class="notification-type-badge notification-type-badge-follow">
                                         <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Follow' %}
                                     </span>
                                 {% elif notification.verb == 'messaged' %}
-                                    <span class="notification-badge notification-badge-message">
+                                    <span class="notification-type-badge notification-type-badge-message">
                                         <i class="fa-solid fa-envelope me-1"></i>{% trans 'Message' %}
                                     </span>
                                 {% endif %}
@@ -512,17 +512,17 @@
             function updateThemeStyles() {
                 if (document.documentElement.getAttribute('data-theme') === 'light') {
                     // Update badge colors for light mode
-                    document.querySelectorAll('.notification-badge').forEach(badge => {
-                        if (badge.classList.contains('notification-badge-like')) {
+                    document.querySelectorAll('.notification-type-badge').forEach(badge => {
+                        if (badge.classList.contains('notification-type-badge-like')) {
                             badge.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
                             badge.style.color = '#e74c3c';
-                        } else if (badge.classList.contains('notification-badge-comment')) {
+                        } else if (badge.classList.contains('notification-type-badge-comment')) {
                             badge.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
                             badge.style.color = '#3498db';
-                        } else if (badge.classList.contains('notification-badge-follow')) {
+                        } else if (badge.classList.contains('notification-type-badge-follow')) {
                             badge.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
                             badge.style.color = '#2ecc71';
-                        } else if (badge.classList.contains('notification-badge-message')) {
+                        } else if (badge.classList.contains('notification-type-badge-message')) {
                             badge.style.backgroundColor = 'rgba(155, 89, 182, 0.1)';
                             badge.style.color = '#9b59b6';
                         }
