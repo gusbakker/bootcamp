@@ -1,39 +1,40 @@
-.notifications {
-  list-style: none;
+/*
+ * Notifications CSS — navbar notification styling
+ * Uses CSS variables instead of hardcoded colors
+ */
+
+ul.notif {
   padding: 0;
-}
-.notification {
-  display: block;
-  padding: 9.6px 12px;
-  border-width: 0 0 1px 0;
-  border-style: solid;
-  border-color: #eeeeee;
-  text-decoration: none;
-}
-.notification:last-child {
-  border-bottom: 0;
-}
-.notification:hover,
-.notification.active:hover {
-  background-color: #676b76;
-  border-color: #eeeeee;
-}
-.notification.active {
-  background-color: #f4f4f4;
-}
-a.notification:hover {
-  text-decoration: none;
-}
-.notification-title {
-  font-size: 15px;
-  margin-bottom: 0;
-}
-.notification-desc {
-  margin-bottom: 0;
-}
-.notification .media-body {
-  padding-top: 5.6px;
-  padding-left: 15px;
-
+  margin: 0;
+  list-style: none;
 }
 
+.notification-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  min-width: 300px;
+}
+
+.notification-list .notification {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.notification-list .notification:last-child {
+  border-bottom: none;
+}
+
+.notif-title {
+  line-height: 14px;
+  font-size: 12px;
+  color: var(--bs-text-muted);
+}
+
+.notif-desc {
+  font-size: 11px;
+  color: var(--bs-text-muted);
+}
+
+.media-body {
+  padding: 4px;
+}
