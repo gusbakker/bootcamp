@@ -1,5 +1,14 @@
-{% load static i18n thumbnail %}<!DOCTYPE html>
+{% load static i18n thumbnail %}
+<!DOCTYPE html>
 <html lang="en" data-theme="dark">
+<script>
+    // Apply theme BEFORE first paint to prevent dark-mode flash
+    (function () {
+        var theme = localStorage.getItem('darkMode') === 'false' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+</script>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -10,119 +19,126 @@
     <meta name="author" content="Gustavo Bakker">
 
     {% block css %}
-        <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Audiowide&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Audiowide&display=swap"
+        rel="stylesheet">
 
-        <!-- Bootstrap 5.3 CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-        <!-- Font Awesome 6 -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-        <!-- Project CSS (includes dark/light mode variables) -->
-        <link href="{% static 'css/bootcamp.css' %}?v=4" rel="stylesheet">
+    <!-- Project CSS (includes dark/light mode variables) -->
+    <link href="{% static 'css/bootcamp.css' %}?v=4" rel="stylesheet">
     {% endblock css %}
     {% block head %}{% endblock head %}
 </head>
+
 <body>
-{% block body %}
+    {% block body %}
     <div class="mb-3">
         {% if request.user.is_authenticated %}
-            <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
-                <div class="container">
-                    <a class="navbar-brand d-flex align-items-center" href="{% url 'news:list' %}">
-                        <img src="{% static 'img/favicon.png' %}" alt="Antisocial Network" height="30" class="me-2">
-                        <span class="d-none d-md-inline">Antisocial</span>
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><a class="nav-link" href="{% url 'articles:list' %}">Blog</a></li>
-                            <li class="nav-item"><a class="nav-link"
-                                                    href="{% url 'users:list' %}">{% trans 'Network' %}</a></li>
-                            <li class="nav-item"><a class="nav-link"
-                                                    href="{% url 'groups:list' %}">{% trans 'Groups' %}</a></li>
-                        </ul>
-                        <div class="d-flex align-items-center">
-                            {% if not hide_search %}
-                                <form class="d-flex me-2" role="search" action="{% url 'search:results' %}">
-                                    <div class="input-group">
-                                        <input name="query" type="search" id="searchInput" class="form-control"
-                                               placeholder="{% trans 'Search' %}" aria-label="Search">
-                                    </div>
-                                </form>
-                            {% endif %}
-                            <div class="d-flex align-items-center ms-2">
-                                <a class="notification-badge text-decoration-none" href="#" id="notifications" data-bs-container="body"
-                                   data-bs-toggle="popover" data-bs-placement="bottom"
-                                   data-bs-title="{% trans 'Notifications' %}">
-                                    <i class="fa-regular fa-bell" aria-hidden="true"></i>
-                                    <span id="countnotif" class="badge bg-danger rounded-pill"></span>
+        <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'news:list' %}">
+                    <img src="{% static 'img/favicon.png' %}" alt="Antisocial Network" height="30" class="me-2">
+                    <span class="d-none d-md-inline">Antisocial</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'articles:list' %}">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'users:list' %}">{% trans 'Network' %}</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'groups:list' %}">{% trans 'Groups' %}</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        {% if not hide_search %}
+                        <form class="d-flex me-2" role="search" action="{% url 'search:results' %}">
+                            <div class="input-group">
+                                <input name="query" type="search" id="searchInput" class="form-control"
+                                    placeholder="{% trans 'Search' %}" aria-label="Search">
+                            </div>
+                        </form>
+                        {% endif %}
+                        <div class="d-flex align-items-center ms-2">
+                            <a class="notification-badge text-decoration-none" href="#" id="notifications"
+                                data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                                data-bs-title="{% trans 'Notifications' %}">
+                                <i class="fa-regular fa-bell" aria-hidden="true"></i>
+                                <span id="countnotif" class="badge bg-danger rounded-pill"></span>
+                            </a>
+                            <a class="notification-badge text-decoration-none" href="{% url 'messager:messages_list' %}"
+                                id="inbox" data-bs-toggle="popover" data-bs-title="{% trans 'Inbox' %}">
+                                <i class="fa-regular fa-comment" aria-hidden="true"></i>
+                                <span id="countmsg" class="badge"></span>
+                            </a>
+                            <div class="nav-item dropdown ms-2">
+                                <a class="nav-link dropdown-toggle p-0 d-flex align-items-center" href="#"
+                                    id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="{{ user.get_picture }}" class="avatar me-2"
+                                        alt="{% trans 'User Image' %}">
+                                    <span>{{ request.user.username }}</span>
                                 </a>
-                                <a class="notification-badge text-decoration-none" href="{% url 'messager:messages_list' %}" id="inbox"
-                                   data-bs-toggle="popover" data-bs-title="{% trans 'Inbox' %}">
-                                    <i class="fa-regular fa-comment" aria-hidden="true"></i>
-                                    <span id="countmsg" class="badge"></span>
-                                </a>
-                                <div class="nav-item dropdown ms-2">
-                                    <a class="nav-link dropdown-toggle p-0 d-flex align-items-center" href="#" id="navbarDropdown" role="button"
-                                       data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="{{ user.get_picture }}" class="avatar me-2"
-                                             alt="{% trans 'User Image' %}">
-                                        <span>{{ request.user.username }}</span>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'users:detail' request.user.username %}">
-                                                <i class="fa-regular fa-user"></i>{% trans 'My Profile' %}
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'users:update' %}">
-                                                <i class="fa-regular fa-gear"></i>{% trans 'Account Settings' %}
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <div class="dropdown-item">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="darkSwitch" checked>
-                                                    <label class="form-check-label" for="darkSwitch">
-                                                        {% trans 'Dark Mode' %}
-                                                    </label>
-                                                </div>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'users:detail' request.user.username %}">
+                                            <i class="fa-regular fa-user"></i>{% trans 'My Profile' %}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'users:update' %}">
+                                            <i class="fa-regular fa-gear"></i>{% trans 'Account Settings' %}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-item">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="darkSwitch" checked>
+                                                <label class="form-check-label" for="darkSwitch">
+                                                    {% trans 'Dark Mode' %}
+                                                </label>
                                             </div>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'account_logout' %}">
-                                                <i class="fa-solid fa-right-from-bracket"></i>{% trans "Log Out" %}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'account_logout' %}">
+                                            <i class="fa-solid fa-right-from-bracket"></i>{% trans "Log Out" %}
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            </nav>
+            </div>
+        </nav>
         {% endif %}
     </div>
     <div id="header" class="container">
         {% if messages %}
-            {% for message in messages %}
-                <div id="messages" class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    {{ message }}
-                </div>
-            {% endfor %}
+        {% for message in messages %}
+        <div id="messages" class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+        {% endfor %}
         {% endif %}
 
         {% block content %}
-            <p>Use this document as a way to quick start any new project.</p>
+        <p>Use this document as a way to quick start any new project.</p>
         {% endblock content %}
 
     </div>
@@ -130,55 +146,60 @@
     <!-- JavaScript
     ================================================== -->
     {% block javascript %}
-        <!-- Bootstrap 5.3 Bundle with Popper -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Bootstrap 5.3 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 
-        <!-- jQuery (still needed for some legacy components) -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- jQuery (still needed for some legacy components) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-        <!-- jQuery UI (for autocomplete) -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- jQuery UI (for autocomplete) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"
+        integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-        <!-- Custom JS -->
-        <script src="{% static 'js/bootcamp.js' %}" type="text/javascript"></script>
-        <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/bootcamp.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
 
-        <script type="text/javascript">
-            var currentUser = "{{ request.user.username }}";
+    <script type="text/javascript">
+        var currentUser = "{{ request.user.username }}";
 
-            // Initialize popovers
-            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
-            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+        // Initialize popovers
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
 
-            // Dark mode toggle
-            document.addEventListener('DOMContentLoaded', () => {
-                const darkSwitch = document.getElementById('darkSwitch');
+        // Dark mode toggle — theme already set in <head>, just sync the checkbox and wire the toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkSwitch = document.getElementById('darkSwitch');
+            if (!darkSwitch) return;
 
-                // Dark mode is now default
-                if (localStorage.getItem('darkMode') === 'false') {
+            // Sync checkbox state with the theme already applied
+            darkSwitch.checked = document.documentElement.getAttribute('data-theme') !== 'light';
+
+            // Toggle event
+            darkSwitch.addEventListener('change', function () {
+                if (this.checked) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('darkMode', 'true');
+                } else {
                     document.documentElement.setAttribute('data-theme', 'light');
-                    darkSwitch.checked = false;
+                    localStorage.setItem('darkMode', 'false');
                 }
-
-                // Add toggle event
-                darkSwitch.addEventListener('change', function() {
-                    if (this.checked) {
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        localStorage.setItem('darkMode', 'true');
-                    } else {
-                        document.documentElement.setAttribute('data-theme', 'light');
-                        localStorage.setItem('darkMode', 'false');
-                    }
-                });
             });
-        </script>
+        });
+    </script>
 
     {% endblock javascript %}
 
     {% block modal %}{% endblock modal %}
 
-{% endblock body %}
+    {% endblock body %}
 </body>
 
 <!-- /.container -->
+
 </html>
