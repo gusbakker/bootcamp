@@ -3,31 +3,129 @@
 {% load static i18n %}
 {% load crispy_forms_tags %}
 
+{% block title %}{% trans 'Edit Article' %}{% endblock %}
+
 {% block head %}
+<link href="{% static 'css/articles.css' %}" rel="stylesheet">
 {% endblock head %}
 
 {% block content %}
-
-  <nav aria-label="breadcrumb">
+<div class="container editor-container">
+  <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{% url 'news:list' %}">{% trans 'Home' %}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'articles:drafts' %}">{% trans 'Drafts' %}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{% trans 'Update an article' %}</li>
     </ol>
   </nav>
-  <form action="{% url 'articles:edit_article' form.instance.pk %}" enctype="multipart/form-data"  id="article-form" method="post" role="form">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <div class="form-group">
-      <button type="button" class="btn btn-primary update">{% trans 'Update' %}</button>
-      <button type="button" class="btn btn-default draft">{% trans 'Save as draft' %}</button>
-      <a href="{% url 'articles:drafts' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
-    </div>
-  </form>
-  {{ form.media }}
 
+  <div class="editor-header">
+    <h1 class="editor-title">{% trans 'Edit Article' %}</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="editor-card">
+        <div class="card-header">
+          <h2 class="card-title">{% trans 'Article Editor' %}</h2>
+        </div>
+        <div class="card-body">
+          <form action="{% url 'articles:edit_article' form.instance.pk %}" enctype="multipart/form-data"
+            id="article-form" method="post" role="form">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <div class="image-preview mt-3 mb-4" id="image-preview">
+              {% if form.instance.image %}
+              <img src="{{ form.instance.image.url }}" alt="{% trans 'Current image' %}">
+              {% else %}
+              <i class="fa-solid fa-image fa-2x"></i>
+              {% endif %}
+            </div>
+
+            <div class="editor-actions">
+              <button type="button" class="btn btn-primary update">{% trans 'Update' %}</button>
+              <button type="button" class="btn btn-outline-primary draft">{% trans 'Save as draft' %}</button>
+              <a href="{% url 'articles:drafts' %}" class="btn btn-outline-secondary">{% trans 'Cancel' %}</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <!-- Writing Tips -->
+      <div class="sidebar-card">
+        <div class="card-header">
+          <i class="fa-solid fa-lightbulb me-2"></i>{% trans 'Writing Tips' %}
+        </div>
+        <div class="card-body">
+          <ul class="tips-list">
+            <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
+            <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
+            <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
+            <li>{% trans 'Use examples to illustrate your points.' %}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ form.media }}
 {% endblock content %}
 
 {% block modal %}
-  <script src="{% static 'js/articles.js' %}"></script>
+<script src="{% static 'js/articles.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Image preview
+    const imageInput = document.querySelector('input[type="file"]');
+    const imagePreview = document.getElementById('image-preview');
+
+    if (imageInput) {
+      imageInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+          }
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.innerHTML = '<i class="fa-solid fa-image fa-2x"></i>';
+        }
+      });
+    }
+
+    // Dark mode support for form elements
+    function updateThemeStyles() {
+      if (document.documentElement.getAttribute('data-theme') === 'light') {
+        document.querySelectorAll('.form-control, .form-select').forEach(el => {
+          el.style.backgroundColor = '#ffffff';
+          el.style.color = '#212529';
+        });
+      } else {
+        document.querySelectorAll('.form-control, .form-select').forEach(el => {
+          el.style.backgroundColor = '#1e1e1e';
+          el.style.color = '#e0e0e0';
+        });
+      }
+    }
+
+    // Run on page load
+    updateThemeStyles();
+
+    // Listen for theme changes
+    document.addEventListener('themeChanged', updateThemeStyles);
+
+    // Hook into the dark mode switch
+    const darkSwitch = document.getElementById('darkSwitch');
+    if (darkSwitch) {
+      darkSwitch.addEventListener('change', function () {
+        setTimeout(updateThemeStyles, 50);
+      });
+    }
+  });
+</script>
 {% endblock modal %}
