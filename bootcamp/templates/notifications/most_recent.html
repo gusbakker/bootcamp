@@ -1,99 +1,48 @@
 {% load static i18n thumbnail humanize %}
 
-<div class="dropdown-notifications">
+<div class="notif-popup">
     {% if notifications %}
-        <div class="notifications-body" style="max-height: 400px; overflow-y: auto;">
-            <ul class="notification-list p-0 m-0 list-unstyled">
-                {% for notification in notifications %}
-                    <li class="notification-item d-flex align-items-start p-2 border-bottom border-dark position-relative" notification-slug="{{ notification.slug }}">
-                        <a href="{% url 'users:detail' notification.actor.username %}" class="flex-shrink-0 me-2">
-                            <img src="{{ notification.actor.get_picture }}" class="rounded-circle"
-                                 style="width: 38px; height: 38px; object-fit: cover;"
-                                 alt="{% trans 'User Image' %}">
-                        </a>
-                        <div class="notification-content">
-                            {% if notification.verb == 'liked' %}
-                                <span class="notification-badge-sm bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
-                                    <i class="fa-solid fa-heart fa-xs"></i>
-                                </span>
-                            {% elif notification.verb == 'commented' %}
-                                <span class="notification-badge-sm bg-info bg-opacity-10 text-info rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
-                                    <i class="fa-solid fa-comment fa-xs"></i>
-                                </span>
-                            {% elif notification.verb == 'followed' %}
-                                <span class="notification-badge-sm bg-success bg-opacity-10 text-success rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
-                                    <i class="fa-solid fa-user-plus fa-xs"></i>
-                                </span>
-                            {% elif notification.verb == 'messaged' %}
-                                <span class="notification-badge-sm bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-0 me-1 d-inline-block align-middle" style="font-size: 10px;">
-                                    <i class="fa-solid fa-envelope fa-xs"></i>
-                                </span>
-                            {% endif %}
-
-                            <span class="notification-text small">
-                                <a href="{% url 'users:detail' notification.actor.username %}" class="fw-bold text-decoration-none text-light">
-                                    {{ notification.actor.get_profile_name|title }}
-                                </a>
-                                {% with verb_display=notification.get_verb_display %}
-                                    {{ verb_display }}
-                                    {% if notification %}
-                                        {{ notification.action_object }}
-                                    {% endif %}
-                                {% endwith %}
-                            </span>
-                            <div class="notification-time text-muted mt-1" style="font-size: 0.7rem;">
-                                {{ notification.timestamp|naturaltime }}
-                            </div>
-                        </div>
-
-                        <a href="{% url 'notifications:mark_as_read' notification.slug %}"
-                           class="pop-notification position-absolute top-0 end-0 m-2 text-decoration-none"
-                           title="{% trans 'Mark as read' %}">
-                            <i class="fa-solid fa-times text-muted" style="font-size: 0.8rem;"></i>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="notifications-footer p-2 text-center border-top border-dark">
-            <a href="{% url 'notifications:unread' %}" class="btn btn-primary btn-sm w-100">
-                <i class="fa-solid fa-bell me-1"></i>{% trans 'View All' %}
+    <div class="notif-popup-body">
+        {% for notification in notifications %}
+        <div class="notif-popup-item" notification-slug="{{ notification.slug }}">
+            <a href="{% url 'users:detail' notification.actor.username %}" class="notif-popup-avatar">
+                <img src="{{ notification.actor.get_picture }}" alt="{{ notification.actor.username }}">
+                {% if notification.verb == 'liked' %}
+                <span class="notif-type-dot notif-dot-like"><i class="fa-solid fa-heart"></i></span>
+                {% elif notification.verb == 'commented' %}
+                <span class="notif-type-dot notif-dot-comment"><i class="fa-solid fa-comment"></i></span>
+                {% elif notification.verb == 'followed' %}
+                <span class="notif-type-dot notif-dot-follow"><i class="fa-solid fa-user-plus"></i></span>
+                {% elif notification.verb == 'messaged' %}
+                <span class="notif-type-dot notif-dot-message"><i class="fa-solid fa-envelope"></i></span>
+                {% endif %}
+            </a>
+            <div class="notif-popup-content">
+                <div class="notif-popup-text">
+                    <a href="{% url 'users:detail' notification.actor.username %}" class="notif-actor">{{notification.actor.get_profile_name|title }}</a>
+                    {% with verb_display=notification.get_verb_display %}
+                    {{ verb_display }}
+                    {% if notification %}{{ notification.action_object }}{% endif %}
+                    {% endwith %}
+                </div>
+                <div class="notif-popup-time">{{ notification.timestamp|naturaltime }}</div>
+            </div>
+            <a href="{% url 'notifications:mark_as_read' notification.slug %}"
+                class="pop-notification notif-popup-dismiss" title="{% trans 'Mark as read' %}">
+                <i class="fa-solid fa-xmark"></i>
             </a>
         </div>
+        {% endfor %}
+    </div>
+    <div class="notif-popup-footer">
+        <a href="{% url 'notifications:unread' %}">
+            {% trans 'See all notifications' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
     {% else %}
-        <div class="empty-notifications p-3 text-center">
-            <div class="empty-icon mb-2">
-                <i class="fa-solid fa-bell-slash fa-2x text-muted opacity-50"></i>
-            </div>
-            <h6 class="mb-1">{% trans 'No Notifications' %}</h6>
-            <p class="text-muted small mb-0">{% trans 'Your notifications will appear here' %}</p>
-        </div>
+    <div class="notif-popup-empty">
+        <i class="fa-regular fa-bell-slash"></i>
+        <p>{% trans "You're all caught up!" %}</p>
+    </div>
     {% endif %}
 </div>
-<script>
-    // Light mode adaptation for dropdown
-    function updateDropdownTheme() {
-        if (document.documentElement.getAttribute('data-theme') === 'light') {
-            // Update borders
-            document.querySelectorAll('.border-dark').forEach(el => {
-                el.classList.remove('border-dark');
-                el.classList.add('border-light');
-            });
-
-            // Update text colors
-            document.querySelectorAll('.text-light').forEach(el => {
-                el.classList.remove('text-light');
-                el.classList.add('text-dark');
-            });
-
-            // Update scrollbar for light mode
-            document.querySelector('.notifications-body').style.scrollbarColor = 'rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05)';
-        }
-    }
-
-    // Run when dropdown is shown
-    document.querySelector('#notifications').addEventListener('shown.bs.popover', function () {
-        updateDropdownTheme();
-    });
-</script>

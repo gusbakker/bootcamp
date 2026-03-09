@@ -34,6 +34,7 @@
 
     <!-- Project CSS (includes dark/light mode variables) -->
     <link href="{% static 'css/bootcamp.css' %}?v=4" rel="stylesheet">
+    <link href="{% static 'css/notifications-page.css' %}?v=2" rel="stylesheet">
     {% endblock css %}
     {% block head %}{% endblock head %}
 </head>
@@ -45,81 +46,96 @@
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{% url 'news:list' %}">
-                    <img src="{% static 'img/favicon.png' %}" alt="Antisocial Network" height="30" class="me-2">
+                    <img src="{% static 'img/favicon.png' %}" alt="Antisocial" height="28" class="me-2">
                     <span class="d-none d-md-inline">Antisocial</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                    aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <!-- ─── Left nav links ─────────────────── -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'articles:list' %}">Blog</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'users:list' %}">{% trans 'Network' %}</a>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'groups:list' %}">{% trans 'Groups' %}</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'articles:list' %}"><i
+                                    class="fa-solid fa-newspaper me-1"></i>Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'users:list' %}"><i
+                                    class="fa-solid fa-user-group me-1"></i>{% trans 'Network' %}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'groups:list' %}"><i
+                                    class="fa-solid fa-people-group me-1"></i>{% trans 'Groups' %}</a></li>
                     </ul>
-                    <div class="d-flex align-items-center">
+
+                    <!-- ─── Right: search + icons + profile ── -->
+                    <div class="d-flex align-items-center gap-2">
                         {% if not hide_search %}
-                        <form class="d-flex me-2" role="search" action="{% url 'search:results' %}">
-                            <div class="input-group">
-                                <input name="query" type="search" id="searchInput" class="form-control"
-                                    placeholder="{% trans 'Search' %}" aria-label="Search">
-                            </div>
+                        <form class="d-flex" role="search" action="{% url 'search:results' %}">
+                            <input name="query" type="search" id="searchInput"
+                                class="form-control form-control-sm nav-search" placeholder="{% trans 'Search' %}"
+                                aria-label="Search">
                         </form>
                         {% endif %}
-                        <div class="d-flex align-items-center ms-2">
-                            <a class="notification-badge text-decoration-none" href="#" id="notifications"
-                                data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                                data-bs-title="{% trans 'Notifications' %}">
-                                <i class="fa-regular fa-bell" aria-hidden="true"></i>
-                                <span id="countnotif" class="badge bg-danger rounded-pill"></span>
+
+                        <!-- Notification icon -->
+                        <a class="nav-icon-btn" href="#" id="notifications" data-bs-container="body"
+                            data-bs-toggle="popover" data-bs-placement="bottom"
+                            data-bs-title="{% trans 'Notifications' %}" title="{% trans 'Notifications' %}">
+                            <i class="fa-solid fa-bell"></i>
+                            <span id="countnotif" class="nav-icon-badge"></span>
+                        </a>
+
+                        <!-- Messages icon -->
+                        <a class="nav-icon-btn" href="{% url 'messager:messages_list' %}" id="inbox"
+                            data-bs-toggle="popover" data-bs-title="{% trans 'Inbox' %}" title="{% trans 'Messages' %}">
+                            <i class="fa-solid fa-comment-dots"></i>
+                            <span id="countmsg" class="nav-icon-badge"></span>
+                        </a>
+
+                        <!-- Profile dropdown -->
+                        <div class="dropdown">
+                            <a class="nav-profile-btn" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <img src="{{ user.get_picture }}" class="nav-avatar" alt="{{ request.user.username }}">
                             </a>
-                            <a class="notification-badge text-decoration-none" href="{% url 'messager:messages_list' %}"
-                                id="inbox" data-bs-toggle="popover" data-bs-title="{% trans 'Inbox' %}">
-                                <i class="fa-regular fa-comment" aria-hidden="true"></i>
-                                <span id="countmsg" class="badge"></span>
-                            </a>
-                            <div class="nav-item dropdown ms-2">
-                                <a class="nav-link dropdown-toggle p-0 d-flex align-items-center" href="#"
-                                    id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="{{ user.get_picture }}" class="avatar me-2"
-                                        alt="{% trans 'User Image' %}">
-                                    <span>{{ request.user.username }}</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'users:detail' request.user.username %}">
-                                            <i class="fa-regular fa-user"></i>{% trans 'My Profile' %}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'users:update' %}">
-                                            <i class="fa-regular fa-gear"></i>{% trans 'Account Settings' %}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-item">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="darkSwitch" checked>
-                                                <label class="form-check-label" for="darkSwitch">
-                                                    {% trans 'Dark Mode' %}
-                                                </label>
-                                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end nav-dropdown" aria-labelledby="profileDropdown">
+                                <!-- User info header -->
+                                <li class="dropdown-header-user">
+                                    <img src="{{ user.get_picture }}" class="dropdown-user-avatar"
+                                        alt="{{ request.user.username }}">
+                                    <div>
+                                        <div class="dropdown-user-name">
+                                            {{request.user.get_full_name|default:request.user.username }}</div>
+                                        <div class="dropdown-user-handle">@{{ request.user.username }}</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'users:detail' request.user.username %}">
+                                        <i class="fa-regular fa-user"></i> {% trans 'My Profile' %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'users:update' %}">
+                                        <i class="fa-solid fa-gear"></i> {% trans 'Settings' %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="dropdown-item d-flex align-items-center justify-content-between">
+                                        <span><i class="fa-solid fa-moon"></i> {% trans 'Dark Mode' %}</span>
+                                        <div class="form-check form-switch mb-0 ms-2">
+                                            <input class="form-check-input" type="checkbox" id="darkSwitch" checked>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'account_logout' %}">
-                                            <i class="fa-solid fa-right-from-bracket"></i>{% trans "Log Out" %}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger-subtle" href="{% url 'account_logout' %}">
+                                        <i class="fa-solid fa-right-from-bracket"></i> {% trans 'Log Out' %}
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -129,12 +145,30 @@
     </div>
     <div id="header" class="container">
         {% if messages %}
-        {% for message in messages %}
-        <div id="messages" class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            {{ message }}
+        <!-- Toast container — bottom-right corner -->
+        <div id="toast-container" aria-live="polite" aria-atomic="true">
+            {% for message in messages %}
+            <div class="app-toast {% if message.tags %}toast-{{ message.tags }}{% else %}toast-info{% endif %}"
+                role="alert">
+                <div class="toast-icon-wrap">
+                    {% if 'success' in message.tags %}
+                    <i class="fa-solid fa-circle-check"></i>
+                    {% elif 'error' in message.tags or 'danger' in message.tags %}
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    {% elif 'warning' in message.tags %}
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    {% else %}
+                    <i class="fa-solid fa-circle-info"></i>
+                    {% endif %}
+                </div>
+                <div class="toast-body-wrap">
+                    <div class="toast-msg">{{ message }}</div>
+                </div>
+                <button class="toast-close" aria-label="Close">&times;</button>
+                <div class="toast-progress"></div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
         {% endif %}
 
         {% block content %}
@@ -191,6 +225,46 @@
                 }
             });
         });
+    </script>
+
+    <!-- ─── Toast notification logic ─────────────────── -->
+    <script>
+        (function () {
+            const DURATION = 4000; // ms before auto-dismiss
+
+            function dismissToast(toast) {
+                toast.classList.add('toast-hiding');
+                toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            }
+
+            document.querySelectorAll('.app-toast').forEach(function (toast) {
+                // Trigger slide-in on next frame
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => toast.classList.add('toast-visible'));
+                });
+
+                // Progress bar animation
+                const bar = toast.querySelector('.toast-progress');
+                if (bar) {
+                    bar.style.transition = `width ${DURATION}ms linear`;
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => { bar.style.width = '0%'; });
+                    });
+                }
+
+                // Auto-dismiss
+                const timer = setTimeout(() => dismissToast(toast), DURATION);
+
+                // Manual close
+                const btn = toast.querySelector('.toast-close');
+                if (btn) {
+                    btn.addEventListener('click', () => {
+                        clearTimeout(timer);
+                        dismissToast(toast);
+                    });
+                }
+            });
+        })();
     </script>
 
     {% endblock javascript %}

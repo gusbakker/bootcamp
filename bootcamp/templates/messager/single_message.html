@@ -1,19 +1,13 @@
 {% load static i18n humanize %}
 {% load thumbnail %}
 
-<li class="message-item d-flex mb-3">
-    <img src="{{ message.sender.get_picture }}" class="user-image picture rounded-circle flex-shrink-0"
-         width="45" height="45"
-         alt="{% trans 'User Image' %}">
-    <div class="message-content ms-3 flex-grow-1">
-        <div class="message-header">
-            <strong>
-                <a href="{% url 'users:detail' message.sender.username %}" class="text-decoration-none">{{ message.sender.get_profile_name|title }}</a>
-            </strong>
-            <small class="timestamp ms-2">{{ message.timestamp|date:'N d G:i' }}</small>
+<div class="message-item {% if message.sender == current_user %}me{% else %}them{% endif %}">
+    <img src="{{ message.sender.get_picture }}" class="picture" alt="{% trans 'User Image' %}"
+        title="{{ message.sender.get_profile_name|title }}">
+    <div class="message-content">
+        <div class="message-bubble">
+            {{ message.message|linebreaksbr }}
         </div>
-        <div class="message">
-            {{ message.message }}
-        </div>
+        <div class="timestamp">{{ message.timestamp|date:'N d G:i' }}</div>
     </div>
-</li>
+</div>

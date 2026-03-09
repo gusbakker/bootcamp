@@ -10,15 +10,6 @@
 
 {% block content %}
     <div class="container article-container">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'news:list' %}">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'articles:list' %}">{% trans 'Articles' %}</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ article.title|title }}</li>
-            </ol>
-        </nav>
-
         <div class="row">
             <!-- Main Content Column -->
             <div class="col-lg-8">
