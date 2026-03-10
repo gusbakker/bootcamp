@@ -2,44 +2,42 @@
 {% load thumbnail %}
 
 <div class="modal fade" id="newsThreadModal" tabindex="-1" aria-labelledby="newsThreadModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark">
-            <div class="modal-header border-bottom border-dark">
-                <h5 class="modal-title fw-bold text-light" id="newsThreadModalLabel">{% trans "Comments" %}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark">
+      <div class="modal-header border-bottom border-dark">
+        <h5 class="modal-title fw-bold text-light" id="newsThreadModalLabel">{% trans "Comments" %}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-            <!-- Original Post -->
-            <div class="modal-body pb-0">
-                <ul class="stream p-0 m-0" id="newsContent"></ul>
-            </div>
+      <!-- Original Post -->
+      <div class="modal-body pb-0">
+        <ul class="stream p-0 m-0" id="newsContent"></ul>
+      </div>
 
-            <!-- Comments Area -->
-            <div class="modal-body pt-0">
-                <hr class="border-dark">
-                <h6 class="fw-semibold mb-3 text-light">{% trans "Replies" %}</h6>
-                <ul class="stream p-0 m-0" id="threadContent"></ul>
-            </div>
+      <!-- Comments Area -->
+      <div class="modal-body pt-0 px-4">
+        <ul class="stream p-0 m-0" id="threadContent"></ul>
+      </div>
 
-            <!-- Reply Form -->
-            <div class="modal-footer border-top border-dark">
-                <form id="replyNewsForm" role="form" method="post" action="#" onsubmit="return false" class="w-100">
-                    {% csrf_token %}
-                    <input type="hidden" name="parent" value="">
-                    <div class="input-group">
-                        <textarea id="replyInput" name="reply" rows="1" class="form-control bg-dark text-light border-dark"
-                                maxlength="280" placeholder="{% trans 'Write a comment...' %}"></textarea>
-                        <button type="button" id="replyNews" class="btn btn-primary">
-                            <i class="fa-regular fa-paper-plane"></i>
-                        </button>
-                    </div>
-                    <div class="d-flex justify-content-end mt-1">
-                        <small id="replyCounter" class="text-muted">280</small>
-                    </div>
-                </form>
-            </div>
-        </div>
+      <!-- Reply Form -->
+      <div class="modal-footer border-top border-dark px-4 py-3">
+        <form id="replyNewsForm" role="form" method="post" action="#" onsubmit="return false" class="w-100 m-0">
+          {% csrf_token %}
+          <input type="hidden" name="parent" value="">
+          <div class="d-flex align-items-center rounded-pill comment-input-wrapper px-2 py-1">
+            <textarea id="replyInput" name="reply"
+              class="form-control bg-transparent text-light border-0 shadow-none m-0 py-2"
+              style="resize: none; overflow: hidden;" rows="1" maxlength="280"
+              placeholder="{% trans 'Write a comment...' %}"></textarea>
+            <button type="button" id="replyNews"
+              class="btn text-primary bg-transparent border-0 p-2 fs-5 d-flex align-items-center justify-content-center me-1">
+              <i class="fa-solid fa-paper-plane m-0"></i>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
@@ -48,7 +46,7 @@
     const replyInput = document.getElementById('replyInput');
     const replyCounter = document.getElementById('replyCounter');
 
-    replyInput.addEventListener('keyup', function() {
+    replyInput.addEventListener('keyup', function () {
       const charCount = this.value.length;
       replyCounter.textContent = 280 - charCount;
 
@@ -60,7 +58,7 @@
     });
 
     // Auto-expand textarea
-    replyInput.addEventListener('input', function() {
+    replyInput.addEventListener('input', function () {
       this.style.height = 'auto';
       this.style.height = (this.scrollHeight) + 'px';
     });
@@ -130,7 +128,7 @@
     // Listen for theme changes
     const darkSwitch = document.getElementById('darkSwitch');
     if (darkSwitch) {
-      darkSwitch.addEventListener('change', function() {
+      darkSwitch.addEventListener('change', function () {
         setTimeout(updateModalTheme, 50);
       });
     }

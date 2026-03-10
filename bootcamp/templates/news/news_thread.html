@@ -4,79 +4,45 @@
 {% load urlize_target_blank %}
 
 {% for reply in thread %}
-    <li class="infinite-item comment-item" news-id="{{ reply.uuid_id }}">
-        <div class="comment-container">
-            <div class="comment-avatar">
-                <a href="{% url 'users:detail' reply.user.username %}">
-                    <img src="{{ reply.user.get_picture }}" class="rounded-circle"
-                         alt="{% trans 'User Image' %}">
-                </a>
-            </div>
-            <div class="comment-content">
-                <div class="comment-header">
-                    <div class="comment-author">
-                        <a href="{% url 'users:detail' reply.user.username %}" class="fw-semibold text-decoration-none">
-                            {{ reply.user.username }}
-                        </a>
-                    </div>
-                    <div class="comment-actions">
-                        <span class="comment-time text-muted small">{{ reply.created|naturaltime }}</span>
-                        {% if reply.user == request.user %}
-                            <a href="#" class="text-danger ms-2 remove-news" data-news-id="{{ reply.uuid_id }}" title="{% trans 'Delete' %}">
-                                <i class="fa fa-trash-o" aria-hidden="true"></i>
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="comment-body">
-                    <p>{{ reply.content|urlize|urlize_target_blank }}</p>
-                </div>
-
-                {% if reply.meta_url %}
-                    <a href="{{ reply.meta_url }}" target="_blank" class="card meta">
-                        {% if reply.meta_image %}
-                            <div class="card-img-top" style="background-image: url({{ reply.meta_image }})"></div>
-                        {% endif %}
-                        <div class="card-body">
-                            {% if reply.meta_title %}
-                                <h5 class="card-title">{{ reply.meta_title }}</h5>
-                            {% endif %}
-                            {% if reply.meta_description %}
-                                <p class="card-text">{{ reply.meta_description }}</p>
-                            {% endif %}
-                            {% if reply.meta_url %}
-                                <p class="card-btn">{{ reply.meta_url }}</p>
-                            {% endif %}
-                        </div>
+<li class="infinite-item mb-3" news-id="{{ reply.uuid_id }}">
+    <div class="d-flex">
+        <div class="me-2 flex-shrink-0">
+            <a href="{% url 'users:detail' reply.user.username %}">
+                <img src="{{ reply.user.get_picture }}" class="rounded-circle"
+                    style="width: 36px; height: 36px; object-fit: cover;" alt="{% trans 'User Image' %}">
+            </a>
+        </div>
+        <div class="flex-grow-1">
+            <div class="comment-bubble d-inline-block px-3 py-2">
+                <div class="fw-bold" style="font-size: 0.9rem;">
+                    <a href="{% url 'users:detail' reply.user.username %}" class="text-decoration-none text-light">
+                        {{ reply.user.username }}
                     </a>
-                {% endif %}
-
-                {% if reply.image %}
-                    {% thumbnail reply.image "300x200" crop="center" as im %}
-                        <div class="comment-image mt-2">
-                            <img src="{{ im.url }}" class="img-fluid rounded" alt="Comment image">
-                        </div>
-                    {% empty %}
-                        <div class="comment-image mt-2">
-                            <img src="{{ reply.image.url }}" class="img-fluid rounded" alt="Comment image">
-                        </div>
-                    {% endthumbnail %}
-                {% endif %}
-
-                <div class="comment-footer">
-                    <div class="comment-interactions">
-                        <a href="#" class="like" title="{% for i in reply.get_likers %}{{ i }}&#10;{% endfor %}">
-                            {% if request.user in reply.get_likers %}
-                                <i class="heart fa fa-heart text-danger" aria-hidden="true"></i>
-                            {% else %}
-                                <i class="heart fa fa-heart-o" aria-hidden="true"></i>
-                            {% endif %}
-                            <span class="like-count">{{ reply.count_likers }}</span>
-                        </a>
-                    </div>
                 </div>
+                <div class="mt-1" style="font-size: 0.95rem;">
+                    <p class="mb-0 text-light" style="word-break: break-word;">
+                        {{reply.content|urlize|urlize_target_blank }}</p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center mt-1 ms-2" style="font-size: 0.8rem;">
+                <span class="text-muted fw-semibold me-3">{{ reply.created|naturaltime }}</span>
+                <a href="#" class="like text-decoration-none fw-bold me-3">
+                    {% if request.user in reply.get_likers %}
+                    <span class="text-primary">{% trans 'Like' %}</span>
+                    {% else %}
+                    <span class="text-muted">{% trans 'Like' %}</span>
+                    {% endif %}
+                    <span class="like-count ms-1 text-muted fw-normal">{{ reply.count_likers }}</span>
+                </a>
+                {% if reply.user == request.user %}
+                <a href="#" class="text-muted fw-bold remove-news text-decoration-none"
+                    data-news-id="{{ reply.uuid_id }}" title="{% trans 'Delete' %}">
+                    {% trans 'Delete' %}
+                </a>
+                {% endif %}
             </div>
         </div>
-    </li>
+    </div>
+</li>
 {% endfor %}

@@ -145,7 +145,7 @@ def get_thread(request):
     """Returns a list of news with the given news as parent."""
     news_id = request.GET.get("news")
     news = News.objects.get(pk=news_id)
-    news_html = render_to_string("news/news_single.html", {"news": news})
+    news_html = render_to_string("news/news_single.html", {"news": news, "request": request})
     thread_html = render_to_string(
         "news/news_thread.html", {"thread": news.get_thread(), "request": request}
     )

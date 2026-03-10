@@ -9,8 +9,7 @@
             <div class="profile-picture me-3">
                 <a href="{% url 'users:detail' news.user.username %}">
                     <img src="{{ news.user.get_picture }}" class="user-image rounded-circle"
-                         style="width: 50px; height: 50px; object-fit: cover;"
-                         alt="{% trans 'User Image' %}">
+                        style="width: 50px; height: 50px; object-fit: cover;" alt="{% trans 'User Image' %}">
                 </a>
             </div>
             <div class="flex-grow-1">
@@ -26,29 +25,29 @@
             </div>
             <div class="dropdown">
                 <i class="fa fa-gear text-light" href="#" id="dotsDropdown-{{ news.uuid_id }}" role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                    data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
                 </i>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dotsDropdown-{{ news.uuid_id }}">
                     {% if news.user == request.user %}
-                        <li>
-                            <a class="dropdown-item remove-news" href="#" data-news-id="{{ news.uuid_id }}">
-                                <i class="fa fa-trash-o me-2 text-danger"></i><span class="text-danger">{% trans 'Delete' %}</span>
-                            </a>
-                        </li>
+                    <li>
+                        <a class="dropdown-item remove-news" href="#" data-news-id="{{ news.uuid_id }}">
+                            <i class="fa fa-trash-o me-2 text-danger"></i><span class="text-danger">{% trans 'Delete'%}</span>
+                        </a>
+                    </li>
                     {% endif %}
                     {% if news.user != request.user %}
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fa fa-flag me-2 text-danger"></i><span class="text-danger">{% trans 'Report This' %}</span>
-                            </a>
-                        </li>
+                    <li>
+                        <a class="dropdown-item" href="#">
+                            <i class="fa fa-flag me-2 text-danger"></i><span class="text-danger">{% trans 'Report This'%}</span>
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
 
         {% thumbnail news.image "750x500" as im %}
-            <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="card-img-top">
+        <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="card-img-top">
         {% empty %}
         {% endthumbnail %}
 
@@ -56,34 +55,56 @@
             <div class="post-content mb-3 text-light">
                 <p>{{ news|urlize|urlize_target_blank }}</p>
                 {% if news.meta_url %}
-                    <a href="{{ news.meta_url }}" target="_blank" class="card meta text-decoration-none">
-                        {% if news.meta_image %}
-                            <div class="card-img-top" style="background-image: url({{ news.meta_image }})"></div>
+                <a href="{{ news.meta_url }}" target="_blank" class="card meta text-decoration-none">
+                    {% if news.meta_image %}
+                    <div class="card-img-top" style="background-image: url({{ news.meta_image }})"></div>
+                    {% endif %}
+                    <div class="card-body">
+                        {% if news.meta_title %}
+                        <h5 class="card-title h6 text-light">{{ news.meta_title }}</h5>
                         {% endif %}
-                        <div class="card-body">
-                            {% if news.meta_title %}
-                                <h5 class="card-title h6 text-light">{{ news.meta_title }}</h5>
-                            {% endif %}
-                        </div>
-                    </a>
+                    </div>
+                </a>
                 {% endif %}
             </div>
 
-            <div class="interaction border-top border-dark pt-3" id="interaction">
-                <a href="#" class="like" data-news-id="{{ news.uuid_id }}">
+            <!-- Reaction counts -->
+            <div class="reaction-counts d-flex justify-content-between align-items-center mb-2 px-2 pb-2">
+                <div class="d-flex align-items-center text-muted small">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-1"
+                        style="width: 18px; height: 18px;">
+                        <i class="fa-solid fa-thumbs-up text-white" style="font-size: 10px;"></i>
+                    </div>
+                    <span class="like-count">{{ news.count_likers }}</span>
+                </div>
+                <div class="text-muted small">
+                    <span class="comment-count">{{ news.count_thread }}</span> {% trans 'comments' %}
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="interaction border-top d-flex justify-content-between pt-2 mt-1" id="interaction">
+                <a href="#"
+                    class="like btn btn-action flex-fill text-muted text-decoration-none fw-semibold rounded-pill d-flex align-items-center justify-content-center py-2"
+                    data-news-id="{{ news.uuid_id }}">
                     {% if request.user in news.get_likers %}
-                        <i class="heart fa fa-heart text-danger" aria-hidden="true"></i>
+                    <i class="heart fa-solid fa-thumbs-up text-primary fs-5 me-2" aria-hidden="true"></i>
+                    <span class="text-primary">{% trans 'Like' %}</span>
                     {% else %}
-                        <i class="heart fa fa-heart-o text-light" aria-hidden="true"></i>
+                    <i class="heart fa-regular fa-thumbs-up fs-5 me-2" aria-hidden="true"></i>
+                    <span>{% trans 'Like' %}</span>
                     {% endif %}
-                    <span class="like-count ms-1 text-light">{{ news.count_likers }}</span>
                 </a>
-                <a href="#" class="comment" data-news-id="{{ news.uuid_id }}">
-                    <i class="fa fa-comment-o text-light" aria-hidden="true"></i>
-                    <span class="comment-count ms-1 text-light">{{ news.count_thread }}</span>
+                <a href="#"
+                    class="comment btn btn-action flex-fill text-muted text-decoration-none fw-semibold rounded-pill d-flex align-items-center justify-content-center py-2"
+                    data-news-id="{{ news.uuid_id }}">
+                    <i class="fa-regular fa-comment fs-5 me-2" aria-hidden="true"></i>
+                    <span>{% trans 'Comment' %}</span>
                 </a>
-                <a href="#" class="share">
-                    <i class="fa fa-share text-light" aria-hidden="true"></i>
+                <a href="#"
+                    class="share btn btn-action flex-fill text-muted text-decoration-none fw-semibold rounded-pill d-flex align-items-center justify-content-center py-2">
+                    <i class="fa-solid fa-share fs-5 me-2" aria-hidden="true"></i>
+                    <span>{% trans 'Share' %}</span>
                 </a>
             </div>
         </div>

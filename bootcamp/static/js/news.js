@@ -121,9 +121,9 @@ $(function () {
         console.log("Using news ID for deletion:", news);
 
         // Ask for confirmation
-//        if (!confirm("Are you sure you want to delete this post?")) {
-//            return;
-//        }
+        //        if (!confirm("Are you sure you want to delete this post?")) {
+        //            return;
+        //        }
 
         $.ajax({
             url: '/news/remove/',
@@ -138,7 +138,7 @@ $(function () {
                     $(li).remove();
                 });
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error("Delete failed:", status, error);
                 console.error("Response text:", xhr.responseText);
                 console.error("Status code:", xhr.status);
@@ -180,13 +180,33 @@ $(function () {
             type: 'POST',
             cache: false,
             success: function (data) {
-                $(".like .like-count", li).text(data.likes);
-                if ($(".like .heart", li).hasClass("fa fa-heart")) {
-                    $(".like .heart", li).removeClass("fa fa-heart");
-                    $(".like .heart", li).addClass("fa fa-heart-o");
+                var likeBtn = $(".like", li);
+
+                // Update like count: post uses .reaction-counts, comment uses .like-count inside btn
+                if ($(".reaction-counts .like-count", li).length > 0) {
+                    $(".reaction-counts .like-count", li).text(data.likes);
                 } else {
-                    $(".like .heart", li).removeClass("fa fa-heart-o");
-                    $(".like .heart", li).addClass("fa fa-heart");
+                    $(".like-count", likeBtn).text(data.likes);
+                }
+
+                var heartIcon = $(".heart", likeBtn);
+                if (heartIcon.length > 0) {
+                    // Post like button toggle
+                    if (heartIcon.hasClass("fa-solid")) {
+                        heartIcon.removeClass("fa-solid text-primary").addClass("fa-regular");
+                        likeBtn.find("span").removeClass("text-primary");
+                    } else {
+                        heartIcon.removeClass("fa-regular").addClass("fa-solid text-primary");
+                        likeBtn.find("span").addClass("text-primary");
+                    }
+                } else {
+                    // Comment like button toggle
+                    var likeText = likeBtn.find("span").not(".like-count");
+                    if (likeText.hasClass("text-primary")) {
+                        likeText.removeClass("text-primary").addClass("text-muted");
+                    } else {
+                        likeText.removeClass("text-muted").addClass("text-primary");
+                    }
                 }
             }
         });
@@ -201,7 +221,7 @@ $(function () {
         $("#newsThreadModal").modal("show");
         $.ajax({
             url: '/news/get-thread/',
-            data: {'news': news},
+            data: { 'news': news },
             cache: false,
             beforeSend: function () {
                 $("#threadContent").html("<li class='loadcomment'><img src='/static/img/loading.gif'></li>");
