@@ -1,95 +1,86 @@
 {% extends 'base.html' %}
 {% load static i18n %}
 {% load crispy_forms_tags %}
-
-{% block title %}{% trans 'Write New Article' %}{% endblock %}
-
+{% block title %}
+    {% trans 'Write New Article' %}
+{% endblock %}
 {% block content %}
-<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
-    <!-- Header -->
-    <div
-        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
-        <div
-            class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
-            <i class="fa-solid fa-pen-nib text-xl"></i>
+    <div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+        <!-- Header -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+                <i class="fa-solid fa-pen-nib text-xl"></i>
+            </div>
+            <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Write a New Article' %}</h1>
         </div>
-        <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">
-            {% trans 'Write a New Article' %}
-        </h1>
-    </div>
-
-    <!-- Editor Card -->
-    <div
-        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
-        <div class="p-4 sm:p-6">
-            <form action="{% url 'articles:write_new' %}" enctype="multipart/form-data" id="article-form" method="post"
-                role="form" class="tailwind-crispy-form">
-                {% csrf_token %}
-                <input type="hidden" name="status" value="P">
-
-                {{ form|crispy }}
-
-                <!-- Image Preview -->
-                <div class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
-                    id="image-preview">
-                    <div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center">
-                        <i class="fa-solid fa-image text-4xl mb-2 opacity-50 group-hover:opacity-80 transition"></i>
-                        <span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span>
+        <!-- Editor Card -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+            <div class="p-4 sm:p-6">
+                <form action="{% url 'articles:write_new' %}"
+                      enctype="multipart/form-data"
+                      id="article-form"
+                      method="post"
+                      role="form"
+                      class="tailwind-crispy-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="P">
+                    {{ form|crispy }}
+                    <!-- Image Preview -->
+                    <div class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
+                         id="image-preview">
+                        <div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center">
+                            <i class="fa-solid fa-image text-4xl mb-2 opacity-50 group-hover:opacity-80 transition"></i>
+                            <span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Actions -->
-                <div
-                    class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
-                    <a href="{% url 'articles:list' %}"
-                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
-                        {% trans 'Cancel' %}
-                    </a>
-                    <button type="button"
-                        class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
-                        <i class="fa-solid fa-file-lines"></i> {% trans 'Save Draft' %}
-                    </button>
-                    <button type="button"
-                        class="publish bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
-                        <i class="fa-solid fa-paper-plane"></i> {% trans 'Publish' %}
-                    </button>
-                </div>
-            </form>
+                    <!-- Actions -->
+                    <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
+                        <a href="{% url 'articles:list' %}"
+                           class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+                            {% trans 'Cancel' %}
+                        </a>
+                        <button type="button"
+                                class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+                            <i class="fa-solid fa-file-lines"></i> {% trans 'Save Draft' %}
+                        </button>
+                        <button type="button"
+                                class="publish bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
+                            <i class="fa-solid fa-paper-plane"></i> {% trans 'Publish' %}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock content %}
-
 {% block right_sidebar_widgets %}
-<!-- Writing Tips -->
-<div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
-    <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
-        <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-            <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
-        </h5>
+    <!-- Writing Tips -->
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+        <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
+            </h5>
+        </div>
+        <div class="p-4">
+            <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
+                <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
+                <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
+                <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
+                <li>{% trans 'Use examples to illustrate your points.' %}</li>
+            </ul>
+        </div>
     </div>
-    <div class="p-4">
-        <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
-            <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
-            <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
-            <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
-            <li>{% trans 'Use examples to illustrate your points.' %}</li>
-        </ul>
+    <!-- Preview Link -->
+    <div class="mb-4 mr-4 text-center">
+        <button type="button"
+                id="preview-button"
+                class="w-full justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text shadow-sm border border-fb-lightBorder dark:border-fb-border">
+            <i class="fa-solid fa-eye"></i> {% trans 'Preview Article' %}
+        </button>
     </div>
-</div>
-
-<!-- Preview Link -->
-<div class="mb-4 mr-4 text-center">
-    <button type="button" id="preview-button"
-        class="w-full justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text shadow-sm border border-fb-lightBorder dark:border-fb-border">
-        <i class="fa-solid fa-eye"></i> {% trans 'Preview Article' %}
-    </button>
-</div>
 {% endblock right_sidebar_widgets %}
-
 {% block modal %}
-<style>
+    <style>
     /* Tailwind overrides for Django forms */
     .tailwind-crispy-form .form-group {
         margin-bottom: 1.25rem;
@@ -147,10 +138,9 @@
     html[data-theme='dark'] .tailwind-crispy-form .help-block {
         color: #b0b3b8;
     }
-</style>
-
-<script src="{% static 'js/articles.js' %}"></script>
-<script>
+    </style>
+    <script src="{% static 'js/articles.js' %}"></script>
+    <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Image preview
         const imageInput = document.querySelector('input[type="file"]');
@@ -200,7 +190,7 @@
                             <script src="https://cdn.tailwindcss.com"><\/script>
                             <style>
                                 body { background-color: #f0f2f5; font-family: system-ui, -apple-system, sans-serif; }
-                            </style>
+</style>
                         </head>
                         <body class="p-6">
                             <div class="max-w-[680px] mx-auto bg-white rounded-xl shadow-sm p-6">

@@ -9,9 +9,7 @@
        class="list-group-item{% if active == 'user_followers' %} active{% endif %}">{% trans 'Followers' %}</a>
     <a href="{% url 'users:view_following' user.username %}"
        class="list-group-item{% if active == 'user_following' %} active{% endif %}">{% trans 'Following' %}</a>
-    <a href="{% url 'users:all_message_requests' user.username%}"
+    <a href="{% url 'users:all_message_requests' user.username %}"
        class="list-group-item{% if active == 'user_friend_requests' %} active{% endif %}">{% trans 'Friend Requests' %}</a>
 </div>
 {#{% endif %}#}
-
-

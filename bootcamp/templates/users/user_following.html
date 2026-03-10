@@ -1,10 +1,8 @@
 {% load static i18n %}
 {% load humanize %}
-
 {% block head %}
     <link href="{% static 'css/user_profile.css' %}?v=1" rel="stylesheet">
 {% endblock head %}
-
 {% block content %}
     {% for user in users %}
         <div class="card mb-3 border-0 border-bottom">
@@ -12,7 +10,11 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0 me-3">
                         {% if user.get_picture %}
-                            <img src="{{ user.get_picture }}" class="rounded-circle" width="50" height="50" alt="{{ user.username }}">
+                            <img src="{{ user.get_picture }}"
+                                 class="rounded-circle"
+                                 width="50"
+                                 height="50"
+                                 alt="{{ user.username }}">
                         {% endif %}
                     </div>
                     <div class="flex-grow-1">
@@ -36,6 +38,4 @@
             </div>
         </div>
     {% endfor %}
-
 {% endblock content %}
-

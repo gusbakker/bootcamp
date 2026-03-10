@@ -1,9 +1,7 @@
 {% load static i18n %}
-
 {% block head %}
     <link href="{% static 'css/user_profile.css' %}?v=1" rel="stylesheet">
 {% endblock head %}
-
 {% block content %}
     {% if users %}
         {% include "users/includes/partial_user.html" with users=users %}
@@ -15,6 +13,4 @@
             </div>
         </div>
     {% endif %}
-
 {% endblock content %}
-

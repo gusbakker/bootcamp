@@ -1,251 +1,244 @@
 {% extends "base.html" %}
 {% load static i18n %}
 {% load crispy_forms_tags %}
-
-{% block title %}{% trans 'Group Settings' %}{% endblock %}
-
+{% block title %}
+    {% trans 'Group Settings' %}
+{% endblock %}
 {% block content %}
-<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
-  <!-- Breadcrumb (Tailwind) -->
-  <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2" aria-label="Breadcrumb">
-    <ol class="inline-flex items-center space-x-1 sm:space-x-3">
-      <li class="inline-flex items-center">
-        <a href="{% url 'groups:list' %}"
-          class="inline-flex items-center hover:text-fb-primary hover:underline transition">
-          <i class="fa-solid fa-house mr-2 text-xs"></i>
-          {% trans 'Groups' %}
-        </a>
-      </li>
-      <li>
-        <div class="flex items-center">
-          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
-          <a href="{% url 'groups:group' group.slug %}" class="hover:text-fb-primary hover:underline transition">
-            {{ group.title|truncatechars:20 }}
-          </a>
+    <div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+        <!-- Breadcrumb (Tailwind) -->
+        <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2"
+             aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 sm:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{% url 'groups:list' %}"
+                       class="inline-flex items-center hover:text-fb-primary hover:underline transition">
+                        <i class="fa-solid fa-house mr-2 text-xs"></i>
+                        {% trans 'Groups' %}
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+                        <a href="{% url 'groups:group' group.slug %}"
+                           class="hover:text-fb-primary hover:underline transition">
+                            {{ group.title|truncatechars:20 }}
+                        </a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+                        <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Settings' %}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <!-- Header -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+                <i class="fa-solid fa-gear text-xl"></i>
+            </div>
+            <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Group Settings' %}</h1>
         </div>
-      </li>
-      <li aria-current="page">
-        <div class="flex items-center">
-          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
-          <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Settings' %}</span>
+        <!-- Form Card -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+            <div class="p-4 sm:p-6">
+                <form method="post"
+                      action="{% url 'groups:group_settings' group.slug %}"
+                      class="tailwind-crispy-form">
+                    {% csrf_token %}
+                    <div class="mb-5">
+                        <label for="{{ form.title.id_for_label }}"
+                               class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
+                            {% trans 'Group Title' %} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.title|as_crispy_field }}
+                        <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
+                            {% trans 'Choose a clear, specific name for your group.' %}
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label for="{{ form.description.id_for_label }}"
+                               class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
+                            {% trans 'Group Description' %} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.description|as_crispy_field }}
+                        <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
+                            {% trans 'Describe what your group is about to help people decide if they want to join.' %}
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label for="{{ form.category.id_for_label }}"
+                               class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
+                            {% trans 'Category' %}
+                        </label>
+                        {{ form.category|as_crispy_field }}
+                        <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
+                            {% trans 'Categorizing your group helps people find it more easily.' %}
+                        </div>
+                    </div>
+                    <div class="mb-6 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] rounded-lg p-4 border border-fb-lightBorder dark:border-fb-border flex items-start gap-3">
+                        <div class="pt-1">{{ form.is_private }}</div>
+                        <div>
+                            <label class="font-bold text-fb-lightText dark:text-fb-text cursor-pointer block"
+                                   for="{{ form.is_private.id_for_label }}">
+                                <i class="fa-solid fa-lock text-gray-500 dark:text-gray-400 mr-1.5 text-sm"></i>{% trans 'Make this group private' %}
+                            </label>
+                            <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
+                                {% trans 'Private groups are only visible to members.' %}
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-[17px] font-bold text-fb-lightText dark:text-fb-text mb-4 border-b border-fb-lightBorder dark:border-fb-border pb-2">
+                        {% trans 'Danger Zone' %}
+                    </h3>
+                    <!-- Transfer Ownership -->
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/50 rounded-lg p-4 mb-4 flex gap-4 items-start">
+                        <div class="text-yellow-600 dark:text-yellow-500 mt-1">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-yellow-800 dark:text-yellow-400 mb-1">{% trans 'Transfer Ownership' %}</h5>
+                            <p class="text-[13px] text-yellow-700 dark:text-yellow-500/80 mb-3">
+                                {% trans 'Transfer this group to another admin. You will remain as an admin but will no longer be the owner.' %}
+                            </p>
+                            <button type="button"
+                                    class="bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/40 dark:hover:bg-yellow-900/60 text-yellow-800 dark:text-yellow-400 font-semibold px-3 py-1.5 rounded text-[13px] transition border border-yellow-300 dark:border-yellow-800">
+                                {% trans 'Transfer Ownership' %}
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Delete Group -->
+                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-lg p-4 mb-4 flex gap-4 items-start">
+                        <div class="text-red-500 mt-1">
+                            <i class="fa-solid fa-trash text-2xl"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-red-800 dark:text-red-400 mb-1">{% trans 'Delete Group' %}</h5>
+                            <p class="text-[13px] text-red-700 dark:text-red-500/80 mb-3">
+                                {% trans 'Once you delete a group, there is no going back. Please be certain.' %}
+                            </p>
+                            <button type="button"
+                                    class="bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-800 dark:text-red-400 font-semibold px-3 py-1.5 rounded text-[13px] transition border border-red-300 dark:border-red-800">
+                                {% trans 'Delete Group' %}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-fb-lightBorder dark:border-fb-border mt-6 flex flex-col sm:flex-row-reverse gap-3">
+                        <button type="submit"
+                                class="w-full sm:w-auto bg-fb-primary hover:bg-blue-600 transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-white shadow-sm">
+                            <i class="fa-solid fa-save"></i>{% trans 'Save Changes' %}
+                        </button>
+                        <a href="{% url 'groups:group' group.slug %}"
+                           class="w-full sm:w-auto bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text">
+                            {% trans 'Cancel' %}
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-      </li>
-    </ol>
-  </nav>
-
-  <!-- Header -->
-  <div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
-    <div
-      class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
-      <i class="fa-solid fa-gear text-xl"></i>
     </div>
-    <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">
-      {% trans 'Group Settings' %}
-    </h1>
-  </div>
-
-  <!-- Form Card -->
-  <div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
-    <div class="p-4 sm:p-6">
-      <form method="post" action="{% url 'groups:group_settings' group.slug %}" class="tailwind-crispy-form">
-        {% csrf_token %}
-
-        <div class="mb-5">
-          <label for="{{ form.title.id_for_label }}"
-            class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">{% trans 'Group Title' %} <span class="text-red-500">*</span></label>
-          {{ form.title|as_crispy_field }}
-          <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">{% trans 'Choose a clear, specific name for your group.' %}</div>
-        </div>
-
-        <div class="mb-5">
-          <label for="{{ form.description.id_for_label }}"
-            class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">{% trans 'Group Description' %} <span class="text-red-500">*</span></label>
-          {{ form.description|as_crispy_field }}
-          <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">{% trans 'Describe what your group is about to help people decide if they want to join.' %}</div>
-        </div>
-
-        <div class="mb-5">
-          <label for="{{ form.category.id_for_label }}"
-            class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">{% trans 'Category' %}</label>
-          {{ form.category|as_crispy_field }}
-          <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">{% trans 'Categorizing your group helps people find it more easily.' %}</div>
-        </div>
-
-        <div
-          class="mb-6 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] rounded-lg p-4 border border-fb-lightBorder dark:border-fb-border flex items-start gap-3">
-          <div class="pt-1">
-            {{ form.is_private }}
-          </div>
-          <div>
-            <label class="font-bold text-fb-lightText dark:text-fb-text cursor-pointer block"
-              for="{{ form.is_private.id_for_label }}">
-              <i class="fa-solid fa-lock text-gray-500 dark:text-gray-400 mr-1.5 text-sm"></i>{% trans 'Make this group private' %}
-            </label>
-            <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">{% trans 'Private groups are only visible to members.' %}</div>
-          </div>
-        </div>
-
-        <h3
-          class="text-[17px] font-bold text-fb-lightText dark:text-fb-text mb-4 border-b border-fb-lightBorder dark:border-fb-border pb-2">
-          {% trans 'Danger Zone' %}</h3>
-
-        <!-- Transfer Ownership -->
-        <div
-          class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/50 rounded-lg p-4 mb-4 flex gap-4 items-start">
-          <div class="text-yellow-600 dark:text-yellow-500 mt-1">
-            <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
-          </div>
-          <div>
-            <h5 class="font-bold text-yellow-800 dark:text-yellow-400 mb-1">{% trans 'Transfer Ownership' %}</h5>
-            <p class="text-[13px] text-yellow-700 dark:text-yellow-500/80 mb-3">{% trans 'Transfer this group to another admin. You will remain as an admin but will no longer be the owner.' %}</p>
-            <button type="button"
-              class="bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/40 dark:hover:bg-yellow-900/60 text-yellow-800 dark:text-yellow-400 font-semibold px-3 py-1.5 rounded text-[13px] transition border border-yellow-300 dark:border-yellow-800">{% trans 'Transfer Ownership' %}</button>
-          </div>
-        </div>
-
-        <!-- Delete Group -->
-        <div
-          class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-lg p-4 mb-4 flex gap-4 items-start">
-          <div class="text-red-500 mt-1">
-            <i class="fa-solid fa-trash text-2xl"></i>
-          </div>
-          <div>
-            <h5 class="font-bold text-red-800 dark:text-red-400 mb-1">{% trans 'Delete Group' %}</h5>
-            <p class="text-[13px] text-red-700 dark:text-red-500/80 mb-3">{% trans 'Once you delete a group, there is no going back. Please be certain.' %}</p>
-            <button type="button"
-              class="bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-800 dark:text-red-400 font-semibold px-3 py-1.5 rounded text-[13px] transition border border-red-300 dark:border-red-800">{% trans 'Delete Group' %}</button>
-          </div>
-        </div>
-
-        <div
-          class="pt-4 border-t border-fb-lightBorder dark:border-fb-border mt-6 flex flex-col sm:flex-row-reverse gap-3">
-          <button type="submit"
-            class="w-full sm:w-auto bg-fb-primary hover:bg-blue-600 transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-white shadow-sm">
-            <i class="fa-solid fa-save"></i>{% trans 'Save Changes' %}
-          </button>
-          <a href="{% url 'groups:group' group.slug %}"
-            class="w-full sm:w-auto bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text">
-            {% trans 'Cancel' %}
-          </a>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 {% endblock content %}
-
 {% block right_sidebar_widgets %}
-<!-- Admins Card -->
-<div
-  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
-  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
-    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-      <i class="fa-solid fa-user-shield text-green-500"></i> {% trans 'Group Admins' %}
-    </h5>
-  </div>
-  <div class="p-3">
-    <ul class="flex flex-col gap-2 mb-3">
-      {% for admin in group.admins.all %}
-      <li
-        class="flex items-center p-2 rounded-lg hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
-        <img src="{{ admin.get_picture }}" alt="{{ admin.username }}"
-          class="w-8 h-8 rounded-full border border-fb-lightBorder dark:border-fb-border object-cover mr-3 group-hover:brightness-90 transition">
-        <div class="flex-grow font-semibold text-[14px] text-fb-lightText dark:text-fb-text truncate">
-          {{ admin.get_profile_name|title|default:admin.username }}
-          {% if forloop.first %}
-          <span
-            class="bg-blue-100 dark:bg-blue-900/30 text-fb-primary ml-1 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{% trans 'Owner' %}</span>
-          {% endif %}
+    <!-- Admins Card -->
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+        <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+                <i class="fa-solid fa-user-shield text-green-500"></i> {% trans 'Group Admins' %}
+            </h5>
         </div>
-      </li>
-      {% endfor %}
-    </ul>
-
-    <button
-      class="w-full justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold text-[13px] flex items-center gap-2 text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border">
-      <i class="fa-solid fa-user-plus"></i>{% trans 'Manage Admins' %}
-    </button>
-    <div class="text-center text-[12px] text-fb-lightMuted dark:text-fb-muted mt-2">{% trans 'A group can have up to 3 admins.' %}</div>
-  </div>
-</div>
-
-<!-- Admin Tools Card -->
-<div
-  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
-  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
-    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-      <i class="fa-solid fa-tools text-gray-500 dark:text-gray-400"></i> {% trans 'Admin Tools' %}
-    </h5>
-  </div>
-  <div class="p-2 flex flex-col gap-1">
-    <a href="{% url 'groups:edit_group_cover' group.slug %}"
-      class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group">
-      <div
-        class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-fb-primary flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-800/40 transition">
-        <i class="fa-solid fa-image"></i>
-      </div>
-      {% trans 'Change Cover' %}
-    </a>
-    <a href="{% url 'groups:banned_users' group.slug %}"
-      class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group">
-      <div
-        class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center group-hover:bg-red-200 dark:group-hover:bg-red-800/40 transition">
-        <i class="fa-solid fa-user-slash"></i>
-      </div>
-      {% trans 'Manage Banned Users' %}
-    </a>
-    <a href="#"
-      class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group opacity-70 cursor-not-allowed">
-      <div
-        class="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-500 flex items-center justify-center transition">
-        <i class="fa-solid fa-flag"></i>
-      </div>
-      {% trans 'View Reports' %}
-    </a>
-    <a href="#"
-      class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group opacity-70 cursor-not-allowed">
-      <div
-        class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 text-green-500 flex items-center justify-center transition">
-        <i class="fa-solid fa-chart-line"></i>
-      </div>
-      {% trans 'Group Analytics' %}
-    </a>
-  </div>
-</div>
-
-<!-- Group Stats Card -->
-<div
-  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
-  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
-    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-      <i class="fa-solid fa-chart-pie text-purple-500"></i> {% trans 'Group Stats' %}
-    </h5>
-  </div>
-  <div class="p-4 grid grid-cols-2 gap-4 text-center">
-    <div>
-      <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.subscribers.count }}</h5>
-      <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Members' %}</div>
+        <div class="p-3">
+            <ul class="flex flex-col gap-2 mb-3">
+                {% for admin in group.admins.all %}
+                    <li class="flex items-center p-2 rounded-lg hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
+                        <img src="{{ admin.get_picture }}"
+                             alt="{{ admin.username }}"
+                             class="w-8 h-8 rounded-full border border-fb-lightBorder dark:border-fb-border object-cover mr-3 group-hover:brightness-90 transition">
+                        <div class="flex-grow font-semibold text-[14px] text-fb-lightText dark:text-fb-text truncate">
+                            {{ admin.get_profile_name|title|default:admin.username }}
+                            {% if forloop.first %}
+                                <span class="bg-blue-100 dark:bg-blue-900/30 text-fb-primary ml-1 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{% trans 'Owner' %}</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <button class="w-full justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold text-[13px] flex items-center gap-2 text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border">
+                <i class="fa-solid fa-user-plus"></i>{% trans 'Manage Admins' %}
+            </button>
+            <div class="text-center text-[12px] text-fb-lightMuted dark:text-fb-muted mt-2">
+                {% trans 'A group can have up to 3 admins.' %}
+            </div>
+        </div>
     </div>
-    <div>
-      <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.submitted_news.count }}</h5>
-      <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Posts' %}</div>
+    <!-- Admin Tools Card -->
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
+        <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+                <i class="fa-solid fa-tools text-gray-500 dark:text-gray-400"></i> {% trans 'Admin Tools' %}
+            </h5>
+        </div>
+        <div class="p-2 flex flex-col gap-1">
+            <a href="{% url 'groups:edit_group_cover' group.slug %}"
+               class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group">
+                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-fb-primary flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-800/40 transition">
+                    <i class="fa-solid fa-image"></i>
+                </div>
+                {% trans 'Change Cover' %}
+            </a>
+            <a href="{% url 'groups:banned_users' group.slug %}"
+               class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group">
+                <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center group-hover:bg-red-200 dark:group-hover:bg-red-800/40 transition">
+                    <i class="fa-solid fa-user-slash"></i>
+                </div>
+                {% trans 'Manage Banned Users' %}
+            </a>
+            <a href="#"
+               class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group opacity-70 cursor-not-allowed">
+                <div class="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-flag"></i>
+                </div>
+                {% trans 'View Reports' %}
+            </a>
+            <a href="#"
+               class="flex items-center gap-3 p-2.5 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group opacity-70 cursor-not-allowed">
+                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 text-green-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                {% trans 'Group Analytics' %}
+            </a>
+        </div>
     </div>
-    <div>
-      <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.recent_posts }}</h5>
-      <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Recent' %}</div>
+    <!-- Group Stats Card -->
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
+        <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-purple-500"></i> {% trans 'Group Stats' %}
+            </h5>
+        </div>
+        <div class="p-4 grid grid-cols-2 gap-4 text-center">
+            <div>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.subscribers.count }}</h5>
+                <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Members' %}</div>
+            </div>
+            <div>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.submitted_news.count }}</h5>
+                <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Posts' %}</div>
+            </div>
+            <div>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.recent_posts }}</h5>
+                <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Recent' %}</div>
+            </div>
+            <div>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.created|date:"M Y" }}</h5>
+                <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Created' %}</div>
+            </div>
+        </div>
     </div>
-    <div>
-      <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.created|date:"M Y" }}</h5>
-      <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Created' %}</div>
-    </div>
-  </div>
-</div>
 {% endblock right_sidebar_widgets %}
-
 {% block modal %}
-<style>
+    <style>
   /* Tailwind overrides for Django forms */
   .tailwind-crispy-form .form-group {
     width: 100%;
@@ -288,5 +281,5 @@
     cursor: pointer;
     accent-color: var(--fb-primary, #1877F2);
   }
-</style>
+    </style>
 {% endblock modal %}

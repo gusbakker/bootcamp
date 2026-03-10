@@ -5,22 +5,21 @@
 {% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-	<title>{% trans 'Create account' %} — Antisocial Network</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
-	<!-- Bootstrap 5 -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<!-- Fonts -->
-	<link
-		href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Audiowide&display=swap"
-		rel="stylesheet">
-	<!-- Font Awesome 6 -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-	<style>
+    <head>
+        <title>{% trans 'Create account' %} — Antisocial Network</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+        <!-- Bootstrap 5 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+              rel="stylesheet">
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Audiowide&display=swap"
+              rel="stylesheet">
+        <!-- Font Awesome 6 -->
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
 		:root {
 			--fb-blue: #1877F2;
 			--fb-blue-dark: #166FE5;
@@ -281,74 +280,63 @@
 		.auth-footer a:hover {
 			color: #6ba8f9;
 		}
-	</style>
-</head>
-
-<body>
-
-	<!-- ─── Navbar ──────────────────────────────── -->
-	<nav class="landing-nav">
-		<a href="{% url 'home' %}" class="brand">
-			<i class="fa-solid fa-circle-nodes me-2"></i>Antisocial
-		</a>
-		<div class="d-flex gap-2">
-			<a href="{% url 'account_login' %}" class="btn-nav-alt">{% trans 'Log in' %}</a>
-		</div>
-	</nav>
-
-	<!-- ─── Sign up form card ───────────────────── -->
-	<main class="auth-page">
-		<div class="auth-card">
-
-			<!-- Brand -->
-			<div class="auth-brand">
-				<span class="auth-brand-name">
-					<i class="fa-solid fa-circle-nodes me-1"></i>Antisocial
-				</span>
-				<span class="auth-brand-tagline">Connect with people who actually matter</span>
-			</div>
-
-			<h1 class="auth-title">{% trans 'Create your account' %}</h1>
-			<p class="auth-subtitle">
-				{% blocktrans %}Already have an account? <a href="{{ login_url }}">Log in</a>.{% endblocktrans %}
-			</p>
-
-			<!-- Error messages -->
-			{% if form.errors %}
-			<ul class="errorlist">
-				{% for field in form %}
-				{% for error in field.errors %}
-				<li>{{ error }}</li>
-				{% endfor %}
-				{% endfor %}
-				{% for error in form.non_field_errors %}
-				<li>{{ error }}</li>
-				{% endfor %}
-			</ul>
-			{% endif %}
-
-			<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-				{% csrf_token %}
-				{{ form|crispy }}
-				{% if redirect_field_value %}
-				<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
-				{% endif %}
-
-				<button type="submit" class="btn-auth-submit">
-					<i class="fa-solid fa-user-plus me-2"></i>{% trans 'Create account' %}
-				</button>
-			</form>
-
-			<div class="auth-footer">
-				{% trans 'Already a member?' %}
-				<a href="{% url 'account_login' %}">{% trans 'Log in instead' %}</a>
-			</div>
-
-		</div>
-	</main>
-
-	<!-- Bootstrap 5 JS -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+        </style>
+    </head>
+    <body>
+        <!-- ─── Navbar ──────────────────────────────── -->
+        <nav class="landing-nav">
+            <a href="{% url 'home' %}" class="brand">
+                <i class="fa-solid fa-circle-nodes me-2"></i>Antisocial
+            </a>
+            <div class="d-flex gap-2">
+                <a href="{% url 'account_login' %}" class="btn-nav-alt">{% trans 'Log in' %}</a>
+            </div>
+        </nav>
+        <!-- ─── Sign up form card ───────────────────── -->
+        <main class="auth-page">
+            <div class="auth-card">
+                <!-- Brand -->
+                <div class="auth-brand">
+                    <span class="auth-brand-name">
+                        <i class="fa-solid fa-circle-nodes me-1"></i>Antisocial
+                    </span>
+                    <span class="auth-brand-tagline">Connect with people who actually matter</span>
+                </div>
+                <h1 class="auth-title">{% trans 'Create your account' %}</h1>
+                <p class="auth-subtitle">
+                    {% blocktrans %}Already have an account? <a href="{{ login_url }}">Log in</a>.{% endblocktrans %}
+                </p>
+                <!-- Error messages -->
+                {% if form.errors %}
+                    <ul class="errorlist">
+                        {% for field in form %}
+                            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+                <form class="signup"
+                      id="signup_form"
+                      method="post"
+                      action="{% url 'account_signup' %}">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {% if redirect_field_value %}
+                        <input type="hidden"
+                               name="{{ redirect_field_name }}"
+                               value="{{ redirect_field_value }}">
+                    {% endif %}
+                    <button type="submit" class="btn-auth-submit">
+                        <i class="fa-solid fa-user-plus me-2"></i>{% trans 'Create account' %}
+                    </button>
+                </form>
+                <div class="auth-footer">
+                    {% trans 'Already a member?' %}
+                    <a href="{% url 'account_login' %}">{% trans 'Log in instead' %}</a>
+                </div>
+            </div>
+        </main>
+        <!-- Bootstrap 5 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

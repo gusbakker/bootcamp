@@ -1,141 +1,131 @@
 {% extends 'base.html' %}
 {% load static i18n humanize %}
 {% load thumbnail %}
-
 {% block head %}
-<link href="{% static 'css/news.css' %}?v=3" rel="stylesheet">
-<link href="{% static 'css/groups.css' %}" rel="stylesheet">
-<link href="{% static 'css/image-tools.css' %}" rel="stylesheet">
+    <link href="{% static 'css/news.css' %}?v=3" rel="stylesheet">
+    <link href="{% static 'css/groups.css' %}" rel="stylesheet">
+    <link href="{% static 'css/image-tools.css' %}" rel="stylesheet">
 {% endblock head %}
-
 {% block content %}
-<!-- Group header section if in group context -->
-{% if is_group_context and group %}
-{% include 'groups/includes/group_header.html' %}
-{% endif %}
-
-<div class="space-y-4">
-    <!-- Stories Section (Static sample for layout matching) -->
-    <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar pb-2">
-        <!-- Create story -->
-        <div
-            class="relative w-28 h-48 rounded-xl bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border flex-shrink-0 cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition overflow-hidden group shadow-sm">
-            <img src="{{ user.get_picture }}"
-                class="w-full h-32 object-cover group-hover:scale-105 transition duration-300">
-            <div
-                class="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-fb-primary rounded-full border-4 border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white z-10">
-                <i class="fa-solid fa-plus font-bold"></i>
+    <!-- Group header section if in group context -->
+    {% if is_group_context and group %}
+        {% include 'groups/includes/group_header.html' %}
+    {% endif %}
+    <div class="space-y-4">
+        <!-- Stories Section (Static sample for layout matching) -->
+        <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar pb-2">
+            <!-- Create story -->
+            <div class="relative w-28 h-48 rounded-xl bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border flex-shrink-0 cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition overflow-hidden group shadow-sm">
+                <img src="{{ user.get_picture }}"
+                     class="w-full h-32 object-cover group-hover:scale-105 transition duration-300">
+                <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-fb-primary rounded-full border-4 border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white z-10">
+                    <i class="fa-solid fa-plus font-bold"></i>
+                </div>
+                <p class="absolute bottom-2 w-full text-center text-sm font-semibold text-fb-lightText dark:text-fb-text z-10">
+                    {% trans 'Create story' %}
+                </p>
             </div>
-            <p
-                class="absolute bottom-2 w-full text-center text-sm font-semibold text-fb-lightText dark:text-fb-text z-10">
-                {% trans 'Create story' %}</p>
-        </div>
-
-        <!-- Other friends' stories -->
-        <div
-            class="relative w-28 h-48 rounded-xl bg-gray-300 flex-shrink-0 overflow-hidden cursor-pointer group shadow-sm">
-            <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff&size=512"
-                class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-            <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition z-0"></div>
-            <div class="absolute top-3 left-3 w-10 h-10 rounded-full border-4 border-fb-primary overflow-hidden z-10">
-                <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=random"
-                    class="w-full h-full object-cover">
+            <!-- Other friends' stories -->
+            <div class="relative w-28 h-48 rounded-xl bg-gray-300 flex-shrink-0 overflow-hidden cursor-pointer group shadow-sm">
+                <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff&size=512"
+                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition z-0"></div>
+                <div class="absolute top-3 left-3 w-10 h-10 rounded-full border-4 border-fb-primary overflow-hidden z-10">
+                    <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=random"
+                         class="w-full h-full object-cover">
+                </div>
+                <p class="absolute bottom-2 left-2 text-white font-semibold text-sm z-10 text-shadow cursor-default">
+                    Jane
+                    Doe
+                </p>
             </div>
-            <p class="absolute bottom-2 left-2 text-white font-semibold text-sm z-10 text-shadow cursor-default">Jane
-                Doe</p>
         </div>
-    </div>
-
-    <!-- Create Post Box -->
-    <div
-        class="bg-fb-lightSurface dark:bg-fb-surface rounded-xl p-4 shadow-sm border border-fb-lightBorder dark:border-fb-border flex flex-col gap-3">
-        <div class="flex items-center gap-3">
-            <a href="{% url 'users:detail' request.user.username %}" class="flex-shrink-0">
-                <img src="{{ user.get_picture }}" class="w-10 h-10 rounded-full hover:brightness-90 transition">
+        <!-- Create Post Box -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface rounded-xl p-4 shadow-sm border border-fb-lightBorder dark:border-fb-border flex flex-col gap-3">
+            <div class="flex items-center gap-3">
+                <a href="{% url 'users:detail' request.user.username %}"
+                   class="flex-shrink-0">
+                    <img src="{{ user.get_picture }}"
+                         class="w-10 h-10 rounded-full hover:brightness-90 transition">
+                </a>
+                <button onclick="toggleModal('newsFormModal')"
+                        class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightMuted dark:text-fb-muted text-left px-4 py-2.5 rounded-full transition font-medium">
+                    {% if group %}
+                        {% trans "Share something with" %} {{ group.title }}...
+                    {% else %}
+                        {% trans "What's on your mind," %} {{ request.user.first_name|default:request.user.username }}?
+                    {% endif %}
+                </button>
+            </div>
+            <hr class="border-fb-lightBorder dark:border-fb-border mt-1 mb-1">
+            <div class="flex justify-between w-full px-2">
+                <!-- Simulated buttons -->
+                <button onclick="toggleModal('newsFormModal')"
+                        class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
+                    <i class="fa-solid fa-video text-red-500 text-xl"></i>
+                    <span class="hidden sm:inline">{% trans 'Live video' %}</span>
+                </button>
+                <button onclick="toggleModal('newsFormModal')"
+                        class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
+                    <i class="fa-regular fa-images text-green-500 text-xl"></i>
+                    <span class="hidden sm:inline">{% trans 'Photo/video' %}</span>
+                </button>
+                <button onclick="toggleModal('newsFormModal')"
+                        class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
+                    <i class="fa-regular fa-face-smile text-yellow-500 text-xl"></i>
+                    <span class="hidden sm:inline">{% trans 'Feeling/activity' %}</span>
+                </button>
+            </div>
+        </div>
+        <!-- Modals -->
+        {% include 'news/news_form_modal.html' with group=group %}
+        {% include 'news/news_thread_modal.html' %}
+        <!-- End Modals -->
+        <!-- Stream Update alert (for ajax push updates) -->
+        <div class="stream-update hidden">
+            <a href="{% if is_group_context %}{% url 'groups:group' group.slug %}{% else %}{% url 'news:list' %}{% endif %}"
+               class="block text-center bg-fb-primary hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition shadow-sm mb-4">
+                <i class="fa-solid fa-arrow-rotate-right me-2"></i>{% trans 'There are new posts' %}
             </a>
-            <button onclick="toggleModal('newsFormModal')"
-                class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightMuted dark:text-fb-muted text-left px-4 py-2.5 rounded-full transition font-medium">
-                {% if group %}
-                {% trans "Share something with" %} {{ group.title }}...
-                {% else %}
-                {% trans "What's on your mind," %} {{ request.user.first_name|default:request.user.username }}?
-                {% endif %}
-            </button>
         </div>
-        <hr class="border-fb-lightBorder dark:border-fb-border mt-1 mb-1">
-        <div class="flex justify-between w-full px-2">
-            <!-- Simulated buttons -->
-            <button onclick="toggleModal('newsFormModal')"
-                class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
-                <i class="fa-solid fa-video text-red-500 text-xl"></i>
-                <span class="hidden sm:inline">{% trans 'Live video' %}</span>
-            </button>
-            <button onclick="toggleModal('newsFormModal')"
-                class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
-                <i class="fa-regular fa-images text-green-500 text-xl"></i>
-                <span class="hidden sm:inline">{% trans 'Photo/video' %}</span>
-            </button>
-            <button onclick="toggleModal('newsFormModal')"
-                class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
-                <i class="fa-regular fa-face-smile text-yellow-500 text-xl"></i>
-                <span class="hidden sm:inline">{% trans 'Feeling/activity' %}</span>
-            </button>
+        <!-- News List -->
+        <div class="infinite-container flex flex-col space-y-4">
+            <ul class="stream list-none p-0 m-0 space-y-4 w-full">
+                {% for news in news_list %}
+                    {% include 'news/news_single.html' with news=news %}
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="load flex justify-center py-4">
+            {% if page_obj.has_next %}
+                <a class="infinite-more-link"
+                   href="?page={{ page_obj.next_page_number }}">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-fb-primary"></div>
+                </a>
+            {% endif %}
         </div>
     </div>
-
-    <!-- Modals -->
-    {% include 'news/news_form_modal.html' with group=group %}
-    {% include 'news/news_thread_modal.html' %}
-    <!-- End Modals -->
-
-    <!-- Stream Update alert (for ajax push updates) -->
-    <div class="stream-update hidden">
-        <a href="{% if is_group_context %}{% url 'groups:group' group.slug %}{% else %}{% url 'news:list' %}{% endif %}"
-            class="block text-center bg-fb-primary hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition shadow-sm mb-4">
-            <i class="fa-solid fa-arrow-rotate-right me-2"></i>{% trans 'There are new posts' %}
-        </a>
-    </div>
-
-    <!-- News List -->
-    <div class="infinite-container flex flex-col space-y-4">
-        <ul class="stream list-none p-0 m-0 space-y-4 w-full">
-            {% for news in news_list %}
-            {% include 'news/news_single.html' with news=news %}
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="load flex justify-center py-4">
-        {% if page_obj.has_next %}
-        <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-fb-primary"></div>
-        </a>
-        {% endif %}
-    </div>
-</div>
 {% endblock content %}
-
 {% block right_sidebar_widgets %}
-{% if is_group_context or groups_list %}
-{% if is_group_context %}
-{% include 'groups/includes/group_sidebar.html' %}
-{% else %}
-<!-- Groups Widget -->
-{% include 'groups/includes/groups_container.html' with groups_list=groups_list %}
-{% endif %}
-<hr class="my-4 border-fb-lightBorder dark:border-fb-border">
-{% endif %}
-{{ block.super }}
+    {% if is_group_context or groups_list %}
+        {% if is_group_context %}
+            {% include 'groups/includes/group_sidebar.html' %}
+        {% else %}
+            <!-- Groups Widget -->
+            {% include 'groups/includes/groups_container.html' with groups_list=groups_list %}
+        {% endif %}
+        <hr class="my-4 border-fb-lightBorder dark:border-fb-border">
+    {% endif %}
+    {{ block.super }}
 {% endblock right_sidebar_widgets %}
-
 {% block modal %}
-<script src="{% static 'js/image-tools.js' %}" type="text/javascript"></script>
-<script src="{% static 'js/jquery.waypoints.min.js' %}" type="text/javascript"></script>
-<script src="{% static 'js/infinite.min.js' %}" type="text/javascript"></script>
-<script src="{% static 'js/news.js' %}" type="text/javascript"></script>
-
-{% if is_group_context %}
-<script>
+    <script src="{% static 'js/image-tools.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/jquery.waypoints.min.js' %}"
+            type="text/javascript"></script>
+    <script src="{% static 'js/infinite.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/news.js' %}" type="text/javascript"></script>
+    {% if is_group_context %}
+        <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Subscribe group functionality
         const subscribeButtons = document.querySelectorAll('#subscribe_group, #sidebar_subscribe_group');
@@ -187,10 +177,9 @@
             }
         }
     });
-</script>
-{% endif %}
-
-<script>
+        </script>
+    {% endif %}
+    <script>
     var infinite = new Waypoint.Infinite({
         element: $('.infinite-container')[0],
         onBeforePageLoad: function () {
@@ -200,5 +189,5 @@
             $('.load').hide();
         }
     });
-</script>
+    </script>
 {% endblock modal %}

@@ -1,82 +1,85 @@
 {% load i18n %}
-
-<div id="newsFormModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center px-4">
-  <div
-    class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-[500px] rounded-xl shadow-2xl border border-fb-lightBorder dark:border-fb-border flex flex-col modal-enter relative"
-    onclick="event.stopPropagation()">
-    <div class="flex items-center justify-center p-4 border-b border-fb-lightBorder dark:border-fb-border relative">
-      <h2 class="text-xl font-bold text-fb-lightText dark:text-fb-text">
-        {% if group %}
-        {% trans "Share something with" %} {{ group.title }}
-        {% else %}
-        {% trans "Create post" %}
-        {% endif %}
-      </h2>
-      <button type="button" onclick="toggleModal('newsFormModal')"
-        class="absolute right-4 w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 dark:hover:bg-[#4e4f50] flex items-center justify-center text-fb-lightMuted dark:text-fb-muted transition">
-        <i class="fa-solid fa-xmark text-xl"></i>
-      </button>
-    </div>
-    <div class="p-4">
-      <form enctype="multipart/form-data" id="postNewsForm" role="form" method="post" action="">
-        {% csrf_token %}
-        {% if group %}
-        <input type="hidden" name="group" value="{{ group.id }}">
-        {% endif %}
-
-        <div class="flex items-center gap-3 mb-4">
-          <img src="{{ user.get_picture }}" class="w-10 h-10 rounded-full">
-          <div>
-            <h4 class="font-semibold text-[15px] text-fb-lightText dark:text-fb-text">
-              {{request.user.get_full_name|default:request.user.username }}</h4>
-            <!-- Simulated audience selector -->
+<div id="newsFormModal"
+     class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center px-4">
+    <div class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-[500px] rounded-xl shadow-2xl border border-fb-lightBorder dark:border-fb-border flex flex-col modal-enter relative"
+         onclick="event.stopPropagation()">
+        <div class="flex items-center justify-center p-4 border-b border-fb-lightBorder dark:border-fb-border relative">
+            <h2 class="text-xl font-bold text-fb-lightText dark:text-fb-text">
+                {% if group %}
+                    {% trans "Share something with" %} {{ group.title }}
+                {% else %}
+                    {% trans "Create post" %}
+                {% endif %}
+            </h2>
             <button type="button"
-              class="flex items-center gap-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text px-2 py-0.5 rounded-md text-xs font-semibold mt-1">
-              <i class="fa-solid fa-user-group text-[10px]"></i> {% trans 'Friends' %} <i
-                class="fa-solid fa-caret-down ml-1"></i>
+                    onclick="toggleModal('newsFormModal')"
+                    class="absolute right-4 w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 dark:hover:bg-[#4e4f50] flex items-center justify-center text-fb-lightMuted dark:text-fb-muted transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-          </div>
         </div>
-
-        <textarea id="newsInput" name="post"
-          class="w-full bg-transparent border-none outline-none resize-none text-xl placeholder-fb-lightMuted dark:placeholder-fb-muted mb-4 h-32 text-fb-lightText dark:text-fb-text"
-          placeholder="{% trans 'What\'s on your mind?' %}"></textarea>
-        <div class="flex justify-end mt-2">
-          <span id="newsCounter" class="text-fb-lightMuted dark:text-fb-muted text-xs font-medium">280</span>
+        <div class="p-4">
+            <form enctype="multipart/form-data"
+                  id="postNewsForm"
+                  role="form"
+                  method="post"
+                  action="">
+                {% csrf_token %}
+                {% if group %}<input type="hidden" name="group" value="{{ group.id }}">{% endif %}
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="{{ user.get_picture }}" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h4 class="font-semibold text-[15px] text-fb-lightText dark:text-fb-text">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                        </h4>
+                        <!-- Simulated audience selector -->
+                        <button type="button"
+                                class="flex items-center gap-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text px-2 py-0.5 rounded-md text-xs font-semibold mt-1">
+                            <i class="fa-solid fa-user-group text-[10px]"></i> {% trans 'Friends' %} <i class="fa-solid fa-caret-down ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                <textarea id="newsInput"
+                          name="post"
+                          class="w-full bg-transparent border-none outline-none resize-none text-xl placeholder-fb-lightMuted dark:placeholder-fb-muted mb-4 h-32 text-fb-lightText dark:text-fb-text"
+                          placeholder="{% trans 'What\'s on your mind?' %}"></textarea>
+                <div class="flex justify-end mt-2">
+                    <span id="newsCounter"
+                          class="text-fb-lightMuted dark:text-fb-muted text-xs font-medium">280</span>
+                </div>
+                <!-- Uploaded image preview -->
+                <div id="imagePreviewContainer" class="mt-3 relative hidden">
+                    <img id="imageResult"
+                         src="#"
+                         alt=""
+                         class="w-full max-h-[250px] object-cover rounded shadow-sm mx-auto block mb-4">
+                    <button type="button"
+                            id="removeImage"
+                            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition shadow-md">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <!-- Upload image area -->
+                <div id="uploadImageArea"
+                     class="mt-3 mb-4 border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
+                    <input id="imageInput"
+                           type="file"
+                           name="image"
+                           class="hidden"
+                           accept="image/*">
+                    <div class="w-10 h-10 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover group-hover:bg-gray-200 dark:group-hover:bg-gray-600 flex items-center justify-center mb-2 transition">
+                        <i class="fa-regular fa-image text-xl text-fb-lightText dark:text-fb-text transition"></i>
+                    </div>
+                    <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Add Photos/Videos' %}</span>
+                    <span class="text-xs text-fb-lightMuted dark:text-fb-muted mt-1">{% trans 'or drag and drop' %}</span>
+                </div>
+                <button type="button"
+                        id="postNews"
+                        class="w-full bg-fb-primary hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition mt-2 opacity-50 cursor-not-allowed"
+                        disabled>{% trans 'Post' %}</button>
+            </form>
         </div>
-
-        <!-- Uploaded image preview -->
-        <div id="imagePreviewContainer" class="mt-3 relative hidden">
-          <img id="imageResult" src="#" alt=""
-            class="w-full max-h-[250px] object-cover rounded shadow-sm mx-auto block mb-4">
-          <button type="button" id="removeImage"
-            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition shadow-md">
-            <i class="fa-solid fa-times"></i>
-          </button>
-        </div>
-
-        <!-- Upload image area -->
-        <div id="uploadImageArea"
-          class="mt-3 mb-4 border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
-          <input id="imageInput" type="file" name="image" class="hidden" accept="image/*">
-          <div
-            class="w-10 h-10 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover group-hover:bg-gray-200 dark:group-hover:bg-gray-600 flex items-center justify-center mb-2 transition">
-            <i class="fa-regular fa-image text-xl text-fb-lightText dark:text-fb-text transition"></i>
-          </div>
-          <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Add Photos/Videos' %}</span>
-          <span class="text-xs text-fb-lightMuted dark:text-fb-muted mt-1">{% trans 'or drag and drop' %}</span>
-        </div>
-
-        <button type="button" id="postNews"
-          class="w-full bg-fb-primary hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition mt-2 opacity-50 cursor-not-allowed"
-          disabled>
-          {% trans 'Post' %}
-        </button>
-      </form>
     </div>
-  </div>
 </div>
-
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const imageInput = document.getElementById('imageInput');

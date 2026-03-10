@@ -1,66 +1,60 @@
 {% load humanize %}
 {% load i18n %}
-
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-  {% for group in groups %}
-  <div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group/card">
-    <!-- Cover Art Option -->
-    <a href="{% url 'groups:group' group.slug %}"
-      class="h-24 sm:h-32 w-full block overflow-hidden relative bg-fb-lightSurfaceHover dark:bg-[#4e4f50]">
-      {% if group.get_picture %}
-      <img src="{{ group.get_picture }}" alt="{{ group.title }}"
-        class="w-full h-full object-cover group-hover/card:scale-105 transition duration-300">
-      {% else %}
-      <div class="w-full h-full flex justify-center items-center text-fb-lightMuted dark:text-fb-muted">
-        <i class="fa-solid fa-users text-4xl opacity-50"></i>
-      </div>
-      {% endif %}
-      <!-- Gradient Overlay for contrast -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-
-      <div class="absolute bottom-2 left-3 right-3">
-        <h5 class="font-bold text-white text-[15px] sm:text-[17px] leading-tight text-shadow drop-shadow-md truncate">{{ group.title }}</h5>
-      </div>
-    </a>
-
-    <!-- Content -->
-    <div class="p-3 sm:p-4 flex flex-col flex-grow">
-      <p
-        class="text-fb-lightText dark:text-fb-text text-[13px] sm:text-[14px] leading-relaxed mb-3 line-clamp-2 min-h-[40px]">
-        {{ group.description }}
-      </p>
-
-      <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted mb-4 font-semibold">
-        <i class="fa-solid fa-users mr-1.5 text-fb-primary"></i> <span class="mr-3">{{ group.subscribers.count }} {%trans 'members' %}</span>
-        <i class="fa-solid fa-clock mr-1.5"></i> <span>{{ group.created|naturaltime }}</span>
-      </div>
-
-      <div class="mt-auto pt-3 border-t border-fb-lightBorder dark:border-fb-border flex gap-2">
-        <a href="{% url 'groups:group' group.slug %}"
-          class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text font-semibold py-2 rounded-lg text-center transition text-[14px]">
-          {% trans 'View Group' %}
-        </a>
-
-        {% if group in request.user.subscribed_groups.all %}
-        <a href="{% url 'groups:subscribe' group.slug %}"
-          class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text font-semibold py-2 rounded-lg text-center transition flex justify-center items-center gap-2 text-[14px]"
-          id="subscribe_group_partial">
-          <i class="fa-solid fa-user-minus"></i> <span class="hidden sm:inline">{% trans 'Leave' %}</span>
-        </a>
-        {% else %}
-        <a href="{% url 'groups:subscribe' group.slug %}"
-          class="flex-1 bg-fb-primary hover:bg-blue-600 text-white font-semibold py-2 rounded-lg text-center transition flex justify-center items-center gap-2 shadow-sm text-[14px]"
-          id="subscribe_group_partial">
-          <i class="fa-solid fa-user-plus"></i> <span class="hidden sm:inline">{% trans 'Join' %}</span>
-        </a>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  {% endfor %}
+    {% for group in groups %}
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group/card">
+            <!-- Cover Art Option -->
+            <a href="{% url 'groups:group' group.slug %}"
+               class="h-24 sm:h-32 w-full block overflow-hidden relative bg-fb-lightSurfaceHover dark:bg-[#4e4f50]">
+                {% if group.get_picture %}
+                    <img src="{{ group.get_picture }}"
+                         alt="{{ group.title }}"
+                         class="w-full h-full object-cover group-hover/card:scale-105 transition duration-300">
+                {% else %}
+                    <div class="w-full h-full flex justify-center items-center text-fb-lightMuted dark:text-fb-muted">
+                        <i class="fa-solid fa-users text-4xl opacity-50"></i>
+                    </div>
+                {% endif %}
+                <!-- Gradient Overlay for contrast -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute bottom-2 left-3 right-3">
+                    <h5 class="font-bold text-white text-[15px] sm:text-[17px] leading-tight text-shadow drop-shadow-md truncate">
+                        {{ group.title }}
+                    </h5>
+                </div>
+            </a>
+            <!-- Content -->
+            <div class="p-3 sm:p-4 flex flex-col flex-grow">
+                <p class="text-fb-lightText dark:text-fb-text text-[13px] sm:text-[14px] leading-relaxed mb-3 line-clamp-2 min-h-[40px]">
+                    {{ group.description }}
+                </p>
+                <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted mb-4 font-semibold">
+                    <i class="fa-solid fa-users mr-1.5 text-fb-primary"></i> <span class="mr-3">{{ group.subscribers.count }} {% trans 'members' %}</span>
+                    <i class="fa-solid fa-clock mr-1.5"></i> <span>{{ group.created|naturaltime }}</span>
+                </div>
+                <div class="mt-auto pt-3 border-t border-fb-lightBorder dark:border-fb-border flex gap-2">
+                    <a href="{% url 'groups:group' group.slug %}"
+                       class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text font-semibold py-2 rounded-lg text-center transition text-[14px]">
+                        {% trans 'View Group' %}
+                    </a>
+                    {% if group in request.user.subscribed_groups.all %}
+                        <a href="{% url 'groups:subscribe' group.slug %}"
+                           class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text font-semibold py-2 rounded-lg text-center transition flex justify-center items-center gap-2 text-[14px]"
+                           id="subscribe_group_partial">
+                            <i class="fa-solid fa-user-minus"></i> <span class="hidden sm:inline">{% trans 'Leave' %}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'groups:subscribe' group.slug %}"
+                           class="flex-1 bg-fb-primary hover:bg-blue-600 text-white font-semibold py-2 rounded-lg text-center transition flex justify-center items-center gap-2 shadow-sm text-[14px]"
+                           id="subscribe_group_partial">
+                            <i class="fa-solid fa-user-plus"></i> <span class="hidden sm:inline">{% trans 'Join' %}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 </div>
-
 <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function () {
     // Subscribe groups

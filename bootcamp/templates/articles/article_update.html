@@ -2,121 +2,110 @@
 {% load crispy_forms_filters %}
 {% load static i18n %}
 {% load crispy_forms_tags %}
-
-{% block title %}{% trans 'Edit Article' %}{% endblock %}
-
+{% block title %}
+    {% trans 'Edit Article' %}
+{% endblock %}
 {% block content %}
-<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
-
-  <!-- Breadcrumb (Tailwind) -->
-  <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2" aria-label="Breadcrumb">
-    <ol class="inline-flex items-center space-x-1 sm:space-x-3">
-      <li class="inline-flex items-center">
-        <a href="{% url 'news:list' %}"
-          class="inline-flex items-center hover:text-fb-primary hover:underline transition">
-          <i class="fa-solid fa-house mr-2 text-xs"></i>
-          {% trans 'Home' %}
-        </a>
-      </li>
-      <li>
-        <div class="flex items-center">
-          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
-          <a href="{% url 'articles:drafts' %}" class="hover:text-fb-primary hover:underline transition">
-            {% trans 'Drafts' %}
-          </a>
+    <div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+        <!-- Breadcrumb (Tailwind) -->
+        <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2"
+             aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 sm:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{% url 'news:list' %}"
+                       class="inline-flex items-center hover:text-fb-primary hover:underline transition">
+                        <i class="fa-solid fa-house mr-2 text-xs"></i>
+                        {% trans 'Home' %}
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+                        <a href="{% url 'articles:drafts' %}"
+                           class="hover:text-fb-primary hover:underline transition">{% trans 'Drafts' %}</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+                        <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Update an article' %}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <!-- Header -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+                <i class="fa-solid fa-pen text-xl"></i>
+            </div>
+            <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Edit Article' %}</h1>
         </div>
-      </li>
-      <li aria-current="page">
-        <div class="flex items-center">
-          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
-          <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Update an article' %}</span>
+        <!-- Editor Card -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+            <div class="p-4 sm:p-6">
+                <form action="{% url 'articles:edit_article' form.instance.pk %}"
+                      enctype="multipart/form-data"
+                      id="article-form"
+                      method="post"
+                      role="form"
+                      class="tailwind-crispy-form">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <!-- Image Preview -->
+                    <div class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
+                         id="image-preview">
+                        {% if form.instance.image %}
+                            <img src="{{ form.instance.image.url }}"
+                                 alt="{% trans 'Current image' %}"
+                                 class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center">
+                                <i class="fa-solid fa-image text-4xl mb-2 opacity-50 group-hover:opacity-80 transition"></i>
+                                <span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <!-- Actions -->
+                    <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
+                        <a href="{% url 'articles:drafts' %}"
+                           class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+                            {% trans 'Cancel' %}
+                        </a>
+                        <button type="button"
+                                class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+                            <i class="fa-solid fa-file-lines"></i> {% trans 'Save as draft' %}
+                        </button>
+                        <button type="button"
+                                class="update bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> {% trans 'Update' %}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </li>
-    </ol>
-  </nav>
-
-  <!-- Header -->
-  <div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
-    <div
-      class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
-      <i class="fa-solid fa-pen text-xl"></i>
     </div>
-    <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">
-      {% trans 'Edit Article' %}
-    </h1>
-  </div>
-
-  <!-- Editor Card -->
-  <div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
-    <div class="p-4 sm:p-6">
-      <form action="{% url 'articles:edit_article' form.instance.pk %}" enctype="multipart/form-data" id="article-form"
-        method="post" role="form" class="tailwind-crispy-form">
-        {% csrf_token %}
-
-        {{ form|crispy }}
-
-        <!-- Image Preview -->
-        <div
-          class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
-          id="image-preview">
-          {% if form.instance.image %}
-          <img src="{{ form.instance.image.url }}" alt="{% trans 'Current image' %}" class="w-full h-full object-cover">
-          {% else %}
-          <div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center">
-            <i class="fa-solid fa-image text-4xl mb-2 opacity-50 group-hover:opacity-80 transition"></i>
-            <span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span>
-          </div>
-          {% endif %}
-        </div>
-
-        <!-- Actions -->
-        <div
-          class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
-          <a href="{% url 'articles:drafts' %}"
-            class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
-            {% trans 'Cancel' %}
-          </a>
-          <button type="button"
-            class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
-            <i class="fa-solid fa-file-lines"></i> {% trans 'Save as draft' %}
-          </button>
-          <button type="button"
-            class="update bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
-            <i class="fa-solid fa-cloud-arrow-up"></i> {% trans 'Update' %}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-{{ form.media }}
+    {{ form.media }}
 {% endblock content %}
-
 {% block right_sidebar_widgets %}
-<!-- Writing Tips -->
-<div
-  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
-  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
-    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-      <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
-    </h5>
-  </div>
-  <div class="p-4">
-    <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
-      <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
-      <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
-      <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
-      <li>{% trans 'Use examples to illustrate your points.' %}</li>
-    </ul>
-  </div>
-</div>
+    <!-- Writing Tips -->
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+        <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
+            </h5>
+        </div>
+        <div class="p-4">
+            <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
+                <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
+                <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
+                <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
+                <li>{% trans 'Use examples to illustrate your points.' %}</li>
+            </ul>
+        </div>
+    </div>
 {% endblock right_sidebar_widgets %}
-
 {% block modal %}
-<style>
+    <style>
   /* Tailwind overrides for Django forms */
   .tailwind-crispy-form .form-group {
     margin-bottom: 1.25rem;
@@ -174,10 +163,9 @@
   html[data-theme='dark'] .tailwind-crispy-form .help-block {
     color: #b0b3b8;
   }
-</style>
-
-<script src="{% static 'js/articles.js' %}"></script>
-<script>
+    </style>
+    <script src="{% static 'js/articles.js' %}"></script>
+    <script>
   document.addEventListener('DOMContentLoaded', function () {
     // Image preview
     const imageInput = document.querySelector('input[type="file"]');
@@ -198,5 +186,5 @@
       });
     }
   });
-</script>
+    </script>
 {% endblock modal %}

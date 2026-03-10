@@ -1,24 +1,41 @@
 {% load i18n %}
-
 <div class="markdownx row">
-  <div class="col-md-12">
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item">
-        <button class="nav-link active" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab" aria-controls="editor" aria-selected="true">{% trans 'Editor' %}</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" id="preview-tab" data-bs-toggle="tab" data-bs-target="#preview" type="button" role="tab" aria-controls="preview" aria-selected="false">{% trans 'Preview' %}</button>
-      </li>
-    </ul>
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <div class="tab-pane active" id="editor" role="tabpanel" aria-labelledby="editor-tab">
-        {% include 'django/forms/widgets/textarea.html' %}
-      </div>
-      <div class="tab-pane" id="preview" role="tabpanel" aria-labelledby="preview-tab">
-        <div class="markdownx-preview mt-3"></div>
-      </div>
+    <div class="col-md-12">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active"
+                        id="editor-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#editor"
+                        type="button"
+                        role="tab"
+                        aria-controls="editor"
+                        aria-selected="true">{% trans 'Editor' %}</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link"
+                        id="preview-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#preview"
+                        type="button"
+                        role="tab"
+                        aria-controls="preview"
+                        aria-selected="false">{% trans 'Preview' %}</button>
+            </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane active"
+                 id="editor"
+                 role="tabpanel"
+                 aria-labelledby="editor-tab">{% include 'django/forms/widgets/textarea.html' %}</div>
+            <div class="tab-pane"
+                 id="preview"
+                 role="tabpanel"
+                 aria-labelledby="preview-tab">
+                <div class="markdownx-preview mt-3"></div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

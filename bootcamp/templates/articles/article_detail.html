@@ -1,333 +1,302 @@
 {% extends 'base.html' %}
 {% load static i18n %}
 {% load comments crispy_forms_tags thumbnail humanize %}
-
 {% block title %}{{ article.title|title }}{% endblock %}
-
 {% block content %}
-<div class="max-w-[680px] mx-auto w-full pt-4 pb-12">
-    <article
-        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm mb-4 overflow-hidden">
-
-        <!-- Article Header (Author & Meta) -->
-        <div class="p-4 flex justify-between items-center border-b border-fb-lightBorder dark:border-fb-border">
-            <div class="flex items-center gap-3">
-                <a href="{% url 'users:detail' article.user.username %}" class="flex-shrink-0">
-                    <img src="{{ article.user.get_picture }}" alt="{{ article.user.username }}"
-                        class="w-10 h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border">
-                </a>
-                <div>
-                    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight hover:underline">
-                        <a href="{% url 'users:detail' article.user.username %}">
-                            {{ article.user.get_profile_name|title|default:article.user.username }}
-                        </a>
-                    </h5>
-                    <div class="flex items-center text-[13px] text-fb-lightMuted dark:text-fb-muted">
-                        <span>{{ article.timestamp|naturaltime }}</span>
-                        <span class="mx-1.5">•</span>
-                        <i class="fa-solid fa-earth-americas text-[11px]"></i>
-                    </div>
-                </div>
-            </div>
-
-            {% if request.user == article.user %}
-            <a class="w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 flex items-center justify-center text-fb-lightText dark:text-fb-text transition"
-                href="{% url 'articles:edit_article' article.id %}" title="{% trans 'Edit this article' %}">
-                <i class="fa-solid fa-pen"></i>
-            </a>
-            {% endif %}
-        </div>
-
-        <!-- Article Content Space -->
-        <div class="p-4 sm:p-5">
-            <h1 class="text-2xl sm:text-3xl font-bold text-fb-lightText dark:text-fb-text mb-4 leading-tight">
-                {{ article.title|title }}
-            </h1>
-
-            <div
-                class="article-content prose dark:prose-invert max-w-none text-fb-lightText dark:text-fb-text text-[15px] sm:text-[16px] leading-relaxed">
-                {{ article.get_markdown|safe }}
-            </div>
-        </div>
-
-        <!-- Featured Image -->
-        <div
-            class="w-full border-t border-b border-fb-lightBorder dark:border-fb-border bg-fb-lightSurfaceHover dark:bg-[#4e4f50] flex justify-center">
-            {% thumbnail article.image "1200x600" as im %}
-            <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="w-full max-h-[500px] object-cover">
-            {% empty %}
-            <div class="py-12 flex flex-col items-center justify-center text-fb-lightMuted dark:text-fb-muted">
-                <i class="fa-solid fa-newspaper text-5xl opacity-30 mb-3"></i>
-                <span class="text-sm font-semibold">{% trans 'No featured image' %}</span>
-            </div>
-            {% endthumbnail %}
-        </div>
-
-        <!-- Footer: Tags & Actions -->
-        <div
-            class="p-3 sm:px-4 flex flex-col sm:flex-row justify-between items-center border-b border-fb-lightBorder dark:border-fb-border gap-3">
-
-            <!-- Tags -->
-            <div class="flex flex-wrap gap-1.5 w-full sm:w-auto">
-                {% for tag in article.tags.all %}
-                <a href="{% url 'articles:list' %}tag/{{ tag }}"
-                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-[13px] font-semibold text-fb-lightText dark:text-fb-text px-2.5 py-1 rounded-md transition">
-                    #{{ tag }}
-                </a>
-                {% empty %}
-                <span class="text-[13px] text-fb-lightMuted dark:text-fb-muted italic">{% trans 'No tags' %}</span>
-                {% endfor %}
-            </div>
-
-            <!-- Share Buttons -->
-            <div class="flex items-center gap-1 w-full sm:w-auto justify-end">
-                <span class="text-[13px] font-semibold text-fb-lightMuted dark:text-fb-muted mr-1">{% trans 'Share:' %}</span>
-                <button
-                    onclick="window.open('https://twitter.com/intent/tweet?text={{ article.title|urlencode }}&url={{ request.build_absolute_uri }}', '_blank')"
-                    class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-[#1DA1F2] flex items-center justify-center transition">
-                    <i class="fa-brands fa-twitter"></i>
-                </button>
-                <button
-                    onclick="window.open('https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}', '_blank')"
-                    class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-[#1877F2] flex items-center justify-center transition">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </button>
-                <button
-                    onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}', '_blank')"
-                    class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-[#0A66C2] flex items-center justify-center transition">
-                    <i class="fa-brands fa-linkedin-in"></i>
-                </button>
-                <button id="copy-link"
-                    class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 text-fb-lightText dark:text-fb-text flex items-center justify-center transition"
-                    title="{% trans 'Copy Link' %}">
-                    <i class="fa-solid fa-link"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Interactivity (Like/Comment buttons static mockup - assuming no likes implemented for articles yet based on original template. But we'll add the UI structural consistency! It is actually not needed if not in original logic) -->
-
-    </article>
-
-    <!-- Comments Section -->
-    <section
-        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm mb-4 overflow-hidden p-4">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-[17px] text-fb-lightText dark:text-fb-text flex items-center gap-2">
-                {% get_comment_list for article as comment_list %}
-                {% trans 'Comments' %}
-                <span
-                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text px-2 py-0.5 rounded-full text-[13px]">{{ comment_list|length }}</span>
-            </h3>
-        </div>
-
-        <!-- Comment Form -->
-        <div class="mb-5 flex gap-2">
-            <img src="{{ request.user.get_picture }}" alt="User"
-                class="w-10 h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border hidden sm:block">
-            <div class="flex-grow w-full comment-form-container">
-                {% if user.is_authenticated %}
-                {% get_comment_form for article as form %}
-                <form action="{% comment_form_target %}" method="POST"
-                    class="bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] rounded-2xl p-1 pr-2 relative overflow-hidden flex flex-col">
-                    {% csrf_token %}
-                    {{ form.comment|as_crispy_field }}
-                    <div class="hidden">
-                        {{ form.honeyspot }}
-                        {{ form.content_type }}
-                        {{ form.object_pk }}
-                        {{ form.timestamp }}
-                        {{ form.security_hash }}
-                    </div>
-                    <input type="hidden" name="next" value="{% url 'articles:article' article.slug %}" />
-
-                    <!-- Custom Submit Button pinned to right side -->
-                    <div class="flex justify-end pr-2 pb-2">
-                        <button type="submit"
-                            class="bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-fb-primary p-2 rounded-full transition flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="{% trans 'Post Comment' %}">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </form>
-                {% else %}
-                <div
-                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-xl p-4 text-center text-fb-lightText dark:text-fb-text text-sm w-full">
-                    {% trans 'Please' %} <a href="{% url 'account_login' %}"
-                        class="text-fb-primary font-semibold hover:underline">{% trans 'log in' %}</a> {% trans 'to leave a comment.' %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Comments List -->
-        {% if comment_list %}
-        <div class="flex flex-col gap-3">
-            {% for comment in comment_list %}
-            <div class="flex gap-2 group">
-                <a href="{% url 'users:detail' comment.user.username %}" class="flex-shrink-0 mt-0.5">
-                    <img src="{{ comment.user.get_picture }}"
-                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border"
-                        alt="{{ comment.user.username }}">
-                </a>
-                <div class="flex flex-col min-w-0 max-w-full">
-                    <div
-                        class="bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] px-3.5 py-2.5 rounded-2xl max-w-fit break-words">
-                        <h6
-                            class="font-bold text-[13px] text-fb-lightText dark:text-fb-text leading-tight mb-0.5 hover:underline cursor-pointer">
-                            <a href="{% url 'users:detail' comment.user.username %}">
-                                {{ comment.user.get_profile_name|title|default:comment.user.username }}
+    <div class="max-w-[680px] mx-auto w-full pt-4 pb-12">
+        <article class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm mb-4 overflow-hidden">
+            <!-- Article Header (Author & Meta) -->
+            <div class="p-4 flex justify-between items-center border-b border-fb-lightBorder dark:border-fb-border">
+                <div class="flex items-center gap-3">
+                    <a href="{% url 'users:detail' article.user.username %}"
+                       class="flex-shrink-0">
+                        <img src="{{ article.user.get_picture }}"
+                             alt="{{ article.user.username }}"
+                             class="w-10 h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border">
+                    </a>
+                    <div>
+                        <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight hover:underline">
+                            <a href="{% url 'users:detail' article.user.username %}">
+                                {{ article.user.get_profile_name|title|default:article.user.username }}
                             </a>
-                        </h6>
-                        <div class="text-[14px] text-fb-lightText dark:text-fb-text leading-snug">
-                            {{ comment.comment|linebreaksbr }}
+                        </h5>
+                        <div class="flex items-center text-[13px] text-fb-lightMuted dark:text-fb-muted">
+                            <span>{{ article.timestamp|naturaltime }}</span>
+                            <span class="mx-1.5">•</span>
+                            <i class="fa-solid fa-earth-americas text-[11px]"></i>
                         </div>
                     </div>
-                    <!-- Micro-actions below comment -->
-                    <div
-                        class="flex items-center gap-3 px-3 mt-1 text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">
-                        <span>{{ comment.submit_date|naturaltime }}</span>
-                    </div>
+                </div>
+                {% if request.user == article.user %}
+                    <a class="w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 flex items-center justify-center text-fb-lightText dark:text-fb-text transition"
+                       href="{% url 'articles:edit_article' article.id %}"
+                       title="{% trans 'Edit this article' %}">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                {% endif %}
+            </div>
+            <!-- Article Content Space -->
+            <div class="p-4 sm:p-5">
+                <h1 class="text-2xl sm:text-3xl font-bold text-fb-lightText dark:text-fb-text mb-4 leading-tight">
+                    {{ article.title|title }}
+                </h1>
+                <div class="article-content prose dark:prose-invert max-w-none text-fb-lightText dark:text-fb-text text-[15px] sm:text-[16px] leading-relaxed">
+                    {{ article.get_markdown|safe }}
                 </div>
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="text-center py-6 text-fb-lightMuted dark:text-fb-muted text-sm font-semibold">
-            {% trans 'No comments yet. Be the first to comment!' %}
-        </div>
-        {% endif %}
-    </section>
-
-    <!-- Related Articles -->
-    {% with related_articles=article.user.article_set.all %}
-    <!-- Check if there are related articles (count > 1 because self is included in QS) -->
-    {% if related_articles.count > 1 %}
-    <section class="mt-8 mb-4">
-        <h3
-            class="font-bold text-[17px] text-fb-lightText dark:text-fb-text mb-3 px-1 border-b pb-2 border-fb-lightBorder dark:border-fb-border">
-            {% trans 'More from this author' %}</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 text-wrap gap-4">
-            {% for related_article in related_articles|slice:":3" %}
-            {% if related_article.id != article.id %}
-            <div
-                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col group">
-                <a href="{% url 'articles:article' related_article.slug %}">
-                    {% thumbnail related_article.image "400x200" crop="center" as im %}
-                    <img src="{{ im.url }}" alt="{% trans 'Article Image' %}"
-                        class="w-full h-32 object-cover group-hover:opacity-90 transition border-b border-fb-lightBorder dark:border-fb-border">
-                    {% empty %}
-                    <div
-                        class="w-full h-32 bg-fb-lightSurfaceHover dark:bg-[#4e4f50] flex items-center justify-center border-b border-fb-lightBorder dark:border-fb-border group-hover:opacity-90 transition">
-                        <i class="fa-solid fa-newspaper text-3xl opacity-30"></i>
+            <!-- Featured Image -->
+            <div class="w-full border-t border-b border-fb-lightBorder dark:border-fb-border bg-fb-lightSurfaceHover dark:bg-[#4e4f50] flex justify-center">
+                {% thumbnail article.image "1200x600" as im %}
+                    <img src="{{ im.url }}"
+                         alt="{% trans 'Featured Image' %}"
+                         class="w-full max-h-[500px] object-cover">
+                {% empty %}
+                    <div class="py-12 flex flex-col items-center justify-center text-fb-lightMuted dark:text-fb-muted">
+                        <i class="fa-solid fa-newspaper text-5xl opacity-30 mb-3"></i>
+                        <span class="text-sm font-semibold">{% trans 'No featured image' %}</span>
                     </div>
-                    {% endthumbnail %}
-                </a>
-                <div class="p-3">
-                    <h5
-                        class="font-bold text-[15px] text-fb-lightText dark:text-fb-text leading-tight mb-1 group-hover:underline line-clamp-2">
-                        <a href="{% url 'articles:article' related_article.slug %}">
-                            {{ related_article.title|title }}
+                {% endthumbnail %}
+            </div>
+            <!-- Footer: Tags & Actions -->
+            <div class="p-3 sm:px-4 flex flex-col sm:flex-row justify-between items-center border-b border-fb-lightBorder dark:border-fb-border gap-3">
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-1.5 w-full sm:w-auto">
+                    {% for tag in article.tags.all %}
+                        <a href="{% url 'articles:list' %}tag/{{ tag }}"
+                           class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-[13px] font-semibold text-fb-lightText dark:text-fb-text px-2.5 py-1 rounded-md transition">
+                            #{{ tag }}
                         </a>
-                    </h5>
-                    <div
-                        class="text-[12px] text-fb-lightMuted dark:text-fb-muted flex items-center justify-between mt-2">
-                        <span>{{ related_article.timestamp|naturaltime }}</span>
+                    {% empty %}
+                        <span class="text-[13px] text-fb-lightMuted dark:text-fb-muted italic">{% trans 'No tags' %}</span>
+                    {% endfor %}
+                </div>
+                <!-- Share Buttons -->
+                <div class="flex items-center gap-1 w-full sm:w-auto justify-end">
+                    <span class="text-[13px] font-semibold text-fb-lightMuted dark:text-fb-muted mr-1">{% trans 'Share:' %}</span>
+                    <button onclick="window.open('https://twitter.com/intent/tweet?text={{ article.title|urlencode }}&url={{ request.build_absolute_uri }}', '_blank')"
+                            class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-[#1DA1F2] flex items-center justify-center transition">
+                        <i class="fa-brands fa-twitter"></i>
+                    </button>
+                    <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}', '_blank')"
+                            class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-[#1877F2] flex items-center justify-center transition">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </button>
+                    <button onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}', '_blank')"
+                            class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-[#0A66C2] flex items-center justify-center transition">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </button>
+                    <button id="copy-link"
+                            class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 text-fb-lightText dark:text-fb-text flex items-center justify-center transition"
+                            title="{% trans 'Copy Link' %}">
+                        <i class="fa-solid fa-link"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Interactivity (Like/Comment buttons static mockup - assuming no likes implemented for articles yet based on original template. But we'll add the UI structural consistency! It is actually not needed if not in original logic) -->
+        </article>
+        <!-- Comments Section -->
+        <section class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm mb-4 overflow-hidden p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-[17px] text-fb-lightText dark:text-fb-text flex items-center gap-2">
+                    {% get_comment_list for article as comment_list %}
+                    {% trans 'Comments' %}
+                    <span class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text px-2 py-0.5 rounded-full text-[13px]">{{ comment_list|length }}</span>
+                </h3>
+            </div>
+            <!-- Comment Form -->
+            <div class="mb-5 flex gap-2">
+                <img src="{{ request.user.get_picture }}"
+                     alt="User"
+                     class="w-10 h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border hidden sm:block">
+                <div class="flex-grow w-full comment-form-container">
+                    {% if user.is_authenticated %}
+                        {% get_comment_form for article as form %}
+                        <form action="{% comment_form_target %}"
+                              method="POST"
+                              class="bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] rounded-2xl p-1 pr-2 relative overflow-hidden flex flex-col">
+                            {% csrf_token %}
+                            {{ form.comment|as_crispy_field }}
+                            <div class="hidden">
+                                {{ form.honeyspot }}
+                                {{ form.content_type }}
+                                {{ form.object_pk }}
+                                {{ form.timestamp }}
+                                {{ form.security_hash }}
+                            </div>
+                            <input type="hidden"
+                                   name="next"
+                                   value="{% url 'articles:article' article.slug %}" />
+                            <!-- Custom Submit Button pinned to right side -->
+                            <div class="flex justify-end pr-2 pb-2">
+                                <button type="submit"
+                                        class="bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-fb-primary p-2 rounded-full transition flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="{% trans 'Post Comment' %}">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-xl p-4 text-center text-fb-lightText dark:text-fb-text text-sm w-full">
+                            {% trans 'Please' %} <a href="{% url 'account_login' %}"
+    class="text-fb-primary font-semibold hover:underline">{% trans 'log in' %}</a> {% trans 'to leave a comment.' %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Comments List -->
+            {% if comment_list %}
+                <div class="flex flex-col gap-3">
+                    {% for comment in comment_list %}
+                        <div class="flex gap-2 group">
+                            <a href="{% url 'users:detail' comment.user.username %}"
+                               class="flex-shrink-0 mt-0.5">
+                                <img src="{{ comment.user.get_picture }}"
+                                     class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border"
+                                     alt="{{ comment.user.username }}">
+                            </a>
+                            <div class="flex flex-col min-w-0 max-w-full">
+                                <div class="bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] px-3.5 py-2.5 rounded-2xl max-w-fit break-words">
+                                    <h6 class="font-bold text-[13px] text-fb-lightText dark:text-fb-text leading-tight mb-0.5 hover:underline cursor-pointer">
+                                        <a href="{% url 'users:detail' comment.user.username %}">
+                                            {{ comment.user.get_profile_name|title|default:comment.user.username }}
+                                        </a>
+                                    </h6>
+                                    <div class="text-[14px] text-fb-lightText dark:text-fb-text leading-snug">{{ comment.comment|linebreaksbr }}</div>
+                                </div>
+                                <!-- Micro-actions below comment -->
+                                <div class="flex items-center gap-3 px-3 mt-1 text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">
+                                    <span>{{ comment.submit_date|naturaltime }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-6 text-fb-lightMuted dark:text-fb-muted text-sm font-semibold">
+                    {% trans 'No comments yet. Be the first to comment!' %}
+                </div>
+            {% endif %}
+        </section>
+        <!-- Related Articles -->
+        {% with related_articles=article.user.article_set.all %}
+            <!-- Check if there are related articles (count > 1 because self is included in QS) -->
+            {% if related_articles.count > 1 %}
+                <section class="mt-8 mb-4">
+                    <h3 class="font-bold text-[17px] text-fb-lightText dark:text-fb-text mb-3 px-1 border-b pb-2 border-fb-lightBorder dark:border-fb-border">
+                        {% trans 'More from this author' %}
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 text-wrap gap-4">
+                        {% for related_article in related_articles|slice:":3" %}
+                            {% if related_article.id != article.id %}
+                                <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col group">
+                                    <a href="{% url 'articles:article' related_article.slug %}">
+                                        {% thumbnail related_article.image "400x200" crop="center" as im %}
+                                            <img src="{{ im.url }}"
+                                                 alt="{% trans 'Article Image' %}"
+                                                 class="w-full h-32 object-cover group-hover:opacity-90 transition border-b border-fb-lightBorder dark:border-fb-border">
+                                        {% empty %}
+                                            <div class="w-full h-32 bg-fb-lightSurfaceHover dark:bg-[#4e4f50] flex items-center justify-center border-b border-fb-lightBorder dark:border-fb-border group-hover:opacity-90 transition">
+                                                <i class="fa-solid fa-newspaper text-3xl opacity-30"></i>
+                                            </div>
+                                        {% endthumbnail %}
+                                    </a>
+                                    <div class="p-3">
+                                        <h5 class="font-bold text-[15px] text-fb-lightText dark:text-fb-text leading-tight mb-1 group-hover:underline line-clamp-2">
+                                            <a href="{% url 'articles:article' related_article.slug %}">{{ related_article.title|title }}</a>
+                                        </h5>
+                                        <div class="text-[12px] text-fb-lightMuted dark:text-fb-muted flex items-center justify-between mt-2">
+                                            <span>{{ related_article.timestamp|naturaltime }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
-                </div>
-            </div>
+                </section>
             {% endif %}
-            {% endfor %}
-        </div>
-    </section>
-    {% endif %}
-    {% endwith %}
-
-</div>
+        {% endwith %}
+    </div>
 {% endblock content %}
-
 {% block right_sidebar_widgets %}
-<!-- Author Card -->
-<div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4 text-center">
-    <!-- Cover -->
-    <div class="h-16 bg-gradient-to-tr from-blue-500 to-indigo-600"></div>
-    <div class="relative -mt-8 mb-2">
-        <img src="{{ article.user.get_picture }}"
-            class="w-16 h-16 rounded-full border-[3px] border-fb-lightSurface dark:border-fb-surface object-cover mx-auto"
-            alt="{{ article.user.username }}">
-    </div>
-    <div class="px-4 pb-4">
-        <h3 class="font-bold text-fb-lightText dark:text-fb-text text-[16px] leading-tight mb-1 hover:underline">
-            <a href="{% url 'users:detail' article.user.username %}">
-                {{ article.user.get_profile_name|title|default:article.user.username }}
-            </a>
-        </h3>
-        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-3 mx-auto leading-snug break-words">
-            {% if article.user.bio %}
-            {{ article.user.bio|truncatewords:20 }}
+    <!-- Author Card -->
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4 text-center">
+        <!-- Cover -->
+        <div class="h-16 bg-gradient-to-tr from-blue-500 to-indigo-600"></div>
+        <div class="relative -mt-8 mb-2">
+            <img src="{{ article.user.get_picture }}"
+                 class="w-16 h-16 rounded-full border-[3px] border-fb-lightSurface dark:border-fb-surface object-cover mx-auto"
+                 alt="{{ article.user.username }}">
+        </div>
+        <div class="px-4 pb-4">
+            <h3 class="font-bold text-fb-lightText dark:text-fb-text text-[16px] leading-tight mb-1 hover:underline">
+                <a href="{% url 'users:detail' article.user.username %}">
+                    {{ article.user.get_profile_name|title|default:article.user.username }}
+                </a>
+            </h3>
+            <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-3 mx-auto leading-snug break-words">
+                {% if article.user.bio %}
+                    {{ article.user.bio|truncatewords:20 }}
+                {% else %}
+                    {% trans 'Writer at Antisocial Network' %}
+                {% endif %}
+            </p>
+            <div class="flex justify-center gap-6 mb-4 mt-2">
+                <div class="text-center">
+                    <div class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-none mb-0.5">
+                        {{ article.user.article_set.count }}
+                    </div>
+                    <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Articles' %}</div>
+                </div>
+                <div class="text-center">
+                    <div class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-none mb-0.5">
+                        {{ article.user.followers.count }}
+                    </div>
+                    <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Followers' %}</div>
+                </div>
+            </div>
+            {% if request.user != article.user %}
+                <div class="flex gap-2 justify-center pb-2">
+                    {% if request.user in article.user.followers.all %}
+                        <a href="{% url 'users:follow_user' article.user.id %}"
+                           class="flex-1 bg-fb-primary hover:bg-blue-600 transition px-3 py-1.5 rounded-md font-semibold text-[13px] flex items-center justify-center gap-1.5 text-white"
+                           id="follow_user">
+                            <i class="fa-solid fa-user-check"></i>{% trans 'Following' %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'users:follow_user' article.user.id %}"
+                           class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-md font-semibold text-[13px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text"
+                           id="follow_user">
+                            <i class="fa-solid fa-user-plus"></i>{% trans 'Follow' %}
+                        </a>
+                    {% endif %}
+                </div>
             {% else %}
-            {% trans 'Writer at Antisocial Network' %}
+                <div class="pb-2">
+                    <a href="{% url 'users:update' %}"
+                       class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-md font-semibold text-[13px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text">
+                        <i class="fa-solid fa-user"></i> {% trans 'My Profile' %}
+                    </a>
+                </div>
             {% endif %}
+        </div>
+    </div>
+    <!-- Write Article Ad Widget -->
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 p-4 text-center">
+        <div class="text-[14px] font-bold text-fb-lightText dark:text-fb-text mb-2">
+            {% trans 'Have something to share?' %}
+        </div>
+        <p class="text-[12px] text-fb-lightMuted dark:text-fb-muted mb-3">
+            {% trans 'Write an article and share it with your professional network.' %}
         </p>
-
-        <div class="flex justify-center gap-6 mb-4 mt-2">
-            <div class="text-center">
-                <div class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-none mb-0.5">{{ article.user.article_set.count }}</div>
-                <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Articles' %}
-                </div>
-            </div>
-            <div class="text-center">
-                <div class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-none mb-0.5">{{ article.user.followers.count }}</div>
-                <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Followers' %}
-                </div>
-            </div>
-        </div>
-
-        {% if request.user != article.user %}
-        <div class="flex gap-2 justify-center pb-2">
-            {% if request.user in article.user.followers.all %}
-            <a href="{% url 'users:follow_user' article.user.id %}"
-                class="flex-1 bg-fb-primary hover:bg-blue-600 transition px-3 py-1.5 rounded-md font-semibold text-[13px] flex items-center justify-center gap-1.5 text-white"
-                id="follow_user">
-                <i class="fa-solid fa-user-check"></i>{% trans 'Following' %}
-            </a>
-            {% else %}
-            <a href="{% url 'users:follow_user' article.user.id %}"
-                class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-md font-semibold text-[13px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text"
-                id="follow_user">
-                <i class="fa-solid fa-user-plus"></i>{% trans 'Follow' %}
-            </a>
-            {% endif %}
-        </div>
-        {% else %}
-        <div class="pb-2">
-            <a href="{% url 'users:update' %}"
-                class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-md font-semibold text-[13px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text">
-                <i class="fa-solid fa-user"></i> {% trans 'My Profile' %}
-            </a>
-        </div>
-        {% endif %}
+        <a class="w-full bg-fb-primary hover:bg-blue-600 transition px-4 py-2 rounded-md font-semibold text-sm flex justify-center items-center gap-2 text-white"
+           href="{% url 'articles:write_new' %}">
+            <i class="fa-solid fa-pen-to-square"></i> {% trans 'Write an Article' %}
+        </a>
     </div>
-</div>
-
-<!-- Write Article Ad Widget -->
-<div
-    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 p-4 text-center">
-    <div class="text-[14px] font-bold text-fb-lightText dark:text-fb-text mb-2">{% trans 'Have something to share?' %}
-    </div>
-    <p class="text-[12px] text-fb-lightMuted dark:text-fb-muted mb-3">{% trans 'Write an article and share it with your professional network.' %}</p>
-    <a class="w-full bg-fb-primary hover:bg-blue-600 transition px-4 py-2 rounded-md font-semibold text-sm flex justify-center items-center gap-2 text-white"
-        href="{% url 'articles:write_new' %}">
-        <i class="fa-solid fa-pen-to-square"></i> {% trans 'Write an Article' %}
-    </a>
-</div>
-
 {% endblock right_sidebar_widgets %}
-
 {% block modal %}
-<!-- Tailwind Form overrides for Crispy Forms rendering in comments -->
-<style>
+    <!-- Tailwind Form overrides for Crispy Forms rendering in comments -->
+    <style>
     .comment-form-container .form-group {
         margin-bottom: 0;
         width: 100%;
@@ -361,9 +330,8 @@
     .comment-form-container .asteriskField {
         display: none;
     }
-</style>
-
-<script>
+    </style>
+    <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Copy article link
         const copyLinkButton = document.getElementById('copy-link');
@@ -416,5 +384,5 @@
             });
         });
     });
-</script>
+    </script>
 {% endblock modal %}
