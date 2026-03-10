@@ -5,266 +5,220 @@
 {% block title %}<title>{% trans 'Create New Group' %}</title>{% endblock %}
 
 {% block head %}
-    <link href="{% static 'css/groups.css' %}" rel="stylesheet">
+<link href="{% static 'css/groups.css' %}" rel="stylesheet">
 {% endblock head %}
 
 {% block content %}
-    <div class="container form-container">
-        <div class="section-header">
-            <h1 class="section-title">{% trans 'Create a New Group' %}</h1>
-        </div>
+<div class="container create-group-container">
+    <div class="section-header">
+        <h1 class="section-title">{% trans 'Create a New Group' %}</h1>
+    </div>
 
-        <div class="row">
-            <!-- Form Column -->
-            <div class="col-lg-8">
-                <div class="card form-card">
-                    <div class="card-header">
-                        <h2 class="card-title">{% trans 'Group Details' %}</h2>
-                    </div>
-                    <div class="card-body">
-                        <form action="{% url 'groups:new_group' %}" method="post" enctype="multipart/form-data" id="group-form">
-                            {% csrf_token %}
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-8">
+            <div class="card create-group-card">
+                <div class="card-body">
+                    <form action="{% url 'groups:new_group' %}" method="post" enctype="multipart/form-data"
+                        id="group-form">
+                        {% csrf_token %}
 
-                            <div class="mb-4">
-                                {{ group_form.title|as_crispy_field }}
-                            </div>
+                        <div class="mb-4">
+                            {{ group_form.title|as_crispy_field }}
+                        </div>
 
-                            <div class="mb-4">
-                                {{ group_form.description|as_crispy_field }}
-                            </div>
+                        <div class="mb-4">
+                            {{ group_form.description|as_crispy_field }}
+                        </div>
 
-                            <div class="mb-4">
-                                <input type="file" class="form-control d-none" id="{{ group_form.cover.id_for_label }}" name="cover" accept="image/*">
+                        <div class="mb-4">
+                            <input type="file" class="form-control d-none" id="{{ group_form.cover.id_for_label }}"
+                                name="cover" accept="image/*">
 
-                                <div class="cover-upload-area" id="cover-upload-area">
-                                    <div class="cover-upload-icon">
-                                        <i class="fa-solid fa-image"></i>
-                                    </div>
-                                    <h5 class="cover-upload-text">{% trans 'Upload a cover photo' %}</h5>
-                                    <p class="cover-upload-hint">{% trans 'Drag & drop an image here, or click to select a file' %}</p>
-                                    <button type="button" class="btn btn-outline-primary">{% trans 'Choose File' %}</button>
-                                </div>
-
-                                <div class="cover-preview" id="cover-preview">
-                                    <img src="" alt="Cover Preview" id="preview-image">
-                                </div>
-
-                                <div class="form-text">{% trans 'Recommended: 900 × 300 pixels. Max size: 2MB.' %}</div>
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fa-solid fa-users me-2"></i>{% trans 'Create Group' %}
-                                </button>
-                                <a href="{% url 'groups:list' %}" class="btn btn-outline-secondary">{% trans 'Cancel' %}</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Guidelines Column -->
-            <div class="col-lg-4">
-                <!-- Guidelines Card -->
-                <div class="card guidelines-card">
-                    <div class="card-header">
-                        <i class="fa-solid fa-lightbulb me-2"></i>{% trans 'Group Creation Guidelines' %}
-                    </div>
-                    <div class="card-body">
-                        <ul class="guidelines-list">
-                            <li class="guidelines-item">
-                                <div class="guidelines-item-icon">
-                                    <i class="fa-solid fa-bullseye"></i>
-                                </div>
-                                <div class="guidelines-item-content">
-                                    <h5>{% trans 'Be Specific' %}</h5>
-                                    <p>{% trans 'Choose a clear title that accurately represents your group purpose.' %}</p>
-                                </div>
-                            </li>
-                            <li class="guidelines-item">
-                                <div class="guidelines-item-icon">
-                                    <i class="fa-solid fa-pen"></i>
-                                </div>
-                                <div class="guidelines-item-content">
-                                    <h5>{% trans 'Detailed Description' %}</h5>
-                                    <p>{% trans 'Write a comprehensive description to help users understand what your group offers.' %}</p>
-                                </div>
-                            </li>
-                            <li class="guidelines-item">
-                                <div class="guidelines-item-icon">
+                            <div class="cover-upload-area" id="cover-upload-area">
+                                <div class="cover-upload-icon">
                                     <i class="fa-solid fa-image"></i>
                                 </div>
-                                <div class="guidelines-item-content">
-                                    <h5>{% trans 'Add a Cover' %}</h5>
-                                    <p>{% trans 'Groups with cover images get 30% more engagement.' %}</p>
-                                </div>
-                            </li>
-                            <li class="guidelines-item">
-                                <div class="guidelines-item-icon">
-                                    <i class="fa-solid fa-user-shield"></i>
-                                </div>
-                                <div class="guidelines-item-content">
-                                    <h5>{% trans 'Group Admins' %}</h5>
-                                    <p>{% trans 'You will automatically become the first admin. You can add up to 2 more later.' %}</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                                <h5 class="cover-upload-text">{% trans 'Upload a cover photo' %}</h5>
+                                <p class="cover-upload-hint">{% trans 'Drag & drop an image here, or click to select a file' %}</p>
+                                <button type="button" class="btn btn-outline-primary">{% trans 'Choose File' %}</button>
+                            </div>
 
-                <!-- What's Next Card -->
-                <div class="card guidelines-card">
-                    <div class="card-header">
-                        <i class="fa-solid fa-circle-question me-2"></i>{% trans 'What Happens Next?' %}
-                    </div>
-                    <div class="card-body">
-                        <ol class="ps-3">
-                            <li class="mb-2">{% trans 'You will be redirected to your new group page.' %}</li>
-                            <li class="mb-2">{% trans 'Start by creating your first post to get the conversation going.' %}</li>
-                            <li class="mb-2">{% trans 'Invite friends to join and participate in your group.' %}</li>
-                            <li class="mb-2">{% trans 'Customize group settings and moderate content as needed.' %}</li>
-                        </ol>
-                    </div>
+                            <div class="cover-preview" id="cover-preview">
+                                <img src="" alt="Cover Preview" id="preview-image">
+                            </div>
+
+                            <div class="form-text">{% trans 'Recommended: 900 × 300 pixels. Max size: 2MB.' %}</div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary rounded-pill btn-lg w-100"
+                                style="background-color: var(--bs-primary); border: none;">
+                                <i class="fa-solid fa-users me-2"></i>{% trans 'Create Group' %}
+                            </button>
+                            <a href="{% url 'groups:list' %}" class="btn btn-outline-secondary rounded-pill w-100">{% trans 'Cancel' %}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guidelines Column -->
+        <div class="col-lg-4">
+            <!-- Guidelines Card -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-lightbulb me-2"></i>{% trans 'Group Guidelines' %}
+                </div>
+                <div class="card-body">
+                    <ul class="tips-list">
+                        <li>{% trans 'Choose a clear title that accurately represents your group.' %}</li>
+                        <li>{% trans 'Write a comprehensive description.' %}</li>
+                        <li>{% trans 'Groups with cover images get more engagement.' %}</li>
+                        <li>{% trans 'You will automatically become the first admin. You can add up to 2 more later.' %}
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}
 
 {% block modal %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const coverInput = document.getElementById('{{ group_form.cover.id_for_label }}');
-            const uploadArea = document.getElementById('cover-upload-area');
-            const previewContainer = document.getElementById('cover-preview');
-            const previewImage = document.getElementById('preview-image');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const coverInput = document.getElementById('{{ group_form.cover.id_for_label }}');
+        const uploadArea = document.getElementById('cover-upload-area');
+        const previewContainer = document.getElementById('cover-preview');
+        const previewImage = document.getElementById('preview-image');
 
-            // Handle click on upload area
-            uploadArea.addEventListener('click', function() {
-                coverInput.click();
-            });
+        // Handle click on upload area
+        uploadArea.addEventListener('click', function () {
+            coverInput.click();
+        });
 
-            // Handle file selection
-            coverInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const file = this.files[0];
+        // Handle file selection
+        coverInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
 
-                    // Check file size
-                    if (file.size > 2 * 1024 * 1024) {
-                        alert("{% trans 'Image size should be less than 2 megabytes.' %}");
-                        this.value = '';
-                        return;
-                    }
-
-                    // Display preview
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImage.src = e.target.result;
-                        previewContainer.style.display = 'block';
-                        uploadArea.style.display = 'none';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // Handle drag and drop
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, highlight, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, unhighlight, false);
-            });
-
-            function highlight() {
-                uploadArea.classList.add('bg-light');
-            }
-
-            function unhighlight() {
-                uploadArea.classList.remove('bg-light');
-            }
-
-            uploadArea.addEventListener('drop', handleDrop, false);
-
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-
-                if (files && files.length) {
-                    coverInput.files = files;
-
-                    // Trigger change event manually
-                    const event = new Event('change', { bubbles: true });
-                    coverInput.dispatchEvent(event);
-                }
-            }
-
-            // Handle form submission
-            const groupForm = document.getElementById('group-form');
-            groupForm.addEventListener('submit', function(event) {
-                const titleInput = document.querySelector('[name="title"]');
-                const descriptionInput = document.querySelector('[name="description"]');
-
-                // Basic validation
-                let isValid = true;
-
-                if (!titleInput.value.trim()) {
-                    isValid = false;
-                    titleInput.classList.add('is-invalid');
-                } else {
-                    titleInput.classList.remove('is-invalid');
+                // Check file size
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("{% trans 'Image size should be less than 2 megabytes.' %}");
+                    this.value = '';
+                    return;
                 }
 
-                if (!descriptionInput.value.trim()) {
-                    isValid = false;
-                    descriptionInput.classList.add('is-invalid');
-                } else {
-                    descriptionInput.classList.remove('is-invalid');
-                }
-
-                if (!isValid) {
-                    event.preventDefault();
-                    alert("{% trans 'Please fill in all required fields.' %}");
-                }
-            });
-
-            // Handle light mode specific styling
-            function updateThemeStyles() {
-                if (document.documentElement.getAttribute('data-theme') === 'light') {
-                    document.querySelectorAll('.bg-dark').forEach(el => {
-                        el.classList.remove('bg-dark');
-                        el.classList.add('bg-light');
-                    });
-
-                    document.querySelectorAll('.bg-opacity-10').forEach(el => {
-                        el.classList.remove('bg-opacity-10');
-                        el.classList.add('bg-opacity-25');
-                    });
-                }
-            }
-
-            // Run on page load
-            updateThemeStyles();
-
-            // Listen for theme changes
-            document.addEventListener('themeChanged', updateThemeStyles);
-
-            // Hook into the dark mode switch
-            const darkSwitch = document.getElementById('darkSwitch');
-            if (darkSwitch) {
-                darkSwitch.addEventListener('change', function() {
-                    setTimeout(updateThemeStyles, 50);
-                });
+                // Display preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    uploadArea.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
             }
         });
-    </script>
+
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            uploadArea.classList.add('bg-light');
+        }
+
+        function unhighlight() {
+            uploadArea.classList.remove('bg-light');
+        }
+
+        uploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files && files.length) {
+                coverInput.files = files;
+
+                // Trigger change event manually
+                const event = new Event('change', { bubbles: true });
+                coverInput.dispatchEvent(event);
+            }
+        }
+
+        // Handle form submission
+        const groupForm = document.getElementById('group-form');
+        groupForm.addEventListener('submit', function (event) {
+            const titleInput = document.querySelector('[name="title"]');
+            const descriptionInput = document.querySelector('[name="description"]');
+
+            // Basic validation
+            let isValid = true;
+
+            if (!titleInput.value.trim()) {
+                isValid = false;
+                titleInput.classList.add('is-invalid');
+            } else {
+                titleInput.classList.remove('is-invalid');
+            }
+
+            if (!descriptionInput.value.trim()) {
+                isValid = false;
+                descriptionInput.classList.add('is-invalid');
+            } else {
+                descriptionInput.classList.remove('is-invalid');
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+                alert("{% trans 'Please fill in all required fields.' %}");
+            }
+        });
+
+        // Handle light mode specific styling
+        function updateThemeStyles() {
+            if (document.documentElement.getAttribute('data-theme') === 'light') {
+                document.querySelectorAll('.bg-dark').forEach(el => {
+                    el.classList.remove('bg-dark');
+                    el.classList.add('bg-light');
+                });
+
+                document.querySelectorAll('.bg-opacity-10').forEach(el => {
+                    el.classList.remove('bg-opacity-10');
+                    el.classList.add('bg-opacity-25');
+                });
+            }
+        }
+
+        // Run on page load
+        updateThemeStyles();
+
+        // Listen for theme changes
+        document.addEventListener('themeChanged', updateThemeStyles);
+
+        // Hook into the dark mode switch
+        const darkSwitch = document.getElementById('darkSwitch');
+        if (darkSwitch) {
+            darkSwitch.addEventListener('change', function () {
+                setTimeout(updateThemeStyles, 50);
+            });
+        }
+    });
+</script>
 {% endblock modal %}

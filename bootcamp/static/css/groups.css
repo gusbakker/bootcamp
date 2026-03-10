@@ -12,17 +12,20 @@
 }
 
 .btn-create-group {
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     padding: 0.6rem 1.2rem;
-    box-shadow: 0 2px 10px rgba(var(--bs-primary-rgb), 0.2);
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    background-color: var(--bs-primary);
+    color: white;
+    border: none;
 }
 
 .btn-create-group:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.3);
+    background-color: #166fe5;
+    /* Slightly darker Facebook blue */
+    color: white;
 }
 
 .btn-create-group i {
@@ -500,15 +503,15 @@
 
 .create-group-card {
     background-color: var(--bs-card-bg);
-    border-radius: 1rem;
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+    border: 1px solid var(--bs-border-color);
+    box-shadow: none;
     overflow: hidden;
     margin-bottom: 1.5rem;
 }
 
 .create-group-card .card-header {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: var(--bs-card-bg);
     border-bottom: 1px solid var(--bs-border-color);
     padding: 1.25rem;
 }
@@ -523,6 +526,23 @@
     padding: 2rem;
 }
 
+/* Sidebar Tips List (mirrors articles.css) */
+.tips-list {
+    padding-left: 1.5rem;
+    margin-bottom: 0;
+}
+
+.tips-list li {
+    margin-bottom: 0.75rem;
+    color: var(--bs-text-muted);
+}
+
+.tips-list li:last-child {
+    margin-bottom: 0;
+}
+
+
+
 /* ==========================================================================
    Group Settings
    ========================================================================== */
@@ -533,16 +553,16 @@
 }
 
 .settings-card {
-    border-radius: 1rem;
-    overflow: hidden;
     background-color: var(--bs-card-bg);
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+    border: 1px solid var(--bs-border-color);
+    box-shadow: none;
+    overflow: hidden;
     margin-bottom: 1.5rem;
 }
 
 .settings-card .card-header {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: var(--bs-card-bg);
     border-bottom: 1px solid var(--bs-border-color);
     padding: 1.25rem;
 }
@@ -575,15 +595,15 @@
 
 .cover-card {
     background-color: var(--bs-card-bg);
-    border-radius: 1rem;
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+    border: 1px solid var(--bs-border-color);
+    box-shadow: none;
     overflow: hidden;
     margin-bottom: 1.5rem;
 }
 
 .cover-card .card-header {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: var(--bs-card-bg);
     border-bottom: 1px solid var(--bs-border-color);
     padding: 1.25rem;
 }
