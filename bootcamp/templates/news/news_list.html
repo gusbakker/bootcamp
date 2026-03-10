@@ -12,34 +12,6 @@
         {% include 'groups/includes/group_header.html' %}
     {% endif %}
     <div class="space-y-4">
-        <!-- Stories Section (Static sample for layout matching) -->
-        <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar pb-2">
-            <!-- Create story -->
-            <div class="relative w-28 h-48 rounded-xl bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border flex-shrink-0 cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition overflow-hidden group shadow-sm">
-                <img src="{{user.get_picture}}"
-                     class="w-full h-32 object-cover group-hover:scale-105 transition duration-300">
-                <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-fb-primary rounded-full border-4 border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white z-10">
-                    <i class="fa-solid fa-plus font-bold"></i>
-                </div>
-                <p class="absolute bottom-2 w-full text-center text-sm font-semibold text-fb-lightText dark:text-fb-text z-10">
-                    {% trans 'Create story' %}
-                </p>
-            </div>
-            <!-- Other friends' stories -->
-            <div class="relative w-28 h-48 rounded-xl bg-gray-300 flex-shrink-0 overflow-hidden cursor-pointer group shadow-sm">
-                <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff&size=512"
-                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition z-0"></div>
-                <div class="absolute top-3 left-3 w-10 h-10 rounded-full border-4 border-fb-primary overflow-hidden z-10">
-                    <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=random"
-                         class="w-full h-full object-cover">
-                </div>
-                <p class="absolute bottom-2 left-2 text-white font-semibold text-sm z-10 text-shadow cursor-default">
-                    Jane
-                    Doe
-                </p>
-            </div>
-        </div>
         <!-- Create Post Box -->
         <div class="bg-fb-lightSurface dark:bg-fb-surface rounded-xl p-4 shadow-sm border border-fb-lightBorder dark:border-fb-border flex flex-col gap-3">
             <div class="flex items-center gap-3">

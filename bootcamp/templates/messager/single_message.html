@@ -1,12 +1,32 @@
 {% load static i18n humanize %}
 {% load thumbnail %}
-<div class="message-item {% if message.sender == current_user %}me{% else %}them{% endif %}">
-    <img src="{{message.sender.get_picture}}"
-         class="picture"
-         alt="{% trans 'User Image' %}"
-         title="{{message.sender.get_profile_name|title}}">
-    <div class="message-content">
-        <div class="message-bubble">{{message.message|linebreaksbr}}</div>
-        <div class="timestamp">{{message.timestamp|date:'N d G:i'}}</div>
+<div
+    class="flex w-full {% if message.sender == current_user %}justify-end{% else %}justify-start{% endif %} group/message mb-1 last:mb-0">
+    {% if message.sender != current_user %}
+    <div class="flex-shrink-0 mr-2 self-end mb-1">
+        <a href="{% url 'users:detail' message.sender.username %}" title="{{message.sender.get_profile_name|title}}">
+            <img src="{{message.sender.get_picture}}"
+                class="w-7 h-7 rounded-full object-cover shadow-sm border border-black/5 dark:border-white/5"
+                alt="{% trans 'User Image' %}">
+        </a>
+    </div>
+    {% endif %}
+
+    <div
+        class="flex flex-col {% if message.sender == current_user %}items-end{% else %}items-start{% endif %} max-w-[70%] sm:max-w-[75%] relative">
+        <div class="relative px-3.5 py-2 text-[15px] break-words shadow-sm leading-[1.35]
+                    {% if message.sender == current_user %}
+                        bg-fb-primary text-white rounded-2xl rounded-br-sm
+                    {% else %}
+                        bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text rounded-2xl rounded-bl-sm border border-fb-lightBorder/30 dark:border-fb-border/30
+                    {% endif %}">
+            {{message.message|linebreaksbr}}
+        </div>
+
+        <!-- Hover Timestamp -->
+        <div
+            class="text-[11px] text-fb-lightMuted dark:text-fb-muted mt-1 opacity-0 transition-opacity duration-200 group-hover/message:opacity-100 absolute {% if message.sender == current_user %}-left-20 top-1/2 -translate-y-1/2 pr-2{% else %}-right-20 top-1/2 -translate-y-1/2 pl-2{% endif %} whitespace-nowrap pointer-events-none">
+            {{message.timestamp|date:'N d G:i'}}
+        </div>
     </div>
 </div>
