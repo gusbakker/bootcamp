@@ -32,7 +32,7 @@
             <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-3 mb-4 flex items-center gap-2">
                 <span class="text-fb-lightMuted dark:text-fb-muted text-sm font-semibold">{% trans 'Filtered by tag:' %}</span>
                 <span class="bg-fb-primary text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
-                    {{ view.kwargs.tag }}
+                    {{view.kwargs.tag}}
                     <a href="{% url 'articles:list' %}"
                        class="hover:text-blue-200 transition">
                         <i class="fa-solid fa-times"></i>
@@ -49,22 +49,22 @@
                         <div class="p-4 flex flex-row items-center gap-3">
                             <a href="{% url 'users:detail' article.user.username %}"
                                class="flex-shrink-0">
-                                <img src="{{ article.user.get_picture }}"
-                                     alt="{{ article.user.username }}"
+                                <img src="{{article.user.get_picture}}"
+                                     alt="{{article.user.username}}"
                                      class="w-10 h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border">
                             </a>
                             <div class="flex-grow">
                                 <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5 hover:underline">
                                     <a href="{% url 'users:detail' article.user.username %}">
-                                        {{ article.user.get_profile_name|title|default:article.user.username }}
+                                        {{article.user.get_profile_name|title|default:article.user.username}}
                                     </a>
                                 </h5>
                                 <div class="flex items-center text-[13px] text-fb-lightMuted dark:text-fb-muted">
                                     {% if article.user.job_title %}
-                                        <span class="truncate max-w-[150px]">{{ article.user.job_title }}</span>
+                                        <span class="truncate max-w-[150px]">{{article.user.job_title}}</span>
                                         <span class="mx-1.5">•</span>
                                     {% endif %}
-                                    <span>{{ article.timestamp|naturaltime }}</span>
+                                    <span>{{article.timestamp|naturaltime}}</span>
                                     <span class="mx-1.5">•</span>
                                     <i class="fa-solid fa-earth-americas text-[11px]"></i>
                                 </div>
@@ -73,16 +73,16 @@
                         <!-- Article Content Preview -->
                         <div class="px-4 pb-3">
                             <h2 class="text-[1.25rem] font-bold text-fb-lightText dark:text-fb-text hover:underline mb-1.5 leading-tight">
-                                <a href="{% url 'articles:article' article.slug %}">{{ article.title|title }}</a>
+                                <a href="{% url 'articles:article' article.slug %}">{{article.title|title}}</a>
                             </h2>
                             <p class="text-[15px] text-fb-lightText dark:text-fb-text leading-snug">
-                                {{ article.get_markdown|safe|striptags|truncatechars:180 }}
+                                {{article.get_markdown|safe|striptags|truncatechars:180}}
                             </p>
                         </div>
                         <!-- Article Image -->
                         <a href="{% url 'articles:article' article.slug %}" class="block group">
                             {% thumbnail article.image "750x400" crop="center" as im %}
-                                <img src="{{ im.url }}"
+                                <img src="{{im.url}}"
                                      alt="{% trans 'Article Image' %}"
                                      class="w-full h-auto max-h-[400px] object-cover group-hover:opacity-95 transition">
                             {% empty %}
@@ -109,7 +109,7 @@
                         {% if page_obj.has_previous %}
                             <li>
                                 <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
-                                   href="?page={{ page_obj.previous_page_number }}"
+                                   href="?page={{page_obj.previous_page_number}}"
                                    aria-label="Previous">
                                     <i class="fa-solid fa-chevron-left text-xs"></i>
                                 </a>
@@ -124,19 +124,19 @@
                         {% for i in paginator.page_range %}
                             {% if page_obj.number == i %}
                                 <li>
-                                    <span class="px-3 py-1.5 rounded-md border border-fb-primary bg-fb-primary text-white font-semibold flex items-center justify-center">{{ i }}</span>
+                                    <span class="px-3 py-1.5 rounded-md border border-fb-primary bg-fb-primary text-white font-semibold flex items-center justify-center">{{i}}</span>
                                 </li>
                             {% else %}
                                 <li>
                                     <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition font-semibold flex items-center justify-center"
-                                       href="?page={{ i }}">{{ i }}</a>
+                                       href="?page={{i}}">{{i}}</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
                         {% if page_obj.has_next %}
                             <li>
                                 <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
-                                   href="?page={{ page_obj.next_page_number }}"
+                                   href="?page={{page_obj.next_page_number}}"
                                    aria-label="Next">
                                     <i class="fa-solid fa-chevron-right text-xs"></i>
                                 </a>
@@ -180,13 +180,13 @@
                 {% if tag_props.slug == view.kwargs.tag %}
                     <a href="{% url 'articles:list' %}"
                        class="inline-block bg-fb-primary text-white hover:brightness-95 transition px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5">
-                        {{ tag }} <span class="opacity-80 font-normal">({{ tag_props.count }})</span>
+                        {{tag}} <span class="opacity-80 font-normal">({{tag_props.count}})</span>
                         <i class="fa-solid fa-times ml-1"></i>
                     </a>
                 {% else %}
-                    <a href="{% url 'articles:list' %}tag/{{ tag_props.slug }}"
+                    <a href="{% url 'articles:list' %}tag/{{tag_props.slug}}"
                        class="inline-block bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border transition px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5">
-                        {{ tag }} <span class="opacity-60 font-normal">({{ tag_props.count }})</span>
+                        {{tag}} <span class="opacity-60 font-normal">({{tag_props.count}})</span>
                     </a>
                 {% endif %}
             {% empty %}
@@ -207,7 +207,7 @@
                    class="flex items-center p-3 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
                     <div class="flex-shrink-0 mr-3">
                         {% thumbnail popular_article.image "100x100" crop="center" as im %}
-                            <img src="{{ im.url }}"
+                            <img src="{{im.url}}"
                                  class="rounded-lg w-14 h-14 object-cover border border-fb-lightBorder dark:border-fb-border shadow-sm group-hover:brightness-90 transition"
                                  alt="">
                         {% empty %}
@@ -218,12 +218,12 @@
                     </div>
                     <div>
                         <h6 class="font-bold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover:underline mb-1">
-                            {{ popular_article.title|title|truncatechars:45 }}
+                            {{popular_article.title|title|truncatechars:45}}
                         </h6>
                         <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted font-medium">
-                            <span>{{ popular_article.user.get_profile_name|title|default:popular_article.user.username }}</span>
+                            <span>{{popular_article.user.get_profile_name|title|default:popular_article.user.username}}</span>
                             <span class="mx-1.5">•</span>
-                            <span>{{ popular_article.timestamp|naturaltime }}</span>
+                            <span>{{popular_article.timestamp|naturaltime}}</span>
                         </div>
                     </div>
                 </a>

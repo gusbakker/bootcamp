@@ -7,8 +7,8 @@
             <a href="{% url 'groups:group' group.slug %}"
                class="h-24 sm:h-32 w-full block overflow-hidden relative bg-fb-lightSurfaceHover dark:bg-[#4e4f50]">
                 {% if group.get_picture %}
-                    <img src="{{ group.get_picture }}"
-                         alt="{{ group.title }}"
+                    <img src="{{group.get_picture}}"
+                         alt="{{group.title}}"
                          class="w-full h-full object-cover group-hover/card:scale-105 transition duration-300">
                 {% else %}
                     <div class="w-full h-full flex justify-center items-center text-fb-lightMuted dark:text-fb-muted">
@@ -19,18 +19,18 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <div class="absolute bottom-2 left-3 right-3">
                     <h5 class="font-bold text-white text-[15px] sm:text-[17px] leading-tight text-shadow drop-shadow-md truncate">
-                        {{ group.title }}
+                        {{group.title}}
                     </h5>
                 </div>
             </a>
             <!-- Content -->
             <div class="p-3 sm:p-4 flex flex-col flex-grow">
                 <p class="text-fb-lightText dark:text-fb-text text-[13px] sm:text-[14px] leading-relaxed mb-3 line-clamp-2 min-h-[40px]">
-                    {{ group.description }}
+                    {{group.description}}
                 </p>
                 <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted mb-4 font-semibold">
-                    <i class="fa-solid fa-users mr-1.5 text-fb-primary"></i> <span class="mr-3">{{ group.subscribers.count }} {% trans 'members' %}</span>
-                    <i class="fa-solid fa-clock mr-1.5"></i> <span>{{ group.created|naturaltime }}</span>
+                    <i class="fa-solid fa-users mr-1.5 text-fb-primary"></i> <span class="mr-3">{{group.subscribers.count}} {% trans 'members' %}</span>
+                    <i class="fa-solid fa-clock mr-1.5"></i> <span>{{group.created|naturaltime}}</span>
                 </div>
                 <div class="mt-auto pt-3 border-t border-fb-lightBorder dark:border-fb-border flex gap-2">
                     <a href="{% url 'groups:group' group.slug %}"

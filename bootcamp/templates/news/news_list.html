@@ -16,7 +16,7 @@
         <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar pb-2">
             <!-- Create story -->
             <div class="relative w-28 h-48 rounded-xl bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border flex-shrink-0 cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition overflow-hidden group shadow-sm">
-                <img src="{{ user.get_picture }}"
+                <img src="{{user.get_picture}}"
                      class="w-full h-32 object-cover group-hover:scale-105 transition duration-300">
                 <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-fb-primary rounded-full border-4 border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white z-10">
                     <i class="fa-solid fa-plus font-bold"></i>
@@ -45,15 +45,15 @@
             <div class="flex items-center gap-3">
                 <a href="{% url 'users:detail' request.user.username %}"
                    class="flex-shrink-0">
-                    <img src="{{ user.get_picture }}"
+                    <img src="{{user.get_picture}}"
                          class="w-10 h-10 rounded-full hover:brightness-90 transition">
                 </a>
                 <button onclick="toggleModal('newsFormModal')"
                         class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightMuted dark:text-fb-muted text-left px-4 py-2.5 rounded-full transition font-medium">
                     {% if group %}
-                        {% trans "Share something with" %} {{ group.title }}...
+                        {% trans "Share something with" %} {{group.title}}...
                     {% else %}
-                        {% trans "What's on your mind," %} {{ request.user.first_name|default:request.user.username }}?
+                        {% trans "What's on your mind," %} {{request.user.first_name|default:request.user.username}}?
                     {% endif %}
                 </button>
             </div>
@@ -99,7 +99,7 @@
         <div class="load flex justify-center py-4">
             {% if page_obj.has_next %}
                 <a class="infinite-more-link"
-                   href="?page={{ page_obj.next_page_number }}">
+                   href="?page={{page_obj.next_page_number}}">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-fb-primary"></div>
                 </a>
             {% endif %}
@@ -116,7 +116,7 @@
         {% endif %}
         <hr class="my-4 border-fb-lightBorder dark:border-fb-border">
     {% endif %}
-    {{ block.super }}
+    {{block.super}}
 {% endblock right_sidebar_widgets %}
 {% block modal %}
     <script src="{% static 'js/image-tools.js' %}" type="text/javascript"></script>
@@ -172,7 +172,7 @@
                 const groupInput = document.createElement('input');
                 groupInput.type = 'hidden';
                 groupInput.name = 'group';
-                groupInput.value = '{{ group.id }}';
+                groupInput.value = '{{group.id}}';
                 postNewsForm.appendChild(groupInput);
             }
         }

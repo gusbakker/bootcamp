@@ -22,7 +22,7 @@
                         <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
                         <a href="{% url 'groups:group' group.slug %}"
                            class="hover:text-fb-primary hover:underline transition">
-                            {{ group.title|truncatechars:20 }}
+                            {{group.title|truncatechars:20}}
                         </a>
                     </div>
                 </li>
@@ -49,40 +49,40 @@
                       class="tailwind-crispy-form">
                     {% csrf_token %}
                     <div class="mb-5">
-                        <label for="{{ form.title.id_for_label }}"
+                        <label for="{{form.title.id_for_label}}"
                                class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
                             {% trans 'Group Title' %} <span class="text-red-500">*</span>
                         </label>
-                        {{ form.title|as_crispy_field }}
+                        {{form.title|as_crispy_field}}
                         <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
                             {% trans 'Choose a clear, specific name for your group.' %}
                         </div>
                     </div>
                     <div class="mb-5">
-                        <label for="{{ form.description.id_for_label }}"
+                        <label for="{{form.description.id_for_label}}"
                                class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
                             {% trans 'Group Description' %} <span class="text-red-500">*</span>
                         </label>
-                        {{ form.description|as_crispy_field }}
+                        {{form.description|as_crispy_field}}
                         <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
                             {% trans 'Describe what your group is about to help people decide if they want to join.' %}
                         </div>
                     </div>
                     <div class="mb-5">
-                        <label for="{{ form.category.id_for_label }}"
+                        <label for="{{form.category.id_for_label}}"
                                class="form-label block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
                             {% trans 'Category' %}
                         </label>
-                        {{ form.category|as_crispy_field }}
+                        {{form.category|as_crispy_field}}
                         <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
                             {% trans 'Categorizing your group helps people find it more easily.' %}
                         </div>
                     </div>
                     <div class="mb-6 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] rounded-lg p-4 border border-fb-lightBorder dark:border-fb-border flex items-start gap-3">
-                        <div class="pt-1">{{ form.is_private }}</div>
+                        <div class="pt-1">{{form.is_private}}</div>
                         <div>
                             <label class="font-bold text-fb-lightText dark:text-fb-text cursor-pointer block"
-                                   for="{{ form.is_private.id_for_label }}">
+                                   for="{{form.is_private.id_for_label}}">
                                 <i class="fa-solid fa-lock text-gray-500 dark:text-gray-400 mr-1.5 text-sm"></i>{% trans 'Make this group private' %}
                             </label>
                             <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-1">
@@ -152,11 +152,11 @@
             <ul class="flex flex-col gap-2 mb-3">
                 {% for admin in group.admins.all %}
                     <li class="flex items-center p-2 rounded-lg hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
-                        <img src="{{ admin.get_picture }}"
-                             alt="{{ admin.username }}"
+                        <img src="{{admin.get_picture}}"
+                             alt="{{admin.username}}"
                              class="w-8 h-8 rounded-full border border-fb-lightBorder dark:border-fb-border object-cover mr-3 group-hover:brightness-90 transition">
                         <div class="flex-grow font-semibold text-[14px] text-fb-lightText dark:text-fb-text truncate">
-                            {{ admin.get_profile_name|title|default:admin.username }}
+                            {{admin.get_profile_name|title|default:admin.username}}
                             {% if forloop.first %}
                                 <span class="bg-blue-100 dark:bg-blue-900/30 text-fb-primary ml-1 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{% trans 'Owner' %}</span>
                             {% endif %}
@@ -219,19 +219,19 @@
         </div>
         <div class="p-4 grid grid-cols-2 gap-4 text-center">
             <div>
-                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.subscribers.count }}</h5>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{group.subscribers.count}}</h5>
                 <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Members' %}</div>
             </div>
             <div>
-                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.submitted_news.count }}</h5>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{group.submitted_news.count}}</h5>
                 <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Posts' %}</div>
             </div>
             <div>
-                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.recent_posts }}</h5>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{group.recent_posts}}</h5>
                 <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Recent' %}</div>
             </div>
             <div>
-                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{ group.created|date:"M Y" }}</h5>
+                <h5 class="text-lg font-bold text-fb-primary mb-0.5">{{group.created|date:"M Y"}}</h5>
                 <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Created' %}</div>
             </div>
         </div>

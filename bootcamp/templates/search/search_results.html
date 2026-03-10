@@ -30,25 +30,25 @@
                        data-bs-toggle="list"
                        href="#list-articles"
                        role="tab"
-                       aria-controls="articles">{% trans 'Articles' %}<span class="badge bg-primary rounded-pill">{{ articles_count }}</span></a>
+                       aria-controls="articles">{% trans 'Articles' %}<span class="badge bg-primary rounded-pill">{{articles_count}}</span></a>
                     <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                        id="list-news-list"
                        data-bs-toggle="list"
                        href="#list-news"
                        role="tab"
-                       aria-controls="news">{% trans 'News' %}<span class="badge bg-primary rounded-pill">{{ news_count }}</span></a>
+                       aria-controls="news">{% trans 'News' %}<span class="badge bg-primary rounded-pill">{{news_count}}</span></a>
                     <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                        id="list-users-list"
                        data-bs-toggle="list"
                        href="#list-users"
                        role="tab"
-                       aria-controls="users">{% trans 'Users' %}<span class="badge bg-primary rounded-pill">{{ users_count }}</span></a>
+                       aria-controls="users">{% trans 'Users' %}<span class="badge bg-primary rounded-pill">{{users_count}}</span></a>
                     <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                        id="list-tags-list"
                        data-bs-toggle="list"
                        href="#list-tags"
                        role="tab"
-                       aria-controls="tags">{% trans 'Tags' %}<span class="badge bg-primary rounded-pill">{{ tags_count }}</span></a>
+                       aria-controls="tags">{% trans 'Tags' %}<span class="badge bg-primary rounded-pill">{{tags_count}}</span></a>
                 </div>
             </div>
             <div class="col-md-9">
@@ -60,7 +60,7 @@
                         {% for article in articles_list %}
                             <div class="card mb-4">
                                 {% thumbnail article.image "750x300" as im %}
-                                    <img src="{{ im.url }}"
+                                    <img src="{{im.url}}"
                                          alt="{% trans 'Featured Image' %}"
                                          class="card-img-top">
                                 {% empty %}
@@ -69,8 +69,8 @@
                                          alt="Card image cap">
                                 {% endthumbnail %}
                                 <div class="card-body">
-                                    <h2 class="card-title">{{ article.title|title }}</h2>
-                                    <p class="card-text">{{ article.content|truncatechars:250 }}</p>
+                                    <h2 class="card-title">{{article.title|title}}</h2>
+                                    <p class="card-text">{{article.content|truncatechars:250}}</p>
                                 </div>
                             </div>
                         {% empty %}
@@ -96,7 +96,7 @@
                                 <div class="flex-shrink-0 me-3">
                                     <a href="{% url 'users:detail' user.username %}">
                                         {% thumbnail user.picture "x40" as im %}
-                                            <img src="{{ im.url }}"
+                                            <img src="{{im.url}}"
                                                  alt="{% trans 'Picture Profile' %}"
                                                  class="rounded-circle"
                                                  width="40"
@@ -113,17 +113,17 @@
                                 <div class="flex-grow-1">
                                     <p class="mb-0">
                                         <i class="fa-solid fa-envelope me-1" aria-hidden="true"></i>
-                                        <a class="email" href="mailto:{{ user.email }}">{{ user.get_profile_name|title }}</a>
+                                        <a class="email" href="mailto:{{user.email}}">{{user.get_profile_name|title}}</a>
                                         {% if user.job_title %}
                                             <span class="ms-2">
                                                 <i class="fa-solid fa-briefcase me-1" aria-hidden="true"></i>
-                                                <em>{{ user.job_title }}</em>
+                                                <em>{{user.job_title}}</em>
                                             </span>
                                         {% endif %}
                                         {% if user.location %}
                                             <span class="ms-2">
                                                 <i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i>
-                                                <em>{{ user.location }}</em>
+                                                <em>{{user.location}}</em>
                                             </span>
                                         {% endif %}
                                     </p>
@@ -140,7 +140,7 @@
                         <div class="card my-4">
                             <div class="card-body">
                                 {% for tag in tags_list %}
-                                    <a href="#" class="text-decoration-none"><span class="badge bg-info text-dark me-1 mb-1">{{ tag }}</span></a>
+                                    <a href="#" class="text-decoration-none"><span class="badge bg-info text-dark me-1 mb-1">{{tag}}</span></a>
                                 {% empty %}
                                     <h4 class="no-data text-muted">{% trans 'There are no results related to your search' %}.</h4>
                                 {% endfor %}

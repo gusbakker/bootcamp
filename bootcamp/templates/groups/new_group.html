@@ -22,15 +22,15 @@
                       id="group-form"
                       class="tailwind-crispy-form">
                     {% csrf_token %}
-                    <div class="mb-5">{{ group_form.title|as_crispy_field }}</div>
-                    <div class="mb-5">{{ group_form.description|as_crispy_field }}</div>
+                    <div class="mb-5">{{group_form.title|as_crispy_field}}</div>
+                    <div class="mb-5">{{group_form.description|as_crispy_field}}</div>
                     <div class="mb-5">
                         <label class="block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
                             {% trans 'Group Cover Photo' %}
                         </label>
                         <input type="file"
                                class="hidden"
-                               id="{{ group_form.cover.id_for_label }}"
+                               id="{{group_form.cover.id_for_label}}"
                                name="cover"
                                accept="image/*">
                         <div class="w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-fb-primary transition relative group"
@@ -156,7 +156,7 @@
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const coverInput = document.getElementById('{{ group_form.cover.id_for_label }}');
+        const coverInput = document.getElementById('{{group_form.cover.id_for_label}}');
         const uploadArea = document.getElementById('cover-upload-area');
         const previewContainer = document.getElementById('cover-preview');
         const previewImage = document.getElementById('preview-image');

@@ -24,7 +24,7 @@
                       class="tailwind-crispy-form">
                     {% csrf_token %}
                     <input type="hidden" name="status" value="P">
-                    {{ form|crispy }}
+                    {{form|crispy}}
                     <!-- Image Preview -->
                     <div class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
                          id="image-preview">
@@ -165,8 +165,8 @@
         const previewButton = document.getElementById('preview-button');
         if (previewButton) {
             previewButton.addEventListener('click', function () {
-                const titleInput = document.getElementById('{{ form.title.id_for_label }}');
-                const contentInput = document.getElementById('{{ form.content.id_for_label }}');
+                const titleInput = document.getElementById('{{form.title.id_for_label}}');
+                const contentInput = document.getElementById('{{form.content.id_for_label}}');
                 
                 if (!titleInput || !contentInput) return;
                 

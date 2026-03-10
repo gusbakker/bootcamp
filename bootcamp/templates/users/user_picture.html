@@ -25,7 +25,7 @@
                 <div class="relative group cursor-pointer block rounded-full"
                      id="avatar-upload-trigger"
                      title="{% trans 'Change profile picture' %}">
-                    <img src="{{ user.get_picture }}"
+                    <img src="{{user.get_picture}}"
                          class="w-[150px] h-[150px] rounded-full border-4 border-fb-lightSurface dark:border-fb-surface object-cover shadow-sm bg-white dark:bg-gray-800 group-hover:opacity-80 transition"
                          alt="{% trans 'User Image' %}">
                     <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition rounded-full">
@@ -36,16 +36,16 @@
                 </div>
                 <!-- Mobile name (shows on under sm) -->
                 <div class="block sm:hidden text-center mt-2 w-full">
-                    <h1 class="text-2xl font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ user.get_profile_name }}</h1>
-                    <p class="text-[15px] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{ user.username }}</p>
+                    <h1 class="text-2xl font-bold leading-tight text-fb-lightText dark:text-fb-text">{{user.get_profile_name}}</h1>
+                    <p class="text-[15px] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{user.username}}</p>
                 </div>
             </div>
             <!-- Main Info and Actions Flex Container -->
             <div class="px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-center sm:items-start flex-wrap gap-4 pb-4">
                 <div class="flex-1 min-w-[300px] text-center sm:text-left">
                     <div class="hidden sm:block">
-                        <h1 class="text-[2rem] font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ user.get_profile_name }}</h1>
-                        <p class="text-[1.1rem] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{ user.username }}</p>
+                        <h1 class="text-[2rem] font-bold leading-tight text-fb-lightText dark:text-fb-text">{{user.get_profile_name}}</h1>
+                        <p class="text-[1.1rem] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{user.username}}</p>
                     </div>
                 </div>
                 <!-- Action buttons for header -->
@@ -136,7 +136,7 @@
                                                 {% trans 'Drag the selection to crop your profile picture.' %}
                                             </p>
                                             <div class="flex justify-center flex-grow items-center">
-                                                <img src="{% get_media_prefix %}profile_pics/{{ user.username }}_tmp.jpg?_={% now 'U' %}"
+                                                <img src="{% get_media_prefix %}profile_pics/{{user.username}}_tmp.jpg?_={% now 'U' %}"
                                                      id="crop-picture"
                                                      class="max-w-full max-h-[50vh] object-contain shadow-sm border border-fb-lightBorder dark:border-fb-border bg-white dark:bg-black">
                                             </div>

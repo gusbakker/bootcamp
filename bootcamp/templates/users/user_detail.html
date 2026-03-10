@@ -20,13 +20,13 @@
             </div>
             <!-- Avatar Wrapper -->
             <div class="relative -mt-[75px] pl-4 sm:pl-8 flex items-end mb-4 z-10 flex-col sm:flex-row items-center sm:items-end">
-                <img src="{{ object.get_picture }}"
+                <img src="{{object.get_picture}}"
                      class="w-[150px] h-[150px] rounded-full border-4 border-fb-lightSurface dark:border-fb-surface object-cover shadow-sm bg-fb-lightSurface dark:bg-fb-surface"
                      alt="{% trans 'User Image' %}">
                 <!-- Mobile name (shows on under sm) -->
                 <div class="block sm:hidden text-center mt-2">
-                    <h1 class="text-2xl font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ object.get_profile_name }}</h1>
-                    <p class="text-sm font-semibold text-fb-lightMuted dark:text-fb-muted">@{{ object.username }}</p>
+                    <h1 class="text-2xl font-bold leading-tight text-fb-lightText dark:text-fb-text">{{object.get_profile_name}}</h1>
+                    <p class="text-sm font-semibold text-fb-lightMuted dark:text-fb-muted">@{{object.username}}</p>
                 </div>
             </div>
             <!-- Main Info and Actions Flex Container -->
@@ -34,47 +34,47 @@
                 <!-- Left Side Info -->
                 <div class="flex-1 min-w-[300px] text-center sm:text-left">
                     <div class="hidden sm:block">
-                        <h1 class="text-[2rem] font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ object.get_profile_name }}</h1>
-                        <p class="text-[1.1rem] font-semibold text-fb-lightMuted dark:text-fb-muted mb-2">@{{ object.username }}</p>
+                        <h1 class="text-[2rem] font-bold leading-tight text-fb-lightText dark:text-fb-text">{{object.get_profile_name}}</h1>
+                        <p class="text-[1.1rem] font-semibold text-fb-lightMuted dark:text-fb-muted mb-2">@{{object.username}}</p>
                     </div>
                     <div class="flex items-center justify-center sm:justify-start gap-4 mb-3 text-[1.05rem]">
-                        <span class="text-fb-lightMuted dark:text-fb-muted"><strong class="text-fb-lightText dark:text-fb-text font-semibold">{{ object.followers.count }}</strong> {% trans 'Followers' %}</span>
-                        <span class="text-fb-lightMuted dark:text-fb-muted"><strong class="text-fb-lightText dark:text-fb-text font-semibold">{{ object.following.count }}</strong> {% trans 'Following' %}</span>
-                        <span class="text-fb-lightMuted dark:text-fb-muted"><strong class="text-fb-lightText dark:text-fb-text font-semibold">{{ object.contact_list.count }}</strong> {% trans 'Friends' %}</span>
+                        <span class="text-fb-lightMuted dark:text-fb-muted"><strong class="text-fb-lightText dark:text-fb-text font-semibold">{{object.followers.count}}</strong> {% trans 'Followers' %}</span>
+                        <span class="text-fb-lightMuted dark:text-fb-muted"><strong class="text-fb-lightText dark:text-fb-text font-semibold">{{object.following.count}}</strong> {% trans 'Following' %}</span>
+                        <span class="text-fb-lightMuted dark:text-fb-muted"><strong class="text-fb-lightText dark:text-fb-text font-semibold">{{object.contact_list.count}}</strong> {% trans 'Friends' %}</span>
                     </div>
                     {% if object.bio %}
                         <div class="mt-2 mb-4 text-[1rem] leading-relaxed max-w-[600px] text-fb-lightText dark:text-fb-text mx-auto sm:mx-0">
-                            {{ object.bio }}
+                            {{object.bio}}
                         </div>
                     {% endif %}
                     <div class="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2 mb-3 text-[0.95rem] font-medium text-fb-lightMuted dark:text-fb-muted">
                         {% if object.job_title %}
                             <div class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-briefcase opacity-80"></i>
-                                {{ object.job_title }}
+                                {{object.job_title}}
                             </div>
                         {% endif %}
                         {% if object.location %}
                             <div class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-location-dot opacity-80"></i>
-                                {{ object.location }}
+                                {{object.location}}
                             </div>
                         {% endif %}
                         <div class="flex items-center gap-1.5">
                             <i class="fa-regular fa-clock opacity-80"></i>
-                            {% trans 'Last online' %} {{ object.last_login|naturaltime }}
+                            {% trans 'Last online' %} {{object.last_login|naturaltime}}
                         </div>
                         <div class="flex items-center gap-1.5">
                             <i class="fa-regular fa-calendar opacity-80"></i>
-                            {% trans 'Joined' %} {{ object.member_since|naturaltime }}
+                            {% trans 'Joined' %} {{object.member_since|naturaltime}}
                         </div>
                         {% if object.personal_url %}
                             <div class="flex items-center gap-1.5">
-                                <a href="{{ object.personal_url }}"
+                                <a href="{{object.personal_url}}"
                                    target="_blank"
                                    title="{% trans 'Personal Website' %}"
                                    class="hover:underline flex items-center text-fb-primary">
-                                    <i class="fa-solid fa-link mr-1"></i> {{ object.personal_url }}
+                                    <i class="fa-solid fa-link mr-1"></i> {{object.personal_url}}
                                 </a>
                             </div>
                         {% endif %}
@@ -169,17 +169,17 @@
                     <button onclick="switchProfileTab('friends')"
                             id="friends-btn"
                             class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap">
-                        {% trans 'Friends' %} <span class="font-normal opacity-80 ml-1">{{ object.contact_list.count }}</span>
+                        {% trans 'Friends' %} <span class="font-normal opacity-80 ml-1">{{object.contact_list.count}}</span>
                     </button>
                     <button onclick="switchProfileTab('followers')"
                             id="followers-btn"
                             class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap">
-                        {% trans 'Followers' %} <span class="font-normal opacity-80 ml-1">{{ object.followers.count }}</span>
+                        {% trans 'Followers' %} <span class="font-normal opacity-80 ml-1">{{object.followers.count}}</span>
                     </button>
                     <button onclick="switchProfileTab('following')"
                             id="following-btn"
                             class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap">
-                        {% trans 'Following' %} <span class="font-normal opacity-80 ml-1">{{ object.following.count }}</span>
+                        {% trans 'Following' %} <span class="font-normal opacity-80 ml-1">{{object.following.count}}</span>
                     </button>
                     {% if request.user == object %}
                         <button onclick="switchProfileTab('requests')"
@@ -187,7 +187,7 @@
                                 class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap flex items-center gap-1.5">
                             {% trans 'Requests' %}
                             {% if object.pending_list.count > 0 %}
-                                <span class="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{{ object.pending_list.count }}</span>
+                                <span class="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{{object.pending_list.count}}</span>
                             {% endif %}
                         </button>
                     {% endif %}
@@ -219,16 +219,16 @@
                             {% for user in object.contact_list.all %}
                                 <!-- Tailwind User Card -->
                                 <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
-                                    <img src="{{ user.get_picture }}"
-                                         alt="{{ user.username }}"
+                                    <img src="{{user.get_picture}}"
+                                         alt="{{user.username}}"
                                          class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
                                     <div class="flex-grow flex flex-col justify-center">
                                         <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
                                             <a href="{% url 'users:detail' user.username %}" class="hover:underline">
-                                                {{ user.get_profile_name|default:user.username }}
+                                                {{user.get_profile_name|default:user.username}}
                                             </a>
                                         </h5>
-                                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{ user.username }}</p>
+                                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{user.username}}</p>
                                         <a href="{% url 'messager:conversation_detail' user.username %}"
                                            class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text w-full sm:w-auto self-start">
                                             <i class="fa-solid fa-message text-[11px]"></i>{% trans 'Message' %}
@@ -249,16 +249,16 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {% for user in object.followers.all %}
                                 <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
-                                    <img src="{{ user.get_picture }}"
-                                         alt="{{ user.username }}"
+                                    <img src="{{user.get_picture}}"
+                                         alt="{{user.username}}"
                                          class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
                                     <div class="flex-grow flex flex-col justify-center">
                                         <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
                                             <a href="{% url 'users:detail' user.username %}" class="hover:underline">
-                                                {{ user.get_profile_name|default:user.username }}
+                                                {{user.get_profile_name|default:user.username}}
                                             </a>
                                         </h5>
-                                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{ user.username }}</p>
+                                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{user.username}}</p>
                                         {% if request.user != user %}
                                             {% if user in request.user.following.all %}
                                                 <a href="{% url 'users:follow_user' user.id %}"
@@ -290,16 +290,16 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {% for user in object.following.all %}
                                 <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
-                                    <img src="{{ user.get_picture }}"
-                                         alt="{{ user.username }}"
+                                    <img src="{{user.get_picture}}"
+                                         alt="{{user.username}}"
                                          class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
                                     <div class="flex-grow flex flex-col justify-center">
                                         <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
                                             <a href="{% url 'users:detail' user.username %}" class="hover:underline">
-                                                {{ user.get_profile_name|default:user.username }}
+                                                {{user.get_profile_name|default:user.username}}
                                             </a>
                                         </h5>
-                                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{ user.username }}</p>
+                                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{user.username}}</p>
                                         <a href="{% url 'users:follow_user' user.id %}"
                                            class="bg-fb-primary hover:bg-blue-600 transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-white w-full sm:w-auto self-start"
                                            id="follow_user">
@@ -322,16 +322,16 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {% for user in object.pending_list.all %}
                                     <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
-                                        <img src="{{ user.get_picture }}"
-                                             alt="{{ user.username }}"
+                                        <img src="{{user.get_picture}}"
+                                             alt="{{user.username}}"
                                              class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
                                         <div class="flex-grow flex flex-col justify-center">
                                             <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
                                                 <a href="{% url 'users:detail' user.username %}" class="hover:underline">
-                                                    {{ user.get_profile_name|default:user.username }}
+                                                    {{user.get_profile_name|default:user.username}}
                                                 </a>
                                             </h5>
-                                            <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-3">@{{ user.username }}</p>
+                                            <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-3">@{{user.username}}</p>
                                             <div class="flex gap-2">
                                                 <a href="{% url 'users:accept_message_request' user.id %}"
                                                    class="bg-green-600 hover:bg-green-700 transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-white flex-1"

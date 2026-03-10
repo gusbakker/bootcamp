@@ -41,7 +41,7 @@
                 <span class="category-pill active bg-fb-primary text-white cursor-pointer px-4 py-1.5 rounded-full text-[14px] font-semibold transition shadow-sm">{% trans 'All' %}</span>
                 {% for category in categories %}
                     {% if category %}
-                        <span class="category-pill bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text cursor-pointer px-4 py-1.5 rounded-full text-[14px] font-semibold transition border border-transparent">{{ category|title }}</span>
+                        <span class="category-pill bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text cursor-pointer px-4 py-1.5 rounded-full text-[14px] font-semibold transition border border-transparent">{{category|title}}</span>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -52,11 +52,11 @@
                 {% for group in object_list %}
                     <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group/card h-full">
                         <!-- Group Cover Image -->
-                        <a href="{{ group.get_absolute_url }}"
+                        <a href="{{group.get_absolute_url}}"
                            class="block w-full h-28 relative overflow-hidden bg-fb-lightSurfaceHover dark:bg-[#4e4f50] border-b border-fb-lightBorder dark:border-fb-border">
                             {% if group.get_picture %}
                                 <div class="absolute inset-0 bg-cover bg-center group-hover/card:scale-105 transition duration-500"
-                                     style="background-image: url('{{ group.get_picture }}')"></div>
+                                     style="background-image: url('{{group.get_picture}}')"></div>
                             {% else %}
                                 <div class="absolute inset-0 flex items-center justify-center group-hover/card:scale-105 transition duration-500">
                                     <i class="fa-solid fa-users text-4xl opacity-30 text-fb-lightMuted dark:text-fb-muted"></i>
@@ -65,22 +65,22 @@
                         </a>
                         <div class="p-4 flex flex-col flex-grow">
                             <h5 class="font-bold text-[17px] text-fb-lightText dark:text-fb-text leading-tight mb-1">
-                                <a href="{{ group.get_absolute_url }}"
-                                   class="hover:underline line-clamp-2">{{ group.title }}</a>
+                                <a href="{{group.get_absolute_url}}"
+                                   class="hover:underline line-clamp-2">{{group.title}}</a>
                             </h5>
                             <div class="flex items-center text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2 font-medium">
                                 <span class="flex items-center gap-1.5">
-                                    <i class="fa-solid fa-users"></i> {{ group.subscribers.count }} {% trans 'members' %}
+                                    <i class="fa-solid fa-users"></i> {{group.subscribers.count}} {% trans 'members' %}
                                 </span>
                                 <span class="mx-2">•</span>
-                                <span>{{ group.created|naturaltime }}</span>
+                                <span>{{group.created|naturaltime}}</span>
                             </div>
                             <p class="text-[14px] text-fb-lightText dark:text-fb-text mb-4 line-clamp-2 flex-grow">
-                                {{ group.description|striptags }}
+                                {{group.description|striptags}}
                             </p>
                             <!-- Actions -->
                             <div class="pt-3 border-t border-fb-lightBorder dark:border-fb-border mt-auto flex flex-col gap-2">
-                                <a href="{{ group.get_absolute_url }}"
+                                <a href="{{group.get_absolute_url}}"
                                    class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition py-1.5 rounded-md font-semibold text-[14px] flex justify-center items-center text-fb-lightText dark:text-fb-text">
                                     {% trans 'View Group' %}
                                 </a>
@@ -109,7 +109,7 @@
                         {% if page_obj.has_previous %}
                             <li>
                                 <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
-                                   href="?page={{ page_obj.previous_page_number }}"
+                                   href="?page={{page_obj.previous_page_number}}"
                                    aria-label="Previous">
                                     <i class="fa-solid fa-chevron-left text-xs"></i>
                                 </a>
@@ -124,19 +124,19 @@
                         {% for i in paginator.page_range %}
                             {% if page_obj.number == i %}
                                 <li>
-                                    <span class="px-3 py-1.5 rounded-md border border-fb-primary bg-fb-primary text-white font-semibold flex items-center justify-center">{{ i }}</span>
+                                    <span class="px-3 py-1.5 rounded-md border border-fb-primary bg-fb-primary text-white font-semibold flex items-center justify-center">{{i}}</span>
                                 </li>
                             {% else %}
                                 <li>
                                     <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition font-semibold flex items-center justify-center"
-                                       href="?page={{ i }}">{{ i }}</a>
+                                       href="?page={{i}}">{{i}}</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
                         {% if page_obj.has_next %}
                             <li>
                                 <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
-                                   href="?page={{ page_obj.next_page_number }}"
+                                   href="?page={{page_obj.next_page_number}}"
                                    aria-label="Next">
                                     <i class="fa-solid fa-chevron-right text-xs"></i>
                                 </a>
@@ -180,11 +180,11 @@
         <div class="flex flex-col">
             {% if request.user.is_authenticated %}
                 {% for group in request.user.subscribed_groups.all|slice:":5" %}
-                    <a href="{{ group.get_absolute_url }}"
+                    <a href="{{group.get_absolute_url}}"
                        class="flex items-center p-3 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
                         <div class="flex-shrink-0 mr-3">
                             {% if group.get_picture %}
-                                <img src="{{ group.get_picture }}"
+                                <img src="{{group.get_picture}}"
                                      class="rounded-lg w-12 h-12 object-cover border border-fb-lightBorder dark:border-fb-border shadow-sm group-hover:brightness-90 transition"
                                      alt="">
                             {% else %}
@@ -195,12 +195,12 @@
                         </div>
                         <div class="min-w-0 pr-2">
                             <h6 class="font-bold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover:underline mb-0.5 truncate">
-                                {{ group.title }}
+                                {{group.title}}
                             </h6>
                             <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted font-medium">
-                                <span class="flex items-center gap-1"><i class="fa-solid fa-user-group text-[10px]"></i>{{ group.subscribers.count }}</span>
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-user-group text-[10px]"></i>{{group.subscribers.count}}</span>
                                 <span class="mx-1.5">•</span>
-                                <span class="flex items-center gap-1"><i class="fa-regular fa-message text-[10px]"></i>{{ group.submitted_news.count }}</span>
+                                <span class="flex items-center gap-1"><i class="fa-regular fa-message text-[10px]"></i>{{group.submitted_news.count}}</span>
                             </div>
                         </div>
                     </a>
@@ -239,11 +239,11 @@
         </div>
         <div class="flex flex-col">
             {% for group in object_list|slice:":5" %}
-                <a href="{{ group.get_absolute_url }}"
+                <a href="{{group.get_absolute_url}}"
                    class="flex items-center p-3 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group/pop">
                     <div class="flex-shrink-0 mr-3">
                         {% if group.get_picture %}
-                            <img src="{{ group.get_picture }}"
+                            <img src="{{group.get_picture}}"
                                  class="rounded-lg w-12 h-12 object-cover border border-fb-lightBorder dark:border-fb-border shadow-sm group-hover/pop:brightness-90 transition"
                                  alt="">
                         {% else %}
@@ -254,12 +254,12 @@
                     </div>
                     <div class="min-w-0 pr-2">
                         <h6 class="font-bold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover/pop:underline mb-0.5 truncate">
-                            {{ group.title }}
+                            {{group.title}}
                         </h6>
                         <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted font-medium">
-                            <span class="flex items-center gap-1"><i class="fa-solid fa-users text-[10px]"></i>{{ group.subscribers.count }}</span>
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-users text-[10px]"></i>{{group.subscribers.count}}</span>
                             <span class="mx-1.5">•</span>
-                            <span>{{ group.created|naturaltime }}</span>
+                            <span>{{group.created|naturaltime}}</span>
                         </div>
                     </div>
                 </a>

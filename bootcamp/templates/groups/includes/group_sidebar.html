@@ -9,19 +9,19 @@
     <div class="p-4 flex flex-col gap-3">
         <div class="flex justify-between items-center text-[14px]">
             <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Category' %}</span>
-            <span class="text-fb-lightMuted dark:text-fb-muted bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover px-2 py-0.5 rounded-md text-[13px] font-semibold">{{ group.category|title|default:"General" }}</span>
+            <span class="text-fb-lightMuted dark:text-fb-muted bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover px-2 py-0.5 rounded-md text-[13px] font-semibold">{{group.category|title|default:"General"}}</span>
         </div>
         <div class="flex justify-between items-center text-[14px]">
             <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Members' %}</span>
-            <span class="text-fb-lightMuted dark:text-fb-muted" id="group_subscribers">{{ group.subscribers.count }}</span>
+            <span class="text-fb-lightMuted dark:text-fb-muted" id="group_subscribers">{{group.subscribers.count}}</span>
         </div>
         <div class="flex justify-between items-center text-[14px]">
             <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Posts' %}</span>
-            <span class="text-fb-lightMuted dark:text-fb-muted">{{ news_list.paginator.count }}</span>
+            <span class="text-fb-lightMuted dark:text-fb-muted">{{news_list.paginator.count}}</span>
         </div>
         <div class="flex justify-between items-center text-[14px]">
             <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Created' %}</span>
-            <span class="text-fb-lightMuted dark:text-fb-muted">{{ group.created|naturaltime }}</span>
+            <span class="text-fb-lightMuted dark:text-fb-muted">{{group.created|naturaltime}}</span>
         </div>
     </div>
 </div>
@@ -36,10 +36,10 @@
         {% for admin in admins %}
             <a href="{% url 'users:detail' admin.username %}"
                class="flex items-center p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition group">
-                <img src="{{ admin.get_picture }}"
+                <img src="{{admin.get_picture}}"
                      class="w-10 h-10 rounded-full border border-fb-lightBorder dark:border-fb-border object-cover mr-3 group-hover:brightness-90 transition"
-                     alt="{{ admin.username }}">
-                <span class="font-semibold text-[14px] text-fb-lightText dark:text-fb-text group-hover:underline">{{ admin.get_profile_name|title|default:admin.username }}</span>
+                     alt="{{admin.username}}">
+                <span class="font-semibold text-[14px] text-fb-lightText dark:text-fb-text group-hover:underline">{{admin.get_profile_name|title|default:admin.username}}</span>
             </a>
         {% endfor %}
     </div>
@@ -88,7 +88,7 @@
                    class="flex items-center p-3 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group/sim">
                     <div class="flex-shrink-0 mr-3">
                         {% if similar_group.get_picture %}
-                            <img src="{{ similar_group.get_picture }}"
+                            <img src="{{similar_group.get_picture}}"
                                  class="rounded-lg w-12 h-12 object-cover border border-fb-lightBorder dark:border-fb-border shadow-sm group-hover/sim:brightness-90 transition"
                                  alt="">
                         {% else %}
@@ -99,10 +99,10 @@
                     </div>
                     <div class="min-w-0 pr-2">
                         <h6 class="font-bold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover/sim:underline mb-0.5 truncate">
-                            {{ similar_group.title }}
+                            {{similar_group.title}}
                         </h6>
                         <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted font-medium">
-                            <i class="fa-solid fa-users mr-1.5 text-[10px]"></i> {{ similar_group.subscribers.count }}
+                            <i class="fa-solid fa-users mr-1.5 text-[10px]"></i> {{similar_group.subscribers.count}}
                         </div>
                     </div>
                 </a>

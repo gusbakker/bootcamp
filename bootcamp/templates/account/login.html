@@ -466,7 +466,7 @@
         {% if messages %}
             <div id="toast-container" aria-live="polite" aria-atomic="true">
                 {% for message in messages %}
-                    <div class="app-toast {% if message.tags %}toast-{{ message.tags }}{% else %}toast-info{% endif %}"
+                    <div class="app-toast {% if message.tags %}toast-{{message.tags}}{% else %}toast-info{% endif %}"
                          role="alert">
                         <div class="toast-icon-wrap">
                             {% if 'success' in message.tags %}
@@ -480,7 +480,7 @@
                             {% endif %}
                         </div>
                         <div class="toast-body-wrap">
-                            <div class="toast-msg">{{ message }}</div>
+                            <div class="toast-msg">{{message}}</div>
                         </div>
                         <button class="toast-close" aria-label="Close">&times;</button>
                         <div class="toast-progress"></div>
@@ -503,18 +503,18 @@
                 {% if form.errors %}
                     <ul class="errorlist">
                         {% for field in form %}
-                            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                            {% for error in field.errors %}<li>{{error}}</li>{% endfor %}
                         {% endfor %}
-                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                        {% for error in form.non_field_errors %}<li>{{error}}</li>{% endfor %}
                     </ul>
                 {% endif %}
                 <form class="login" method="POST" action="{% url 'account_login' %}">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {{form.as_p}}
                     {% if redirect_field_value %}
                         <input type="hidden"
-                               name="{{ redirect_field_name }}"
-                               value="{{ redirect_field_value }}">
+                               name="{{redirect_field_name}}"
+                               value="{{redirect_field_value}}">
                     {% endif %}
                     <button type="submit" class="btn-auth-submit">
                         <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>{% trans 'Log in' %}

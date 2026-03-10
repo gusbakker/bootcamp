@@ -25,7 +25,7 @@
                 <div class="relative group cursor-pointer rounded-full"
                      id="avatar-upload-trigger"
                      title="{% trans 'Change profile picture' %}">
-                    <img src="{{ user.get_picture }}"
+                    <img src="{{user.get_picture}}"
                          class="w-[150px] h-[150px] rounded-full border-4 border-fb-lightSurface dark:border-fb-surface object-cover shadow-sm bg-white dark:bg-gray-800 group-hover:opacity-80 transition"
                          alt="{% trans 'User Image' %}"
                          id="current-avatar">
@@ -46,16 +46,16 @@
                 </div>
                 <!-- Mobile name (shows on under sm) -->
                 <div class="block sm:hidden text-center mt-2 w-full">
-                    <h1 class="text-2xl font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ user.get_profile_name }}</h1>
-                    <p class="text-[15px] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{ user.username }}</p>
+                    <h1 class="text-2xl font-bold leading-tight text-fb-lightText dark:text-fb-text">{{user.get_profile_name}}</h1>
+                    <p class="text-[15px] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{user.username}}</p>
                 </div>
             </div>
             <!-- Main Info and Actions Flex Container -->
             <div class="px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-center sm:items-start flex-wrap gap-4 pb-4">
                 <div class="flex-1 min-w-[300px] text-center sm:text-left">
                     <div class="hidden sm:block">
-                        <h1 class="text-[2rem] font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ user.get_profile_name }}</h1>
-                        <p class="text-[1.1rem] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{ user.username }}</p>
+                        <h1 class="text-[2rem] font-bold leading-tight text-fb-lightText dark:text-fb-text">{{user.get_profile_name}}</h1>
+                        <p class="text-[1.1rem] font-semibold text-fb-lightMuted dark:text-fb-muted">@{{user.username}}</p>
                     </div>
                 </div>
                 <!-- Action buttons for header -->
@@ -92,7 +92,7 @@
                     <div class="p-4 sm:p-5">
                         <form method="post" action="{% url 'users:update' %}" class="space-y-4">
                             {% csrf_token %}
-                            {{ form|crispy }}
+                            {{form|crispy}}
                             <div class="pt-4 flex items-center justify-end gap-3 border-t border-fb-lightBorder dark:border-fb-border mt-6">
                                 <a href="{% url 'users:detail' user.username %}"
                                    class="px-5 py-2 font-semibold rounded-lg text-fb-lightText dark:text-fb-text bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 transition">
@@ -172,11 +172,10 @@
                     </div>
                     <div class="p-4 overflow-y-auto flex-grow bg-gray-50 dark:bg-gray-900 border-x border-x-fb-lightBorder dark:border-x-fb-border">
                         <p class="text-center mb-4 text-fb-lightText dark:text-fb-text font-medium">
-                            {% trans 'Drag the selection
-                            to crop your profile picture.' %}
+                            {% trans 'Drag the selection to crop your profile picture.' %}
                         </p>
                         <div class="flex justify-center flex-grow items-center">
-                            <img src="{% get_media_prefix %}profile_pics/{{ user.username }}_tmp.jpg?_={% now 'U' %}"
+                            <img src="{% get_media_prefix %}profile_pics/{{user.username}}_tmp.jpg?_={% now 'U' %}"
                                  id="crop-picture"
                                  class="max-w-full max-h-[50vh] object-contain shadow-sm border border-fb-lightBorder dark:border-fb-border bg-white dark:bg-black">
                         </div>

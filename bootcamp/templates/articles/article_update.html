@@ -50,12 +50,12 @@
                       role="form"
                       class="tailwind-crispy-form">
                     {% csrf_token %}
-                    {{ form|crispy }}
+                    {{form|crispy}}
                     <!-- Image Preview -->
                     <div class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
                          id="image-preview">
                         {% if form.instance.image %}
-                            <img src="{{ form.instance.image.url }}"
+                            <img src="{{form.instance.image.url}}"
                                  alt="{% trans 'Current image' %}"
                                  class="w-full h-full object-cover">
                         {% else %}
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-    {{ form.media }}
+    {{form.media}}
 {% endblock content %}
 {% block right_sidebar_widgets %}
     <!-- Writing Tips -->

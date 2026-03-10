@@ -10,21 +10,21 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0 me-3">
                         {% if user.get_picture %}
-                            <img src="{{ user.get_picture }}"
+                            <img src="{{user.get_picture}}"
                                  class="rounded-circle"
                                  width="50"
                                  height="50"
-                                 alt="{{ user.username }}">
+                                 alt="{{user.username}}">
                         {% endif %}
                     </div>
                     <div class="flex-grow-1">
                         <h5 class="mb-0">
                             <a href="{% url 'users:detail' user.username %}"
                                class="text-decoration-none"
-                               title="{{ user.username }}">{{ user.username }}</a>
+                               title="{{user.username}}">{{user.username}}</a>
                         </h5>
                         {% if user.member_since %}
-                            <p class="text-muted mb-0 small">Member since {{ user.member_since|naturaltime }}</p>
+                            <p class="text-muted mb-0 small">Member since {{user.member_since|naturaltime}}</p>
                         {% endif %}
                     </div>
                 </div>

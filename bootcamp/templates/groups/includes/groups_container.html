@@ -5,8 +5,8 @@
     <div class="card-body">
         <div class="d-flex flex-wrap gap-2 mb-3">
             {% for group in groups_list %}
-                <a href="{{ group.get_absolute_url }}"
-                   class="badge bg-light text-dark text-decoration-none px-3 py-2 rounded-pill">{{ group.title }}</a>
+                <a href="{{group.get_absolute_url}}"
+                   class="badge bg-light text-dark text-decoration-none px-3 py-2 rounded-pill">{{group.title}}</a>
             {% empty %}
                 <p class="text-muted mb-0">You haven't subscribed to any groups yet.</p>
             {% endfor %}

@@ -151,7 +151,7 @@
                         <div class="relative">
                             <button onclick="toggleDropdown('profileMenu')"
                                     class="w-10 h-10 rounded-full overflow-hidden border border-fb-lightBorder dark:border-fb-border ml-1 focus:outline-none">
-                                <img src="{{ user.get_picture }}"
+                                <img src="{{user.get_picture}}"
                                      alt="Profile"
                                      class="w-full h-full object-cover">
                             </button>
@@ -159,10 +159,10 @@
                                  class="hidden absolute right-0 mt-2 w-80 bg-fb-lightSurface dark:bg-fb-surface rounded-lg shadow-xl border border-fb-lightBorder dark:border-fb-border p-3 z-50">
                                 <a href="{% url 'users:detail' request.user.username %}"
                                    class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg cursor-pointer transition shadow-sm border border-fb-lightBorder dark:border-fb-border mb-2">
-                                    <img src="{{ user.get_picture }}" class="w-12 h-12 rounded-full">
+                                    <img src="{{user.get_picture}}" class="w-12 h-12 rounded-full">
                                     <div>
                                         <h3 class="font-semibold text-fb-lightText dark:text-fb-text">
-                                            {{ request.user.get_full_name|default:request.user.username }}
+                                            {{request.user.get_full_name|default:request.user.username}}
                                         </h3>
                                         <p class="text-sm text-fb-lightMuted dark:text-fb-muted">See your profile</p>
                                     </div>
@@ -207,8 +207,8 @@
                             <li>
                                 <a href="{% url 'users:detail' request.user.username %}"
                                    class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
-                                    <img src="{{ user.get_picture }}" class="w-8 h-8 rounded-full">
-                                    <span class="font-medium">{{ request.user.get_full_name|default:request.user.username }}</span>
+                                    <img src="{{user.get_picture}}" class="w-8 h-8 rounded-full">
+                                    <span class="font-medium">{{request.user.get_full_name|default:request.user.username}}</span>
                                 </a>
                             </li>
                             <li>
@@ -243,7 +243,7 @@
                             {% for message in messages %}
                                 <div class="bg-fb-lightSurface dark:bg-fb-surface border-l-4 {% if 'success' in message.tags %}border-green-500{% elif 'error' in message.tags or 'danger' in message.tags %}border-red-500{% else %}border-blue-500{% endif %} p-4 rounded shadow-sm text-fb-lightText dark:text-fb-text flex justify-between items-center toast-message"
                                      role="alert">
-                                    <div>{{ message }}</div>
+                                    <div>{{message}}</div>
                                     <button class="text-fb-lightMuted dark:text-fb-muted hover:text-fb-lightText dark:hover:text-fb-text focus:outline-none"
                                             onclick="this.parentElement.style.opacity='0'; setTimeout(()=>this.parentElement.remove(), 300)">
                                         <i class="fa-solid fa-xmark"></i>
@@ -269,12 +269,11 @@
                                             <a href="{% url 'messager:conversation_detail' friend.username %}"
                                                class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition relative">
                                                 <div class="relative">
-                                                    <img src="{{ friend.get_picture }}" class="w-8 h-8 rounded-full">
+                                                    <img src="{{friend.get_picture}}" class="w-8 h-8 rounded-full">
                                                     <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-fb-lightBg dark:border-fb-bg">
                                                     </div>
                                                 </div>
-                                                <span class="font-medium text-[15px]">{{ friend.get_profile_name|default:friend.username
-                                                }}</span>
+                                                <span class="font-medium text-[15px]">{{friend.get_profile_name|default:friend.username}}</span>
                                             </a>
                                         </li>
                                     {% empty %}
@@ -298,7 +297,7 @@
                 <script src="{% static 'js/bootcamp.js' %}" type="text/javascript"></script>
                 <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
                 <script type="text/javascript">
-        var currentUser = "{{ request.user.username }}";
+        var currentUser = "{{request.user.username}}";
 
         function toggleDropdown(id) {
             const dropdown = document.getElementById(id);

@@ -24,17 +24,16 @@
                     <a href="{% url 'messager:conversation_detail' user.username %}"
                        class="chat-user {% if active == user.username %}active{% endif %}">
                         <div class="d-flex align-items-center w-100">
-                            <img src="{{ user.get_picture }}"
+                            <img src="{{user.get_picture}}"
                                  class="user-image"
                                  alt="{% trans 'User Image' %}">
                             <div class="chat-user-info">
-                                <div class="chat-user-name">{{ user.get_profile_name|title }}</div>
-                                <div class="chat-user-preview">@{{ user.username }}</div>
+                                <div class="chat-user-name">{{user.get_profile_name|title}}</div>
+                                <div class="chat-user-preview">@{{user.username}}</div>
                             </div>
                             {% if unread_messages %}
-                                <span id="new-message-{{ user.username }}"
-                                      class="badge rounded-pill ms-auto">{{ unread_messages
-                                }}</span>
+                                <span id="new-message-{{user.username}}"
+                                      class="badge rounded-pill ms-auto">{{unread_messages}}</span>
                             {% endif %}
                         </div>
                     </a>
@@ -50,10 +49,10 @@
                         {% if user.username == active %}
                             <a href="{% url 'users:detail' user.username %}"
                                class="chat-header-user">
-                                <img src="{{ user.get_picture }}"
+                                <img src="{{user.get_picture}}"
                                      class="user-image"
                                      alt="{% trans 'User Image' %}">
-                                <span class="chat-header-name">{{ user.get_profile_name|title }}</span>
+                                <span class="chat-header-name">{{user.get_profile_name|title}}</span>
                             </a>
                         {% endif %}
                     {% endfor %}
@@ -75,7 +74,7 @@
                 <div class="chat-box">
                     <form role="form" method="post" action="#" id="send" class="m-0">
                         {% csrf_token %}
-                        <input type="hidden" name="to" value="{{ active }}">
+                        <input type="hidden" name="to" value="{{active}}">
                         <div class="chat-box-form">
                             <input class="form-control"
                                    type="text"
@@ -107,7 +106,7 @@
 {% endblock content %}
 {% block modal %}
     <script type="text/javascript">
-    var activeUser = "{{ active }}";
+    var activeUser = "{{active}}";
     // Auto-scroll to bottom of chat
     window.onload = function () {
         var msgs = $('.messages-list');

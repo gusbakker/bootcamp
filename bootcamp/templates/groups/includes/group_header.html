@@ -4,7 +4,7 @@
     <div class="relative w-full h-48 sm:h-64 bg-fb-lightSurfaceHover dark:bg-[#4e4f50]">
         {% if group.get_picture %}
             <div class="absolute inset-0 bg-cover bg-center"
-                 style="background-image: url('{{ group.get_picture }}')"></div>
+                 style="background-image: url('{{group.get_picture}}')"></div>
         {% else %}
             <div class="absolute inset-0 flex items-center justify-center">
                 <i class="fa-solid fa-users text-5xl opacity-30 text-fb-lightMuted dark:text-fb-muted"></i>
@@ -15,8 +15,8 @@
         <!-- Title & Action inside Overlay -->
         <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 flex flex-col sm:flex-row items-end justify-between gap-4">
             <div class="text-white w-full sm:w-auto">
-                <h1 class="text-2xl sm:text-3xl font-bold leading-tight mb-1 text-shadow">{{ group.title }}</h1>
-                <p class="text-sm text-gray-200 hidden sm:block max-w-xl text-shadow-sm">{{ group.description|truncatewords:20 }}</p>
+                <h1 class="text-2xl sm:text-3xl font-bold leading-tight mb-1 text-shadow">{{group.title}}</h1>
+                <p class="text-sm text-gray-200 hidden sm:block max-w-xl text-shadow-sm">{{group.description|truncatewords:20}}</p>
             </div>
             <div class="w-full sm:w-auto flex-shrink-0">
                 {% if group in request.user.subscribed_groups.all %}
@@ -39,22 +39,22 @@
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-px bg-fb-lightBorder dark:border-fb-border">
         <!-- Subscribers -->
         <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{ group.subscribers.count }}</div>
+            <div class="text-xl font-bold text-fb-primary mb-0.5">{{group.subscribers.count}}</div>
             <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Members' %}</div>
         </div>
         <!-- Posts -->
         <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{ news_list.paginator.count }}</div>
+            <div class="text-xl font-bold text-fb-primary mb-0.5">{{news_list.paginator.count}}</div>
             <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Posts' %}</div>
         </div>
         <!-- Admins -->
         <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{ group.admins.count }}</div>
+            <div class="text-xl font-bold text-fb-primary mb-0.5">{{group.admins.count}}</div>
             <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Admins' %}</div>
         </div>
         <!-- Recent Activity -->
         <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{ group.recent_posts }}</div>
+            <div class="text-xl font-bold text-fb-primary mb-0.5">{{group.recent_posts}}</div>
             <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Recent Activity' %}</div>
         </div>
     </div>

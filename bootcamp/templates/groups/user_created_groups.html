@@ -51,26 +51,26 @@
                            class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
                             <i class="fa-solid fa-angles-left"></i>
                         </a>
-                        <a href="?page={{ page_obj.previous_page_number }}"
+                        <a href="?page={{page_obj.previous_page_number}}"
                            class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
                             <i class="fa-solid fa-angle-left"></i> {% trans 'Prev' %}
                         </a>
                     {% endif %}
                     {% for num in paginator.page_range %}
                         {% if page_obj.number == num %}
-                            <span class="px-3 py-1.5 rounded-md bg-fb-primary text-white font-bold shadow-sm text-[14px]">{{ num }}</span>
+                            <span class="px-3 py-1.5 rounded-md bg-fb-primary text-white font-bold shadow-sm text-[14px]">{{num}}</span>
                         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <a href="?page={{ num }}"
+                            <a href="?page={{num}}"
                                class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
-                            {{ num }}</a>
+                            {{num}}</a>
                         {% endif %}
                     {% endfor %}
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}"
+                        <a href="?page={{page_obj.next_page_number}}"
                            class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
                             {% trans 'Next' %} <i class="fa-solid fa-angle-right"></i>
                         </a>
-                        <a href="?page={{ paginator.num_pages }}"
+                        <a href="?page={{paginator.num_pages}}"
                            class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
                             <i class="fa-solid fa-angles-right"></i>
                         </a>

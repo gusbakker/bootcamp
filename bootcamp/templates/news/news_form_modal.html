@@ -6,7 +6,7 @@
         <div class="flex items-center justify-center p-4 border-b border-fb-lightBorder dark:border-fb-border relative">
             <h2 class="text-xl font-bold text-fb-lightText dark:text-fb-text">
                 {% if group %}
-                    {% trans "Share something with" %} {{ group.title }}
+                    {% trans "Share something with" %} {{group.title}}
                 {% else %}
                     {% trans "Create post" %}
                 {% endif %}
@@ -24,12 +24,12 @@
                   method="post"
                   action="">
                 {% csrf_token %}
-                {% if group %}<input type="hidden" name="group" value="{{ group.id }}">{% endif %}
+                {% if group %}<input type="hidden" name="group" value="{{group.id}}">{% endif %}
                 <div class="flex items-center gap-3 mb-4">
-                    <img src="{{ user.get_picture }}" class="w-10 h-10 rounded-full">
+                    <img src="{{user.get_picture}}" class="w-10 h-10 rounded-full">
                     <div>
                         <h4 class="font-semibold text-[15px] text-fb-lightText dark:text-fb-text">
-                            {{ request.user.get_full_name|default:request.user.username }}
+                            {{request.user.get_full_name|default:request.user.username}}
                         </h4>
                         <!-- Simulated audience selector -->
                         <button type="button"

@@ -34,7 +34,7 @@
                   class="w-full m-0 flex gap-2">
                 {% csrf_token %}
                 <input type="hidden" name="parent" value="">
-                <img src="{{ user.get_picture }}"
+                <img src="{{user.get_picture}}"
                      class="w-9 h-9 rounded-full object-cover">
                 <div class="flex-grow flex items-center bg-fb-lightBg dark:bg-fb-bg rounded-2xl px-3 py-1 border border-transparent focus-within:border-fb-primary transition">
                     <textarea id="replyInput"

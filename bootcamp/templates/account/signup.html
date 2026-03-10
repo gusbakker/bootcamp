@@ -304,15 +304,15 @@
                 </div>
                 <h1 class="auth-title">{% trans 'Create your account' %}</h1>
                 <p class="auth-subtitle">
-                    {% blocktrans %}Already have an account? <a href="{{ login_url }}">Log in</a>.{% endblocktrans %}
+                    {% blocktrans %}Already have an account? <a href="{{login_url}}">Log in</a>.{% endblocktrans %}
                 </p>
                 <!-- Error messages -->
                 {% if form.errors %}
                     <ul class="errorlist">
                         {% for field in form %}
-                            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                            {% for error in field.errors %}<li>{{error}}</li>{% endfor %}
                         {% endfor %}
-                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                        {% for error in form.non_field_errors %}<li>{{error}}</li>{% endfor %}
                     </ul>
                 {% endif %}
                 <form class="signup"
@@ -320,11 +320,11 @@
                       method="post"
                       action="{% url 'account_signup' %}">
                     {% csrf_token %}
-                    {{ form|crispy }}
+                    {{form|crispy}}
                     {% if redirect_field_value %}
                         <input type="hidden"
-                               name="{{ redirect_field_name }}"
-                               value="{{ redirect_field_value }}">
+                               name="{{redirect_field_name}}"
+                               value="{{redirect_field_value}}">
                     {% endif %}
                     <button type="submit" class="btn-auth-submit">
                         <i class="fa-solid fa-user-plus me-2"></i>{% trans 'Create account' %}

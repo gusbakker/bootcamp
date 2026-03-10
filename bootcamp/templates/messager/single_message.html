@@ -1,12 +1,12 @@
 {% load static i18n humanize %}
 {% load thumbnail %}
 <div class="message-item {% if message.sender == current_user %}me{% else %}them{% endif %}">
-    <img src="{{ message.sender.get_picture }}"
+    <img src="{{message.sender.get_picture}}"
          class="picture"
          alt="{% trans 'User Image' %}"
-         title="{{ message.sender.get_profile_name|title }}">
+         title="{{message.sender.get_profile_name|title}}">
     <div class="message-content">
-        <div class="message-bubble">{{ message.message|linebreaksbr }}</div>
-        <div class="timestamp">{{ message.timestamp|date:'N d G:i' }}</div>
+        <div class="message-bubble">{{message.message|linebreaksbr}}</div>
+        <div class="timestamp">{{message.timestamp|date:'N d G:i'}}</div>
     </div>
 </div>

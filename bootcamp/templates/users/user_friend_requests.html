@@ -10,7 +10,7 @@
                 <div class="d-flex">
                     <div class="flex-shrink-0 me-3">
                         <a href="{% url 'users:detail' user.username %}">
-                            <img src="{{ user.get_picture }}"
+                            <img src="{{user.get_picture}}"
                                  class="user-image rounded-circle"
                                  width="60"
                                  height="60"
@@ -22,7 +22,7 @@
                             <h5 class="mb-1">
                                 <a href="{% url 'users:detail' user.username %}"
                                    class="text-decoration-none"
-                                   title="{{ user.username }}">{{ user.username }}</a>
+                                   title="{{user.username}}">{{user.username}}</a>
                             </h5>
                             <a href="{% url 'users:accept_message_request' user.id %}"
                                class="btn btn-outline-primary btn-sm"
@@ -31,7 +31,7 @@
                         </div>
                         <p class="text-muted mb-0">
                             Member since
-                            <span title="{{ user.member_since|date:'D d M Y' }} | {{ user.member_since|time:'H:i:s' }}">{{ user.member_since|naturaltime }}</span>
+                            <span title="{{user.member_since|date:'D d M Y'}} | {{user.member_since|time:'H:i:s'}}">{{user.member_since|naturaltime}}</span>
                         </p>
                     </div>
                 </div>
