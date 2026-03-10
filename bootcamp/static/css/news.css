@@ -1,196 +1,518 @@
+/*
+ * News CSS - Modernized with Bootstrap 5 compatibility
+ * Includes styles from news_list.html, news_single.html, news_thread.html, news_form_modal.html
+ */
+
+/* ==========================================================================
+   1. Stream & Container
+   ========================================================================== */
 
 ul.stream {
   margin: 0;
   padding: 0;
-}
-
-ul.stream li {
   list-style: none;
 }
 
-.infinite-container li {
-  list-style: none;
+.infinite-container {
+  margin-top: 1.5rem;
 }
 
 .infinite-item {
-  margin-bottom: 30px;
+  margin-bottom: 1.5rem;
+  list-style: none;
 }
 
-.stream {
-  margin: 2em 0 0 0;
-  padding: 0;
+/* ==========================================================================
+   2. Post Card — Dark Mode First
+   ========================================================================== */
+
+.news-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1.5rem;
+  background-color: #1e1e1e;
 }
 
-.stream li:last-child {
-  border-bottom: none;
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-ul.stream li a img.user {
-  width: 60px;
-  border-radius: 100px;
-  float: left;
+.news-card .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-bottom: 1px solid #2d2d2d;
 }
 
-ul.stream li div.post {
-  padding: 0 0.1em 0 1.2em;
-  overflow-x: auto;
+.news-card .card-body {
+  padding: 1.25rem;
+  background-color: #1e1e1e;
 }
 
-ul.stream li div.post h3 {
-  font-size: 1em;
-  margin: 0;
+/* Post Content */
+.post-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
-ul.stream li div.post h3 small {
-  margin-left: .3em;
-  font-size: .8em;
+.post-content p {
+  margin-bottom: 0.75rem;
 }
 
-ul.stream li div.post p {
-  margin: 0;
+.post-content p:last-child {
+  margin-bottom: 0;
 }
 
-ul.stream li div.post div.interaction {
-  padding-top: 0;
-}
-
-ul.stream li div.post div.interaction a {
-  margin-right: .6em;
-  font-size: .8em;
-}
-
-.post {
-  margin-left: 10px;
-  padding: 0 0 0 1.2em;
-  overflow-x: auto;
-}
-
-.ads-column {
-    margin-top: 78px;
+/* User Info & Timestamp */
+.user-info {
+  font-size: 0.85rem;
+  color: #6c757d;
 }
 
 .timestamp {
-  font-size: 0.8em;
-  color: grey;
+  font-size: 0.8rem;
+  color: #6c757d;
 }
 
-.news-comment {
-  padding: 0.7rem 1.5rem 0.7rem 1.5rem;
-  overflow-x: auto;
+/* ==========================================================================
+   3. Interactions
+   ========================================================================== */
+
+.interactions .btn {
+  font-size: 0.85rem;
+  padding: 0.375rem 0.75rem;
+  transition: all 0.2s ease;
 }
 
-.interaction {
+.interactions .btn:hover {
+  background-color: #f0f0f0;
+}
+
+.like-count,
+.comment-count {
+  font-size: 0.85rem;
 }
 
 .interaction a {
-  margin-right: 1.3em;
+  display: inline-block;
   text-decoration: none;
+  margin-right: 0.75rem;
+  color: #aaa;
+  padding: 0.375rem 0.75rem;
+  border-radius: 1.5rem;
+  background-color: #2d2d2d;
+  transition: all 0.2s ease;
 }
 
-.interaction a span {
-  margin-left: 0.3em;
+.interaction a:hover {
+  background-color: #3d3d3d;
 }
+
+.interaction a i {
+  margin-right: 0.25rem;
+}
+
+/* ==========================================================================
+   4. Stream Updates & Loading
+   ========================================================================== */
 
 .stream-update {
   text-align: center;
-  border-bottom: 1px solid #eeeeee;
+  background-color: rgba(13, 110, 253, 0.1);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: none;
+}
+
+.stream-update:hover {
+  background-color: rgba(13, 110, 253, 0.15);
 }
 
 .stream-update a {
-  display: block;
-  padding: .6em 0;
-  background-color: #f5f8fa;
-}
-
-.stream-update a:hover {
+  color: #0d6efd;
   text-decoration: none;
-  background-color: #e1e8ed;
-}
-
-.compose {
-  display: none;
-  border-bottom: 1px solid #eee;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.col-centered {
-  float: none;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-.compose h2 {
-  font-size: 1.4em;
-}
-
-.empty {
-  margin: 0 .8em;
-  font-size: .9em;
+  font-weight: 500;
+  display: block;
 }
 
 .load {
   text-align: center;
-  padding-top: 1em;
-  border-top: 1px solid #eeeeee;
+  padding: 1.5rem 0;
   display: none;
-  padding: 15px 0;
 }
 
-.loadcomment {
-  text-align: center;
-}
-
-.remove-news {
-  color: #bbbbbb;
-  float: right;
-  cursor: pointer;
-}
-
-.remove-news:hover {
-  color: #333333;
-
-}
-
-.dotsmenu{
-  content: '\2807';
-  font-size: 3em;
-  color: #2e2e2e
-}
+/* ==========================================================================
+   5. Meta Link Cards
+   ========================================================================== */
 
 .meta.card {
-  background-color: #f8f8f8;
-  margin-bottom: 10px;
-  color: #6c757d;
+  background-color: #2d2d2d;
+  margin-bottom: 0.75rem;
+  color: #e0e0e0;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .meta.card:hover {
-  background-color: #fff;
+  background-color: #3d3d3d;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .meta .card-body {
   padding: 0.8rem;
+  background-color: #2d2d2d;
 }
 
-.meta .card-title, .meta .card-text, .meta .card-btn{
-  font-size: 0.8em;
-  line-height: 1.4em;
+.meta .card-title,
+.meta .card-text,
+.meta .card-btn {
+  font-size: 0.9rem;
+  line-height: 1.4;
   margin: 0;
 }
 
-.meta .card-img-top{
-  height: 100px;
-  background: center no-repeat #ccc;
+.meta .card-img-top {
+  height: 160px;
+  background: center no-repeat #3d3d3d;
   background-size: cover;
 }
 
-.meta .card-text{
-  margin-bottom: 5px;
+/* ==========================================================================
+   6. Compose Button
+   ========================================================================== */
+
+.btn-compose {
+  border-radius: 0.5rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 5px rgba(13, 110, 253, 0.15);
+  transition: all 0.2s ease;
 }
 
-.meta:hover .btn{
-  background-color: #888;
-  color: #FFF;
+.btn-compose:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+}
 
+.btn-compose i {
+  margin-right: 0.5rem;
+}
+
+/* ==========================================================================
+   7. Modal
+   ========================================================================== */
+
+.modal .modal-content {
+  border: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal .modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.5rem;
+}
+
+.modal .modal-body {
+  padding: 1.5rem;
+}
+
+.modal .modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.5rem;
+}
+
+/* ==========================================================================
+   8. Upload Area (news_form_modal.html)
+   ========================================================================== */
+
+.upload-area {
+  border: 2px dashed #515151;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.upload-area:hover {
+  border-color: var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+
+.upload-area-inner {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.upload-area .upload-icon {
+  font-size: 2rem;
+  color: var(--bs-primary);
+  margin-bottom: 0.5rem;
+}
+
+.upload-text {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--bs-light);
+}
+
+.upload-hint {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--bs-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.upload-area.highlight {
+  border-color: var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+#imagePreviewContainer {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+}
+
+#removeImage {
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+#removeImage:hover {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   9. Comments (news_thread.html)
+   ========================================================================== */
+
+.comment-item {
+  margin-bottom: 1.5rem;
+  list-style-type: none;
+}
+
+.comment-bubble {
+  background-color: #3A3B3C;
+  border-radius: 1rem;
+}
+
+.comment-input-wrapper {
+  background-color: #3A3B3C;
+}
+
+#newsThreadModal #newsContent .news-card {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+#newsThreadModal #newsContent .news-card .card-body {
+  background-color: transparent !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+#newsThreadModal #newsContent .news-card .card-header {
+  background-color: transparent !important;
+  border-bottom: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+#newsThreadModal #newsContent .interaction {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ==========================================================================
+   10. Widget Cards (news_list.html sidebar)
+   ========================================================================== */
+
+.widget-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+  margin-bottom: 1.5rem;
+  background-color: #1e1e1e;
+}
+
+.widget-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #2d2d2d;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.widget-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0;
+  color: #e0e0e0;
+}
+
+/* ==========================================================================
+   11. Light Mode Overrides
+   ========================================================================== */
+
+[data-theme="light"] .news-card {
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .news-card:hover {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .news-card .card-header {
+  background-color: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .news-card .card-body {
+  background-color: #fff;
+}
+
+[data-theme="light"] .post-content.text-light {
+  color: #212529 !important;
+}
+
+[data-theme="light"] .text-light {
+  color: #212529 !important;
+}
+
+[data-theme="light"] .interaction a {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+[data-theme="light"] .interaction a:hover {
+  background-color: #e0e0e0;
+}
+
+[data-theme="light"] .interaction .fa-heart-o.text-light,
+[data-theme="light"] .interaction .fa-comment-o.text-light,
+[data-theme="light"] .interaction .fa-share.text-light {
+  color: #555 !important;
+}
+
+[data-theme="light"] .interaction .like-count.text-light,
+[data-theme="light"] .interaction .comment-count.text-light {
+  color: #555 !important;
+}
+
+[data-theme="light"] .meta.card {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+[data-theme="light"] .meta.card:hover {
+  background-color: #fff;
+}
+
+[data-theme="light"] .meta .card-body {
+  background-color: #f8f9fa;
+}
+
+[data-theme="light"] .meta .card-title.text-light {
+  color: #212529 !important;
+}
+
+[data-theme="light"] .border-dark {
+  border-color: #dee2e6 !important;
+}
+
+[data-theme="light"] .widget-card {
+  background-color: #fff;
+}
+
+[data-theme="light"] .widget-header {
+  background-color: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .widget-title {
+  color: #212529;
+}
+
+[data-theme="light"] .stream-update {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+[data-theme="light"] .stream-update:hover {
+  background-color: rgba(13, 110, 253, 0.15);
+}
+
+[data-theme="light"] .stream-update a {
+  color: #0d6efd;
+}
+
+[data-theme="light"] .interactions .btn {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+[data-theme="light"] .interactions .btn:hover {
+  background-color: #e9ecef;
+}
+
+[data-theme="light"] .btn-light {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  color: #212529;
+}
+
+[data-theme="light"] .btn-light:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #212529;
+}
+
+[data-theme="light"] .modal-content {
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+[data-theme="light"] .modal-header,
+[data-theme="light"] .modal-footer {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .upload-area {
+  border-color: #dee2e6;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .upload-text {
+  color: var(--bs-dark);
+}
+
+[data-theme="light"] .upload-hint {
+  color: var(--bs-gray-600);
+}
+
+[data-theme="light"] .comment-bubble {
+  background-color: #F0F2F5;
+}
+
+[data-theme="light"] .comment-input-wrapper {
+  background-color: #F0F2F5;
+}
+
+[data-theme="light"] #newsThreadModal #newsContent .interaction {
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 }

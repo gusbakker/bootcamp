@@ -5,120 +5,262 @@
 {% block title %} {% trans 'Articles' %} {% endblock %}
 
 {% block head %}
-
+    <link href="{% static 'css/articles.css' %}" rel="stylesheet">
 {% endblock head %}
 
 {% block content %}
+    <div class="container articles-container">
+        <div class="section-header">
+            <h1 class="section-title">
+            </h1>
 
-    <!-- Page Content -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'news:list' %}">{% trans 'Home' %}</a></li>
-            {% if view.kwargs.tag %}
-                <li class="breadcrumb-item"><a href="{% url 'articles:list' %}">{% trans 'Articles' %}</a></li>
-                <li class="breadcrumb-item active"><a
-                        href="{% url 'articles:list' %}tag/{{ view.kwargs.tag }}">{{ view.kwargs.tag }}</a></li>
-            {% else %}
-                <li class="breadcrumb-item active"><a href="{% url 'articles:list' %}">{% trans 'Articles' %}</a></li>
-            {% endif %}
-        </ol>
-    </nav>
-    <div class="row">
-        <!-- Blog Entries Column -->
-        <div class="col-md-8">
-            {% for article in articles %}
-                <!-- Blog Post -->
-                <div class="card mb-4">
-                    {% thumbnail article.image "750x300" as im %}
-                        <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="card-img-top">
-                    {% empty %}
-                        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-                    {% endthumbnail %}
-                    <div class="card-body">
-                        <h2 class="card-title">{{ article.title|title }}</h2>
-                        <p class="card-text">{{ article.get_markdown|safe|truncatechars:150 }}</p>
-                        <a href="{% url 'articles:article' article.slug %}"
-                           class="btn btn-primary">{% trans 'Read More' %} &rarr;</a>
-                    </div>
-                    <div class="card-footer text-muted">
-                        {% trans 'Posted' %} {{ article.timestamp|naturaltime }}
-                        <i class="lead fa fa-user"></i>
-                        <a href="{% url 'users:detail' article.user.username %}">{{ article.user.get_profile_name|title }}</a>
-                        {% for tag in article.tags.names %}
-                            <a href="#">{{ tag }}</a>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% empty %}
-                <h4 class="no-data">{% trans 'There is no published article yet' %}. <a
-                        href="{% url 'articles:write_new' %}">{% trans 'Be the first one to publish one' %}!</a></h4>
-            {% endfor %}
-
-            {% if is_paginated %}
-                <ul class="pagination justify-content-center mb-4">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link"
-                                                 href="?page={{ page_obj.previous_page_number }}">&larr; {% trans 'Newer' %}</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><a class="page-link" href="#"><span>&larr;</span></a></li>
-                    {% endif %}
-                    {% for i in paginator.page_range %}
-                        {% if page_obj.number == i %}
-                            <li class="page-item disabled"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a>
-                            </li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-                    {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link"
-                                                 href="?page={{ page_obj.next_page_number }}">{% trans 'Older' %}
-                            &rarr;</a></li>
-                    {% else %}
-                        <li class="page-item disabled"><a class="page-link" href="#"><span>&rarr;</span></a></li>
-                    {% endif %}
-                </ul>
-            {% endif %}
-
-        </div>
-
-        <!-- Sidebar Widgets Column -->
-        <div class="col-md-4">
-            <!-- Write Article Widget -->
-            {% if request.user.is_authenticated %}
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        <a class="btn btn-success" href="{% url 'articles:write_new' %}"
-                           title="{% trans 'Write a new article' %}"><i class="fa fa-pencil"
-                                                                        aria-hidden="true"></i> {% trans 'New Article' %}
-                        </a>
-                        <a class="btn btn-primary" href="{% url 'articles:drafts' %}" title="{% trans 'Drafts' %}"><i
-                                class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans 'Drafts' %}</a>
-                    </div>
-                </div>
-            {% endif %}
-            <!-- Cloud Tag Widget -->
-            <div class="card my-4">
-                <h5 class="card-header">{% trans 'Cloud tag' %}</h5>
-                <div class="card-body">
-                    {% for tag, tag_props in popular_tags %}
-                        {% if tag_props.slug == view.kwargs.tag %}
-                            <a href="{% url 'articles:list' %}">
-                            <span class="badge badge-success">{{ tag_props.count }} {{ tag }} <i class="fa fa-times"
-                                                                                                 aria-hidden="true"></i></span>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'articles:list' %}tag/{{ tag_props.slug }}">
-                                <span class="badge badge-info">{{ tag_props.count }} {{ tag }}</span>
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+            <div class="section-actions">
+                {% if request.user.is_authenticated %}
+                    <a class="btn btn-primary btn-create-article" href="{% url 'articles:write_new' %}">
+                        <i class="fa-solid fa-pen-to-square"></i>{% trans 'Write Article' %}
+                    </a>
+                    <a class="btn btn-outline-primary btn-create-article" href="{% url 'articles:drafts' %}">
+                        <i class="fa-solid fa-file me-1"></i>{% trans 'My Drafts' %}
+                    </a>
+                {% endif %}
             </div>
         </div>
 
-    </div>
-    <!-- /.row -->
+        <!-- Articles and Sidebar -->
+        <div class="row">
+            <!-- Articles Column -->
+            <div class="col-lg-8">
+                <!-- Filter/Sort Controls -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    {% if view.kwargs.tag %}
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">{% trans 'Filtered by tag:' %}</span>
+                        <span class="badge bg-primary rounded-pill px-3 py-2">
+                            {{ view.kwargs.tag }}
+                            <a href="{% url 'articles:list' %}" class="text-white ms-2">
+                                <i class="fa-solid fa-times"></i>
+                            </a>
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
 
+                <!-- Articles Grid -->
+                {% if articles %}
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for article in articles %}
+                           <div class="col">
+                                <div class="card article-card h-100 shadow-sm">
+                                    <a href="{% url 'articles:article' article.slug %}" class="card-img-link">
+                                        {% thumbnail article.image "750x500" as im %}
+                                            <img src="{{ im.url }}" alt="{% trans 'Article Image' %}" class="card-img-top">
+                                        {% empty %}
+                                            <div class="bg-light card-img-top d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                <i class="fa-solid fa-newspaper fa-3x text-muted opacity-50"></i>
+                                            </div>
+                                        {% endthumbnail %}
+                                    </a>
+
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title mb-2">
+                                            <a href="{% url 'articles:article' article.slug %}" class="text-decoration-none stretched-link">
+                                                {{ article.title|title }}
+                                            </a>
+                                        </h5>
+
+                                        <p class="card-text text-muted mb-3 small">
+                                            {{ article.get_markdown|safe|striptags|truncatechars:120 }}
+                                        </p>
+
+                                        <div class="mt-auto d-flex justify-content-between align-items-end">
+                                            <a href="{% url 'articles:article' article.slug %}" class="btn btn-outline-primary btn-sm">
+                                                {% trans 'Read More' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+                                            </a>
+
+                                            <span class="text-muted small">
+                                                <i class="fa-regular fa-clock me-1"></i>{{ article.timestamp|naturaltime }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer bg-transparent">
+                                        <div class="d-flex align-items-center">
+                                            <a href="{% url 'users:detail' article.user.username %}" class="me-2">
+                                                <img src="{{ article.user.get_picture }}" alt="{{ article.user.username }}"
+                                                     class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
+                                            </a>
+                                            <div>
+                                                <a href="{% url 'users:detail' article.user.username %}" class="text-decoration-none fw-medium">
+                                                    {{ article.user.get_profile_name|title }}
+                                                </a>
+                                                {% if article.user.job_title %}
+                                                    <div class="text-muted small">{{ article.user.job_title|truncatechars:25 }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true"><i class="fa-solid fa-arrow-left"></i></span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fa-solid fa-arrow-left"></i></span>
+                                    </li>
+                                {% endif %}
+
+                                {% for i in paginator.page_range %}
+                                    {% if page_obj.number == i %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ i }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fa-solid fa-arrow-right"></i></span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fa-solid fa-newspaper"></i>
+                        </div>
+                        <h3 class="empty-state-title">{% trans 'No Articles Yet' %}</h3>
+                        <p class="empty-state-description">
+                            {% trans 'There are no published articles yet.' %}
+                        </p>
+                        <a href="{% url 'articles:write_new' %}" class="btn btn-primary">
+                            <i class="fa-solid fa-pen-to-square me-2"></i>{% trans 'Write First Article' %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Tag Cloud Widget -->
+                <div class="card sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-tags me-2"></i>{% trans 'Popular Tags' %}
+                    </div>
+                    <div class="card-body">
+                        <div class="tag-cloud">
+                            {% for tag, tag_props in popular_tags %}
+                                {% if tag_props.slug == view.kwargs.tag %}
+                                    <a href="{% url 'articles:list' %}" class="article-tag">
+                                        {{ tag }} ({{ tag_props.count }})
+                                        <i class="fa-solid fa-times ms-1"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'articles:list' %}tag/{{ tag_props.slug }}" class="article-tag">
+                                        {{ tag }} ({{ tag_props.count }})
+                                    </a>
+                                {% endif %}
+                            {% empty %}
+                                <p class="text-muted mb-0">{% trans 'No tags available yet.' %}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Articles Widget -->
+                <div class="card sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-fire me-2"></i>{% trans 'Popular Articles' %}
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for popular_article in popular_articles|default:articles|slice:":5" %}
+                                <a href="{% url 'articles:article' popular_article.slug %}" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                                    <div class="flex-shrink-0 me-3">
+                                        {% thumbnail popular_article.image "100x100" crop="center" as im %}
+                                            <img src="{{ im.url }}" class="rounded" width="64" height="64" style="object-fit: cover;" alt="">
+                                        {% empty %}
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                                                <i class="fa-solid fa-newspaper fa-lg text-muted"></i>
+                                            </div>
+                                        {% endthumbnail %}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fs-6">{{ popular_article.title|title|truncatechars:50 }}</h6>
+                                        <div class="d-flex align-items-center text-muted">
+                                            <small>
+                                                <i class="fa-solid fa-user me-1"></i>{{ popular_article.user.get_profile_name|title }}
+                                            </small>
+                                            <span class="mx-2">•</span>
+                                            <small>
+                                                <i class="fa-solid fa-clock me-1"></i>{{ popular_article.timestamp|naturaltime }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% empty %}
+                                <div class="list-group-item text-center p-3 text-muted">
+                                    {% trans 'No articles available yet.' %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 {% endblock content %}
+
+{% block modal %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle light mode specific styling
+        function updateThemeStyles() {
+            if (document.documentElement.getAttribute('data-theme') === 'light') {
+                // Update placeholder backgrounds for article thumbnails
+                document.querySelectorAll('.bg-light').forEach(bg => {
+                    bg.classList.remove('bg-light');
+                    bg.classList.add('bg-gray-100');
+                });
+            }
+        }
+
+        // Run on page load
+        updateThemeStyles();
+
+        // Listen for theme changes
+        document.addEventListener('themeChanged', updateThemeStyles);
+
+        // Hook into the dark mode switch
+        const darkSwitch = document.getElementById('darkSwitch');
+        if (darkSwitch) {
+            darkSwitch.addEventListener('change', function() {
+                setTimeout(updateThemeStyles, 50);
+            });
+        }
+    });
+</script>
+{% endblock modal %}

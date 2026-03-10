@@ -3,20 +3,33 @@
 {% block title %}<title>Subscription List</title>{% endblock %}
 
 {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Subscription List</h1>
+        <a href="{% url 'groups:list' %}" class="btn btn-primary">
+          <i class="fa-solid fa-compass me-2"></i>Discover Groups
+        </a>
+      </div>
 
-{#{% include "groups/includes/page_heading.html" with text="Subscription List" %}#}
-<div class="alert alert-light text-center" role="alert">
-  Subscribe interesting groups to populate your home feed with interesting subjects.
-</div>
-{% if subscriptions %}
-  {% include "groups/includes/partial_group.html" with groups=subscriptions %}
-{% else %}
-  <div class="card p-4 my-4 mx-0">
-    <h6 class="text-center">No Subscriptions Found</h6>
-    <div style="margin:0 auto;">
-    <p class="text-muted">You have not subscribed any groups yet.</p>
+      <div class="alert alert-light text-center mb-4" role="alert">
+        Subscribe to interesting groups to populate your home feed with relevant content.
+      </div>
+
+      {% if subscriptions %}
+        {% include "groups/includes/partial_group.html" with groups=subscriptions %}
+      {% else %}
+        <div class="card p-5 text-center border-0 shadow-sm">
+          <i class="fa-solid fa-user-group fa-3x text-muted mb-3"></i>
+          <h5 class="mb-3">No Subscriptions Found</h5>
+          <p class="text-muted mb-4">You haven't subscribed to any groups yet.</p>
+          <a href="{% url 'groups:list' %}" class="btn btn-primary">
+            <i class="fa-solid fa-compass me-2"></i>Discover Groups
+          </a>
+        </div>
+      {% endif %}
     </div>
   </div>
-{% endif %}
-
+</div>
 {% endblock %}

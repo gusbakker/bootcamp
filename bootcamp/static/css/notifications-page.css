@@ -1,0 +1,556 @@
+/*
+ * Notifications CSS — popup + page styles
+ * Consistent with Facebook-style dark/light theme
+ */
+
+/* ==========================================================================
+   NOTIFICATION POPUP (most_recent.html — Bootstrap popover content)
+   ========================================================================== */
+
+.notif-popup {
+    width: 340px;
+    overflow: hidden;
+}
+
+/* ─── Header ───────────────────────────────── */
+.notif-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.notif-popup-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--bs-body-color);
+}
+
+.notif-mark-all {
+    color: var(--bs-primary);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+.notif-mark-all:hover {
+    opacity: 0.7;
+}
+
+/* ─── Body / list ──────────────────────────── */
+.notif-popup-body {
+    max-height: 380px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.notif-popup-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.notif-popup-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.notif-popup-body::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}
+
+[data-theme="light"] .notif-popup-body {
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+[data-theme="light"] .notif-popup-body::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* ─── Single notification item ─────────────── */
+.notif-popup-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.7rem 1rem;
+    position: relative;
+    transition: background 0.12s;
+}
+
+.notif-popup-item:not(:last-child) {
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.notif-popup-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .notif-popup-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+/* ─── Avatar + type indicator ──────────────── */
+.notif-popup-avatar {
+    position: relative;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.notif-popup-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.notif-type-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.5rem;
+    color: #fff;
+    border: 2px solid var(--bs-card-bg, #242526);
+}
+
+.notif-dot-like {
+    background: #e74c3c;
+}
+
+.notif-dot-comment {
+    background: #1877F2;
+}
+
+.notif-dot-follow {
+    background: #42B72A;
+}
+
+.notif-dot-message {
+    background: #9b59b6;
+}
+
+/* ─── Text content ─────────────────────────── */
+.notif-popup-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-popup-text {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--bs-body-color);
+}
+
+.notif-actor {
+    font-weight: 600;
+    color: var(--bs-body-color);
+    text-decoration: none;
+}
+
+.notif-actor:hover {
+    text-decoration: underline;
+}
+
+.notif-popup-time {
+    font-size: 0.72rem;
+    color: var(--bs-primary);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* ─── Dismiss (X) button ───────────────────── */
+.notif-popup-dismiss {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bs-text-muted, #B0B3B8);
+    text-decoration: none;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+}
+
+.notif-popup-item:hover .notif-popup-dismiss {
+    opacity: 1;
+}
+
+.notif-popup-dismiss:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--bs-body-color);
+}
+
+[data-theme="light"] .notif-popup-dismiss:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Footer ───────────────────────────────── */
+.notif-popup-footer {
+    padding: 0.65rem 1rem;
+    text-align: center;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.notif-popup-footer a {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.notif-popup-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ─── Empty state ──────────────────────────── */
+.notif-popup-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--bs-text-muted, #B0B3B8);
+}
+
+.notif-popup-empty i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    opacity: 0.4;
+}
+
+.notif-popup-empty p {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* ==========================================================================
+   NOTIFICATION PAGE (notification_list.html)
+   ========================================================================== */
+
+.notification-container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding-top: 1rem;
+}
+
+/* ─── Header ───────────────────────────────── */
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.notification-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.notification-actions .btn {
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* ─── Filter pills ─────────────────────────── */
+.notification-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.notification-filter {
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    background: var(--bs-card-bg);
+    border: 1px solid var(--bs-border-color);
+    font-weight: 500;
+    font-size: 0.82rem;
+    color: var(--bs-body-color);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.notification-filter i {
+    font-size: 0.78rem;
+    opacity: 0.6;
+}
+
+.notification-filter:hover {
+    background: rgba(24, 119, 242, 0.08);
+    border-color: rgba(24, 119, 242, 0.3);
+    color: #1877F2;
+}
+
+.notification-filter.active {
+    background: #1877F2;
+    border-color: #1877F2;
+    color: #fff;
+}
+
+.notification-filter.active i {
+    opacity: 1;
+}
+
+/* ─── Notification card ────────────────────── */
+.notification-card {
+    position: relative;
+    background: var(--bs-card-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.75rem;
+    margin-bottom: 0.5rem;
+    transition: background 0.12s;
+    overflow: hidden;
+}
+
+.notification-card:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="light"] .notification-card:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.notification-card.unread {
+    border-left: 3px solid #1877F2;
+}
+
+.notification-card.unread::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1877F2;
+}
+
+.notification-card .card-body {
+    display: flex;
+    padding: 0.85rem 1rem;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+/* ─── Avatar in page cards ─────────────────── */
+.notification-card .notification-avatar {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.notification-card .notification-avatar img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* ─── Content text ─────────────────────────── */
+.notification-card .notification-content {
+    flex: 1;
+    min-width: 0;
+    padding-right: 1.5rem;
+}
+
+.notification-text {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--bs-body-color);
+}
+
+.notification-user {
+    font-weight: 600;
+    color: var(--bs-body-color);
+    text-decoration: none;
+}
+
+.notification-user:hover {
+    color: #1877F2;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: #1877F2;
+    font-weight: 500;
+    margin-top: 3px;
+}
+
+/* ─── Type badges ──────────────────────────── */
+.notification-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.55rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.notification-type-badge-like {
+    background: rgba(231, 76, 60, 0.12);
+    color: #e74c3c;
+}
+
+.notification-type-badge-comment {
+    background: rgba(24, 119, 242, 0.12);
+    color: #1877F2;
+}
+
+.notification-type-badge-follow {
+    background: rgba(66, 183, 42, 0.12);
+    color: #42B72A;
+}
+
+.notification-type-badge-message {
+    background: rgba(155, 89, 182, 0.12);
+    color: #9b59b6;
+}
+
+/* ─── Mark-as-read button ──────────────────── */
+.notification-action {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.notification-card:hover .notification-action {
+    opacity: 1;
+}
+
+.mark-read-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: var(--bs-text-muted, #B0B3B8);
+    font-size: 0.75rem;
+    transition: background 0.15s, color 0.15s;
+}
+
+.mark-read-btn:hover {
+    background: rgba(24, 119, 242, 0.15);
+    color: #1877F2;
+}
+
+[data-theme="light"] .mark-read-btn {
+    background: #e4e6e9;
+}
+
+[data-theme="light"] .mark-read-btn:hover {
+    background: rgba(24, 119, 242, 0.1);
+}
+
+/* ─── Removing animation ───────────────────── */
+@keyframes fadeOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+}
+
+.notification-card.removing {
+    animation: fadeOutRight 0.4s ease forwards;
+}
+
+/* ─── Empty state ──────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--bs-text-muted, #B0B3B8);
+    opacity: 0.3;
+    margin-bottom: 1rem;
+}
+
+.empty-state-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+    font-size: 0.88rem;
+    color: var(--bs-text-muted, #B0B3B8);
+    margin-bottom: 1.5rem;
+}
+
+/* ─── Pagination ───────────────────────────── */
+.notification-container .pagination {
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.notification-container .page-link {
+    background: var(--bs-card-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+    border-radius: 0.5rem;
+    margin: 0 0.15rem;
+    font-size: 0.85rem;
+}
+
+.notification-container .page-item.active .page-link {
+    background: #1877F2;
+    border-color: #1877F2;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .notification-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .notification-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .notification-filter {
+        flex-shrink: 0;
+    }
+
+    .notification-action {
+        opacity: 1;
+    }
+
+    .notif-popup {
+        width: 300px;
+    }
+}

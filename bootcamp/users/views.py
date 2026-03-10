@@ -62,6 +62,11 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         # Only get the User record for the user making the request
         return User.objects.get(username=self.request.user.username)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['uploaded_picture'] = self.request.GET.get('upload_picture') == 'uploaded'
+        return context
+
 
 class UserListView(LoginRequiredMixin, ListView):
     model = User
@@ -115,11 +120,11 @@ def upload_picture(request):
 
         im.save(filename)
 
-        return redirect('/picture/?upload_picture=uploaded')
+        return redirect('/~update/?upload_picture=uploaded')
 
     except Exception as e:
         logging.error(f"Error uploading picture: {e}", exc_info=True)
-        return redirect('/picture/')
+        return redirect('/~update/')
 
 
 
@@ -144,7 +149,7 @@ def save_uploaded_picture(request):
     except Exception:
         pass
 
-    return redirect('/picture/')
+    return redirect('/~update/')
 
 
 class FollowersPageView(LoginRequiredMixin, ListView):

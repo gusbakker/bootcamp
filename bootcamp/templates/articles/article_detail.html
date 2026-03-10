@@ -4,94 +4,410 @@
 
 {% block title %}{{ article.title|title }}{% endblock %}
 
+{% block head %}
+    <link href="{% static 'css/articles.css' %}" rel="stylesheet">
+{% endblock head %}
+
 {% block content %}
-  <!-- Page Content -->
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'news:list' %}">{% trans 'Home' %}</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'articles:list' %}">{% trans 'Articles' %}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{ article.title|title }}</li>
-      </ol>
-    </nav>
-    <div class="row">
-      <!-- Post Content Column -->
-      <div class="col-lg-8">
-        <!-- Title -->
-        <h1 class="mt-4">{{ article.title|title }}</h1>
-        <!-- Author -->
-        <p class="lead">{% trans 'by' %}
-          <a href="{% url 'users:detail' article.user.username %}">{{ article.user.get_profile_name|title }}</a>
-        </p>
-        <!-- Date/Time -->
-        <p>{% trans 'Posted' %} {{ article.timestamp|naturaltime }}  </p>
-        <!-- Featured Image -->
-        {% thumbnail article.image "900x300" as im %}
-          <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="card-img-top">
-        {% empty %}
-          <img class="img-fluid rounded" src="http://placehold.it/900x300" alt="Card Image">
-        {% endthumbnail %}
-        <!-- <img src="{{ MEDIA_URL }}{{ article.image }}" lt="{% trans 'Featured Image' %}" class="card-img-top"> -->
-        <!-- Post Content -->
-        <p class="card-text">{{ article.get_markdown|safe }}</p>
-        <!-- Comments Form -->
-        <div class="card my-4">
-          <h5 class="card-header">{% trans 'Leave a Comment' %}:</h5>
-          <div class="card-body">
-            {% if user.is_authenticated %}
-              {% get_comment_form for article as form %}
-              <form action="{% comment_form_target %}" method="POST">
-                {% csrf_token %}
-                {{ form.comment|as_crispy_field }}
-                {{ form.honeyspot }}
-                {{ form.content_type }}
-                {{ form.object_pk }}
-                {{ form.timestamp }}
-                {{ form.security_hash }}
-                <input type="hidden" name="next" value="{% url 'articles:article' article.slug %}" />
-                <input type="submit" class="btn btn-primary" value="{% trans 'Add comment' %}" id="id_submit" />
-              </form>
-            {% endif %}
-          </div>
+    <div class="container article-container">
+        <div class="row">
+            <!-- Main Content Column -->
+            <div class="col-lg-8">
+                <article>
+                    <!-- Article Header -->
+                    <header class="article-header">
+                        <!-- Featured Image -->
+                        <div class="article-featured-image mb-4">
+                            {% thumbnail article.image "1200x600" as im %}
+                                <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="img-fluid rounded">
+                            {% empty %}
+                                <div class="bg-light text-center py-5 rounded">
+                                    <i class="fa-solid fa-newspaper fa-4x text-muted mb-3"></i>
+                                    <p class="text-muted">{% trans 'No featured image' %}</p>
+                                </div>
+                            {% endthumbnail %}
+                        </div>
+
+                        <h1 class="article-title mb-3">{{ article.title|title }}</h1>
+                        <hr class="mb-4">
+                    </header>
+
+                    <!-- Article Content -->
+                    <div class="article-content">
+                        {{ article.get_markdown|safe }}
+                    </div>
+
+                    <!-- Article Footer with Share Buttons -->
+                    <div class="mt-5 pt-4 border-top border-dark">
+                        <!-- Author and timestamp row -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ article.user.get_picture }}" alt="{{ article.user.username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                <span class="text-muted small">Written by <a href="{% url 'users:detail' article.user.username %}" class="text-decoration-none">{{ article.user.get_profile_name|title }}</a></span>
+                            </div>
+
+                            <div class="article-timestamp">
+                                <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                    <i class="fa-regular fa-clock me-1"></i>{{ article.timestamp|naturaltime }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Tags and share buttons row -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="article-tags">
+                                {% for tag in article.tags.all %}
+                                    <a href="{% url 'articles:list' %}tag/{{ tag }}" class="article-tag">
+                                        <i class="fa-solid fa-tag fa-sm me-1"></i>{{ tag }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+
+                            <div class="article-share-buttons">
+                                <a href="#" class="share-button" title="Share on Twitter" onclick="window.open('https://twitter.com/intent/tweet?text={{ article.title|urlencode }}&url={{ request.build_absolute_uri }}', '_blank')">
+                                    <i class="fa-brands fa-twitter"></i>
+                                </a>
+                                <a href="#" class="share-button" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}', '_blank')">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="share-button" title="Share on LinkedIn" onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}', '_blank')">
+                                    <i class="fa-brands fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="share-button" title="Copy Link" id="copy-link">
+                                    <i class="fa-solid fa-link"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Comments Section -->
+                <section class="comments-section mt-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="comments-title mb-0">
+                            {% get_comment_list for article as comment_list %}
+                            {% trans 'Comments' %}
+                            <span class="badge bg-primary rounded-pill ms-2">{{ comment_list|length }}</span>
+                        </h2>
+                    </div>
+
+                    <!-- Comment Form -->
+                    <div class="collapse {% if not comment_list %}show{% endif %}" id="commentForm">
+                        <div class="comment-form-card mb-4">
+                            <h3 class="comment-form-title h5">{% trans 'Leave a Comment' %}</h3>
+                            {% if user.is_authenticated %}
+                                {% get_comment_form for article as form %}
+                                <form action="{% comment_form_target %}" method="POST">
+                                    {% csrf_token %}
+                                    {{ form.comment|as_crispy_field }}
+                                    {{ form.honeyspot }}
+                                    {{ form.content_type }}
+                                    {{ form.object_pk }}
+                                    {{ form.timestamp }}
+                                    {{ form.security_hash }}
+                                    <input type="hidden" name="next" value="{% url 'articles:article' article.slug %}" />
+                                     <div class="d-flex justify-content-end mt-3">
+                                        <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#commentForm">
+                                            {% trans 'Cancel' %}
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="id_submit">
+                                            <i class="fa-solid fa-paper-plane me-1"></i>{% trans 'Post Comment' %}
+                                        </button>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    {% trans 'Please' %} <a href="{% url 'account_login' %}">{% trans 'log in' %}</a> {% trans 'to leave a comment.' %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Comments List -->
+                    {% if comment_list %}
+                        <div class="comments-list">
+                            {% for comment in comment_list %}
+                                <div class="comment-card">
+                                    <div class="comment-header">
+                                        <img src="{{ comment.user.get_picture }}" class="comment-avatar" alt="{{ comment.user.username }}">
+                                        <div>
+                                            <a href="{% url 'users:detail' comment.user.username %}" class="comment-author">
+                                                {{ comment.user.get_profile_name|title }}
+                                            </a>
+                                        </div>
+                                        <span class="comment-timestamp">{{ comment.submit_date|naturaltime }}</span>
+                                    </div>
+                                    <div class="comment-body">
+                                        {{ comment.comment|linebreaks }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-light text-center">
+                            {% trans 'No comments yet. Be the first to comment!' %}
+                        </div>
+                    {% endif %}
+                </section>
+            </div>
+
+            <!-- Sidebar Column -->
+            <div class="col-lg-4">
+                <!-- Author Card -->
+                <div class="sidebar-card">
+                    <div class="author-card">
+                        <img src="{{ article.user.get_picture }}" class="author-avatar" alt="{{ article.user.username }}">
+                        <h3 class="author-name">{{ article.user.get_profile_name|title }}</h3>
+                        <div class="author-bio">
+                            {% if article.user.bio %}
+                                {{ article.user.bio|truncatewords:30 }}
+                            {% else %}
+                                {% trans 'Writer at Antisocial Network' %}
+                            {% endif %}
+                        </div>
+                        <div class="author-stats">
+                            <div class="author-stat">
+                                <div class="author-stat-value">{{ article.user.article_set.count }}</div>
+                                <div class="author-stat-label">{% trans 'Articles' %}</div>
+                            </div>
+                            <div class="author-stat">
+                                <div class="author-stat-value">{{ article.user.followers.count }}</div>
+                                <div class="author-stat-label">{% trans 'Followers' %}</div>
+                            </div>
+                        </div>
+                        <a href="{% url 'users:detail' article.user.username %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-user me-1"></i>{% trans 'View Profile' %}
+                        </a>
+                        {% if request.user != article.user %}
+                            {% if request.user in article.user.followers.all %}
+                                <a href="{% url 'users:follow_user' article.user.id %}" class="btn btn-primary btn-sm ms-2" id="follow_user">
+                                    <i class="fa-solid fa-user-check me-1"></i>{% trans 'Following' %}
+                                </a>
+                            {% else %}
+                                <a href="{% url 'users:follow_user' article.user.id %}" class="btn btn-outline-primary btn-sm ms-2" id="follow_user">
+                                    <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Follow' %}
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Actions Widget -->
+                {% if request.user.is_authenticated %}
+                    <div class="sidebar-card">
+                        <div class="card-body d-flex justify-content-between">
+                            <a class="btn btn-primary w-100 me-2" href="{% url 'articles:write_new' %}" title="{% trans 'Write a new article' %}">
+                                <i class="fa-solid fa-pen-to-square me-1"></i> {% trans 'New Article' %}
+                            </a>
+                            {% if request.user == article.user %}
+                                <a class="btn btn-outline-primary w-100 ms-2" href="{% url 'articles:edit_article' article.id %}" title="{% trans 'Edit this article' %}">
+                                    <i class="fa-solid fa-edit me-1"></i> {% trans 'Edit' %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Tags Widget -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-tags me-2"></i>{% trans 'Tags' %}
+                    </div>
+                    <div class="card-body">
+                        <div class="tag-cloud">
+                            {% for tag in article.tags.all %}
+                                <a href="{% url 'articles:list' %}tag/{{ tag }}" class="article-tag">
+                                    {{ tag }}
+                                </a>
+                            {% empty %}
+                                <p class="text-muted mb-0">{% trans 'No tags for this article.' %}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Articles by Same Author -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-user-pen me-2"></i>{% trans 'More by this author' %}
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% with author_articles=article.user.article_set.all %}
+                                {% for author_article in author_articles|slice:":5" %}
+                                    {% if author_article.id != article.id %}
+                                        <a href="{% url 'articles:article' author_article.slug %}" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                                            <div class="flex-shrink-0 me-3">
+                                                {% thumbnail author_article.image "100x100" crop="center" as im %}
+                                                    <img src="{{ im.url }}" class="rounded" width="64" height="64" style="object-fit: cover;" alt="">
+                                                {% empty %}
+                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                                                        <i class="fa-solid fa-newspaper fa-lg text-muted"></i>
+                                                    </div>
+                                                {% endthumbnail %}
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">{{ author_article.title|title|truncatechars:50 }}</h6>
+                                                <small class="text-muted">
+                                                    <i class="fa-regular fa-clock me-1"></i>{{ author_article.timestamp|naturaltime }}
+                                                </small>
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                {% empty %}
+                                    <div class="list-group-item text-center p-3 text-muted">
+                                        {% trans 'No other articles by this author.' %}
+                                    </div>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Single Comment -->
+        <!-- Related Articles -->
+        <section class="related-articles">
+            <h2 class="related-title">{% trans 'You might also like' %}</h2>
 
-        {% get_comment_list for article as comment_list %}
-        {% for comment in comment_list %}
-          <div class="media mb-4">
-          <img src="{{ comment.user.get_picture }}" class="user-image pull-left"
-                                        id="pic" style="width: 50px; border-radius: 50%;"
-                                         alt="{% trans 'User Image' %}">
-            <div class="media-body">
-              <h5 class="mt-0">{{ comment.user.get_profile_name|title }}</h5>
-              {{ comment.comment|linebreaks }}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% with related_articles=article.user.article_set.all %}
+                    {% for related_article in related_articles|slice:":3" %}
+                        {% if related_article.id != article.id %}
+                            <div class="col">
+                                <div class="card related-article-card h-100">
+                                    <a href="{% url 'articles:article' related_article.slug %}">
+                                        {% thumbnail related_article.image "400x300" as im %}
+                                            <img src="{{ im.url }}" alt="{% trans 'Article Image' %}" class="card-img-top">
+                                        {% empty %}
+                                            <div class="bg-light card-img-top d-flex align-items-center justify-content-center">
+                                                <i class="fa-solid fa-newspaper fa-2x text-muted"></i>
+                                            </div>
+                                        {% endthumbnail %}
+                                    </a>
+
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="{% url 'articles:article' related_article.slug %}">
+                                                {{ related_article.title|title }}
+                                            </a>
+                                        </h5>
+
+                                        <p class="card-text">
+                                            {{ related_article.get_markdown|safe|truncatechars:100 }}
+                                        </p>
+
+                                        <div class="related-article-meta">
+                                            <a href="{% url 'users:detail' related_article.user.username %}" class="text-decoration-none">
+                                                <i class="fa-solid fa-user me-1"></i>{{ related_article.user.get_profile_name|title }}
+                                            </a>
+                                            <span>
+                                                <i class="fa-regular fa-clock me-1"></i>{{ related_article.timestamp|naturaltime }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endwith %}
             </div>
-          </div>
-        {% endfor %}
-      </div>
-
-      <!-- Sidebar Widgets Column -->
-      <div class="col-md-4">
-
-        <!-- Write Article Widget -->
-        {% if request.user.is_authenticated %}
-          <div class="card my-4">
-            <div class="card-body text-center">
-              <a class="btn btn-success" href="{% url 'articles:write_new' %}" title="{% trans 'Write a new article' %}"><i class="fa fa-pencil" aria-hidden="true"></i> {% trans 'New Article' %}</a>
-              <a class="btn btn-primary" href="{% url 'articles:edit_article' article.id %}" title="{% trans 'Edit this article' %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans 'Edit' %}</a>
-            </div>
-          </div>
-        {% endif %}
-        <!-- Cloud Tag Widget -->
-        <div class="card my-4">
-          <h5 class="card-header">{% trans 'Cloud tag' %}</h5>
-          <div class="card-body">
-            {% for tag in article.tags.all %}
-              <a href="#"><span class="badge badge-info">{{ tag }}</span></a>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
+        </section>
     </div>
-    <!-- /.row -->
+
+    <!-- Back to top button -->
+    <a href="#" class="back-to-top" id="back-to-top" title="{% trans 'Back to top' %}">
+        <i class="fa-solid fa-arrow-up"></i>
+    </a>
 {% endblock content %}
+
+{% block modal %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Back to top button
+            const backToTopButton = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('active');
+                } else {
+                    backToTopButton.classList.remove('active');
+                }
+            });
+
+            backToTopButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Copy article link
+            const copyLinkButton = document.getElementById('copy-link');
+
+            copyLinkButton.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(function() {
+                    // Success feedback
+                    const originalIcon = copyLinkButton.innerHTML;
+                    copyLinkButton.innerHTML = '<i class="fa-solid fa-check"></i>';
+
+                    setTimeout(function() {
+                        copyLinkButton.innerHTML = originalIcon;
+                    }, 2000);
+                }).catch(function() {
+                    console.error('Failed to copy link');
+                });
+            });
+
+            // Handle light mode specific styling
+            function updateThemeStyles() {
+                if (document.documentElement.getAttribute('data-theme') === 'light') {
+                    // Update placeholder backgrounds for article thumbnails
+                    document.querySelectorAll('.bg-light').forEach(bg => {
+                        bg.classList.remove('bg-light');
+                        bg.classList.add('bg-gray-100');
+                    });
+                }
+            }
+
+            // Run on page load
+            updateThemeStyles();
+
+            // Listen for theme changes
+            document.addEventListener('themeChanged', updateThemeStyles);
+
+            // Hook into the dark mode switch
+            const darkSwitch = document.getElementById('darkSwitch');
+            if (darkSwitch) {
+                darkSwitch.addEventListener('change', function() {
+                    setTimeout(updateThemeStyles, 50);
+                });
+            }
+
+            // Initialize user follow functionality
+            document.querySelectorAll('#follow_user').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(data => {
+                            if (this.classList.contains('btn-outline-primary')) {
+                                this.classList.remove('btn-outline-primary');
+                                this.classList.add('btn-primary');
+                                this.innerHTML = '<i class="fa-solid fa-user-check me-1"></i> Following';
+                            } else {
+                                this.classList.add('btn-outline-primary');
+                                this.classList.remove('btn-primary');
+                                this.innerHTML = '<i class="fa-solid fa-user-plus me-1"></i> Follow';
+                            }
+                        });
+                });
+            });
+        });
+    </script>
+
+    {% include "users/includes/partial_user_js.html" %}
+{% endblock modal %}

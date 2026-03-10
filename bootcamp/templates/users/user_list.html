@@ -4,30 +4,189 @@
 {% block title %}{% trans 'Network' %}{% endblock %}
 
 {% block head %}
-    <link href="{% static 'css/user_profile.css' %}?v=1" rel="stylesheet">
+<link href="{% static 'css/users.css' %}" rel="stylesheet">
 {% endblock head %}
 
 {% block content %}
-
-    <div class="page-header">
-        <h1>{% trans 'Network' %}</h1>
+<div class="container">
+    <div class="section-header">
+        <h1 class="section-title"></h1>
+        <!--            <div class="section-actions">-->
+        <!--                <a href="#" class="btn btn-primary">-->
+        <!--                    <i class="fa-solid fa-user-plus me-2"></i>{% trans 'Find People' %}-->
+        <!--                </a>-->
+        <!--            </div>-->
     </div>
 
-    <ul class="user-profiles-list">
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <i class="fa-solid fa-search search-icon"></i>
+        <input type="text" class="form-control" placeholder="{% trans 'Search for people...' %}">
+    </div>
+
+    <!-- Filters -->
+    <div class="network-filters">
+        <div class="network-filter active">{% trans 'All' %}</div>
+        <div class="network-filter">{% trans 'Friends' %}</div>
+        <div class="network-filter">{% trans 'Following' %}</div>
+        <div class="network-filter">{% trans 'Followers' %}</div>
+        <div class="network-filter">{% trans 'Suggestions' %}</div>
+    </div>
+
+    <!-- User List -->
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 justify-content-center g-4">
         {% if user_list %}
-            {% include "users/includes/partial_user.html" with users=user_list %}
-        {% else %}
-            <div class="card p-4 my-4 mx-0">
-                <h6 class="text-center">No Network Found</h6>
-                <div style="margin:0 auto;">
-                    <p class="text-muted">You don't have any contact right now.</p>
+        {% for user in user_list %}
+        <div class="col">
+            <div class="card user-card h-100">
+                <div class="card-header"></div>
+                <div class="avatar-wrapper">
+                    <a href="{% url 'users:detail' user.username %}">
+                        <img src="{{ user.get_picture }}" class="avatar" alt="{{ user.username }}">
+                    </a>
+                </div>
+                <div class="card-body">
+                    <h5 class="user-name">
+                        <a href="{% url 'users:detail' user.username %}" class="text-decoration-none">
+                            {{ user.get_profile_name|default:user.username }}
+                        </a>
+                    </h5>
+                    <p class="user-username">@{{ user.username }}</p>
+
+                    <div class="user-meta">
+                        {% if user.job_title %}
+                        <div>{{ user.job_title }}</div>
+                        {% endif %}
+                        {% if user.location %}
+                        <div>{{ user.location }}</div>
+                        {% endif %}
+                        <div>{% trans 'Member since' %} {{ user.member_since|date:"M Y" }}</div>
+                    </div>
+
+                    {% if request.user != user %}
+                    <div class="action-buttons">
+                        {% if not request.user in user.contact_list.all %}
+                        {% if request.user in user.pending_list.all %}
+                        <a href="{% url 'users:send_message_request' user.id %}" class="btn btn-primary"
+                            id="send_message_request">
+                            <i class="fa-solid fa-clock"></i>{% trans 'Request Sent' %}
+                        </a>
+                        {% else %}
+                        <a href="{% url 'users:send_message_request' user.id %}" class="btn btn-outline-primary"
+                            id="send_message_request">
+                            <i class="fa-solid fa-user-plus"></i>{% trans 'Connect' %}
+                        </a>
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'messager:conversation_detail' user.username %}" class="btn btn-outline-primary"
+                            title="{% trans 'Send a message' %}">
+                            <i class="fa-solid fa-message"></i>{% trans 'Message' %}
+                        </a>
+                        {% endif %}
+
+                        {% if request.user in user.followers.all %}
+                        <a href="{% url 'users:follow_user' user.id %}" class="btn btn-primary" id="follow_user">
+                            <i class="fa-solid fa-user-check"></i>{% trans 'Following' %}
+                        </a>
+                        {% else %}
+                        <a href="{% url 'users:follow_user' user.id %}" class="btn btn-outline-primary"
+                            id="follow_user">
+                            <i class="fa-solid fa-user-plus"></i>{% trans 'Follow' %}
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <a href="{% url 'users:update' %}" class="btn btn-outline-primary">
+                        <i class="fa-solid fa-pen-to-square me-1"></i>{% trans 'Edit Profile' %}
+                    </a>
+                    {% endif %}
                 </div>
             </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa-solid fa-users-slash"></i>
+                </div>
+                <h5 class="empty-state-title">{% trans 'No Users Found' %}</h5>
+                <p class="empty-state-description">
+                    {% trans 'There are no users in your network yet.' %}
+                </p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Find People' %}
+                </a>
+            </div>
+        </div>
         {% endif %}
-    </ul>
+    </div>
 
-{% endblock content %}
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+            {% endif %}
+
+            {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+            <li class="page-item active">
+                <span class="page-link">{{ i }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
 
 {% block modal %}
-    {% include "users/includes/partial_user_js.html" %}
+{% include "users/includes/partial_user_js.html" %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Network filter functionality
+        const filters = document.querySelectorAll('.network-filter');
+        filters.forEach(filter => {
+            filter.addEventListener('click', function () {
+                filters.forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+                // Here you would implement filtering logic
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-bar input');
+        searchInput.addEventListener('keyup', function (e) {
+            // Implement search filtering logic here
+            console.log('Searching for:', this.value);
+        });
+    });
+</script>
 {% endblock modal %}

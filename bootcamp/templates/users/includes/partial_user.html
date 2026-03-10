@@ -2,94 +2,84 @@
 {% load humanize static %}
 
 {% for user in users %}
-    <div class="card" style="margin-bottom: 10px">
+    <div class="card mb-3">
         <div class="card-body">
-            <div class="profile-picture">
-                <a href="{% url 'users:detail' user.username %}">
-                    <img src="{{ user.get_picture }}" class="user-image pull-left"
-                         style="width: 60px; border-radius: 50%;"
-                         alt="{% trans 'User Image' %}">
-                </a>
-            </div>
-            <div class="user-card">
-                <h4>
-                    <a href="{% url 'users:detail' user.username %}">{{ user.username }}</a>
-                </h4>
-                {% if request.user == user %}
-                {% else %}
-                    {% if not request.user in user.contact_list.all %}
-                        {% if request.user in user.pending_list.all %}
-                            <a href="{% url 'users:send_message_request' user.id %}"
-                               class="btn btn-primary btn-sm"
-                               id="send_message_request"
-                               style="float:right; margin-right:10px;"
-                               title="Request sent to this users">Request Sent</a>
-                        {% else %}
-                            <a href="{% url 'users:send_message_request' user.id %}"
-                               class="btn btn-outline-primary btn-sm"
-                               id="send_message_request"
-                               style="float:right; margin-right:10px;"
-                               title="Send request to this user to start conversation">Send Request</a>
-                        {% endif %}
-                    {% else %}
-                        <!-- Block User Trigger -->
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                data-target="#blockUserModel" style="float:right; margin-right:10px;">Block
-                        </button>
-
-                        <!-- Block User Modal -->
-                        <div class="modal fade" id="blockUserModel" tabindex="-1" role="dialog"
-                             aria-labelledby="Block User" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Are you sure?</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <h5>Once you block the user, you cannot message him again until he accepts
-                                            your request.</h5>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
-                                            Cancel
-                                        </button>
-                                        <a href="{% url 'users:block_spammer' user.id %}"
-                                           class="btn btn-primary btn-sm" id="block_spammer"
-                                           style="margin-right: 10px;" title="Block this user">Block</a>
-                                    </div>
-                                </div>
+            <div class="d-flex">
+                <div class="flex-shrink-0 me-3">
+                    <a href="{% url 'users:detail' user.username %}">
+                        <img src="{{ user.get_picture }}" class="user-image rounded-circle"
+                             width="60" height="60"
+                             alt="{% trans 'User Image' %}">
+                    </a>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h4 class="mb-1">
+                            <a href="{% url 'users:detail' user.username %}" class="text-decoration-none">{{ user.username }}</a>
+                        </h4>
+                        {% if request.user != user %}
+                            <div class="btn-group">
+                                {% if request.user in user.followers.all %}
+                                    <a href="{% url 'users:follow_user' user.id %}"
+                                       class="btn btn-primary btn-sm"
+                                       id="follow_user">Unfollow</a>
+                                {% else %}
+                                    <a href="{% url 'users:follow_user' user.id %}"
+                                       class="btn btn-outline-primary btn-sm"
+                                       id="follow_user">Follow</a>
+                                {% endif %}
+                                
+                                {% if not request.user in user.contact_list.all %}
+                                    {% if request.user in user.pending_list.all %}
+                                        <a href="{% url 'users:send_message_request' user.id %}"
+                                           class="btn btn-primary btn-sm"
+                                           id="send_message_request"
+                                           title="Request sent to this user">Request Sent</a>
+                                    {% else %}
+                                        <a href="{% url 'users:send_message_request' user.id %}"
+                                           class="btn btn-outline-primary btn-sm"
+                                           id="send_message_request"
+                                           title="Send request to this user to start conversation">Send Request</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{% url 'messager:conversation_detail' user.username %}"
+                                       class="btn btn-outline-primary btn-sm"
+                                       title="Send message to this user">Message</a>
+                                    <!-- Block User Trigger -->
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#blockUserModal-{{ user.id }}">Block</button>
+                                {% endif %}
                             </div>
-                        </div>
-
-                        <a href="{% url 'messager:conversation_detail' user.username %}"
-                           class="btn btn-outline-primary btn-sm"
-                           title="Send message to this user"
-                           style="float:right; margin-right:10px;">Message</a>
-                    {% endif %}
-                {% endif %}
-
-                {% if request.user == user %}
-                {% else %}
-                    {% if request.user in user.followers.all %}
-                        <a href="{% url 'users:follow_user' user.id %}"
-                           class="btn btn-primary btn-sm"
-                           id="follow_user"
-                           style="float:right; margin-right:10px;">Unfollow</a>
-                    {% else %}
-                        <a href="{% url 'users:follow_user' user.id %}"
-                           class="btn btn-outline-primary btn-sm"
-                           id="follow_user"
-                           style="float:right; margin-right:10px;">Follow</a>
-                    {% endif %}
-                {% endif %}
-                <p class="text-muted">Member since <span>{{ user.member_since|naturaltime }}</span>
-                </p>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted mb-0">Member since <span>{{ user.member_since|naturaltime }}</span></p>
+                </div>
             </div>
         </div>
     </div>
+    
+    {% if request.user != user and request.user in user.contact_list.all %}
+    <!-- Block User Modal -->
+    <div class="modal fade" id="blockUserModal-{{ user.id }}" tabindex="-1" aria-labelledby="blockUserModalLabel-{{ user.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="blockUserModalLabel-{{ user.id }}">Are you sure?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Once you block the user, you cannot message them again until they accept your request.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <a href="{% url 'users:block_spammer' user.id %}"
+                       class="btn btn-danger btn-sm" id="block_spammer"
+                       title="Block this user">Block</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endfor %}
 
 

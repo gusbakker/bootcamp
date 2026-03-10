@@ -1,24 +1,22 @@
+/*
+ * User Profile CSS — Scoped to .user-profile context
+ * Previously had bare p/a/ul overrides causing global pollution
+ */
 
-.user-card{
-    margin-left: 70px;
-}
-
-.clear {
-    clear: both;
-}
-
-p {
+.user-profile p {
     margin: 0 0 16px 0;
 }
 
-a {
+.user-profile a {
     color: #999;
 }
 
-a:hover {
-    color: black;
+.user-profile ul {
+    margin: 0;
 }
 
-ul {
-    margin: 0 0 0 0;
+.user-card {
+    box-shadow: 1px 1px 3px #aaa;
+    padding: 5px;
+    margin-bottom: 10px;
 }

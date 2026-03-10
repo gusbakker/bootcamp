@@ -55,7 +55,7 @@ class Article(models.Model):
     image = models.ImageField(
         _("Featured image"), upload_to="articles_pictures/%Y/%m/"
     )
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=255, null=False, unique=True)
     slug = models.SlugField(max_length=80, null=True, blank=True)
     status = models.CharField(max_length=1, choices=STATUS, default=DRAFT)
@@ -67,7 +67,7 @@ class Article(models.Model):
     class Meta:
         verbose_name = _("Article")
         verbose_name_plural = _("Articles")
-        ordering = ("-timestamp",)
+        ordering = ("-created",)
 
     def __str__(self):
         return self.title

@@ -33,7 +33,7 @@ class News(models.Model):
         blank=True, null=True
     )
     group = models.ForeignKey(Group, related_name='submitted_news', on_delete=models.CASCADE, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     uuid_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content = models.TextField(max_length=280)
     liked = models.ManyToManyField(
@@ -49,7 +49,7 @@ class News(models.Model):
     class Meta:
         verbose_name = _("News")
         verbose_name_plural = _("News")
-        ordering = ("-timestamp",)
+        ordering = ("-created",)
 
     def __str__(self):
         return str(self.content)

@@ -31,14 +31,14 @@ class MessageQuerySet(models.query.QuerySet):
         """Returns all the messages sent between two users."""
         qs_one = self.filter(sender=sender, recipient=recipient)
         qs_two = self.filter(sender=recipient, recipient=sender)
-        return qs_one.union(qs_two).order_by("timestamp")
+        return qs_one.union(qs_two).order_by("created")
 
     def get_most_recent_conversation(self, recipient):
         """Returns the most recent conversation counterpart's username."""
         try:
             qs_sent = self.filter(sender=recipient)
             qs_recieved = self.filter(recipient=recipient)
-            qs = qs_sent.union(qs_recieved).latest("timestamp")
+            qs = qs_sent.union(qs_recieved).latest("created")
             if qs.sender == recipient:
                 return qs.recipient
 
@@ -72,7 +72,7 @@ class Message(models.Model):
         verbose_name=_("Recipient"),
         on_delete=models.CASCADE,
     )
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     message = models.TextField(max_length=1000, blank=True)
     unread = models.BooleanField(default=True, db_index=True)
     objects = MessageQuerySet.as_manager()
@@ -80,7 +80,7 @@ class Message(models.Model):
     class Meta:
         verbose_name = _("Message")
         verbose_name_plural = _("Messages")
-        ordering = ("-timestamp",)
+        ordering = ("-created",)
 
     def __str__(self):
         return self.message

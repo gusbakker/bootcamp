@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% load thumbnail humanize %}
+
+{% block title %}<title>{% trans 'Groups' %}</title>{% endblock %}
+
+{% block head %}
+    <link href="{% static 'css/groups.css' %}" rel="stylesheet">
+{% endblock head %}
+
+{% block content %}
+    <div class="container groups-container">
+        <div class="section-header">
+            <h1 class="section-title">{% trans 'Groups' %}</h1>
+
+            <div class="section-actions">
+                {% if request.user.is_authenticated %}
+                    <a class="btn btn-primary btn-create-group" href="{% url 'groups:new_group' %}">
+                        <i class="fa-solid fa-users"></i>{% trans 'Create Group' %}
+                    </a>
+                    <a class="btn btn-outline-primary btn-create-group" href="{% url 'groups:user_created_groups' request.user.username %}">
+                        <i class="fa-solid fa-folder me-1"></i>{% trans 'My Groups' %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Groups and Sidebar -->
+        <div class="row">
+            <!-- Groups Column -->
+            <div class="col-lg-8">
+                <!-- Search Bar -->
+                <div class="search-box">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" class="form-control" placeholder="{% trans 'Search for groups...' %}">
+                </div>
+
+                <!-- Categories Filter -->
+                <div class="categories-filter">
+                    <span class="category-pill active">{% trans 'All' %}</span>
+                    {% for category in categories %}
+                        {% if category %}
+                        <span class="category-pill">{{ category|title }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Groups Grid -->
+                {% if object_list %}
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for group in object_list %}
+                            <div class="col">
+                                <div class="card group-card h-100">
+                                    <!-- Group Cover Image -->
+                                    <div class="card-cover" style="background-image: url('{{ group.get_picture }}');"></div>
+
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="{{ group.get_absolute_url }}">
+                                                {{ group.title }}
+                                            </a>
+                                        </h5>
+
+                                        <div class="group-meta">
+                                            <div class="group-subscribers">
+                                                <i class="fa-solid fa-users"></i>
+                                                <span>{{ group.subscribers.count }}</span>
+                                            </div>
+                                            <div class="group-timestamp">
+                                                <i class="fa-regular fa-clock"></i>
+                                                <span>{{ group.created|naturaltime }}</span>
+                                            </div>
+                                        </div>
+
+                                        <p class="card-text">
+                                            {{ group.description|truncatewords:25 }}
+                                        </p>
+
+                                        <div class="card-actions">
+                                            <a href="{{ group.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                                                {% trans 'View Group' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+                                            </a>
+
+                                            {% if group in request.user.subscribed_groups.all %}
+                                                <a href="{% url 'groups:subscribe' group.slug %}" class="btn btn-secondary btn-sm" id="subscribe_group">
+                                                    <i class="fa-solid fa-user-minus me-1"></i>{% trans 'Unsubscribe' %}
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'groups:subscribe' group.slug %}" class="btn btn-primary btn-sm" id="subscribe_group">
+                                                    <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Subscribe' %}
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true"><i class="fa-solid fa-arrow-left"></i></span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fa-solid fa-arrow-left"></i></span>
+                                    </li>
+                                {% endif %}
+
+                                {% for i in paginator.page_range %}
+                                    {% if page_obj.number == i %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ i }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fa-solid fa-arrow-right"></i></span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fa-solid fa-users-slash"></i>
+                        </div>
+                        <h3 class="empty-state-title">{% trans 'No Groups Yet' %}</h3>
+                        <p class="empty-state-description">
+                            {% trans 'There are no groups created yet. Be the first to create one!' %}
+                        </p>
+                        <a href="{% url 'groups:new_group' %}" class="btn btn-primary">
+                            <i class="fa-solid fa-users me-2"></i>{% trans 'Create First Group' %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Your Groups Widget -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-folder"></i>{% trans 'Your Groups' %}
+                    </div>
+                    <div class="card-body">
+                        {% if request.user.is_authenticated %}
+                            {% for group in request.user.subscribed_groups.all|slice:":5" %}
+                                <a href="{{ group.get_absolute_url }}" class="group-list-item">
+                                    <div class="group-list-icon" style="{% if group.cover %}background-image: url('{{ group.get_picture }}');{% else %}background-color: rgba(var(--bs-primary-rgb), 0.1);{% endif %}">
+                                        {% if not group.cover %}
+                                        <i class="fa-solid fa-users"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="group-list-info">
+                                        <div class="group-list-name">{{ group.title }}</div>
+                                        <div class="group-list-meta">
+                                            <span><i class="fa-solid fa-user-group"></i>{{ group.subscribers.count }}</span>
+                                            <span><i class="fa-regular fa-message"></i>{{ group.submitted_news.count }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% empty %}
+                                <div class="p-4 text-center text-muted">
+                                    {% trans 'You have not joined any groups yet.' %}
+                                </div>
+                            {% endfor %}
+
+                            {% if request.user.subscribed_groups.exists %}
+                                <div class="card-footer">
+                                    <a href="{% url 'groups:user_subscription_list' %}" class="btn btn-sm btn-primary">
+                                        {% trans 'View All Subscriptions' %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="p-4 text-center text-muted">
+                                {% trans 'Sign in to see your groups' %}
+                            </div>
+                            <div class="card-footer">
+                                <a href="{% url 'login' %}" class="btn btn-sm btn-primary">
+                                    <i class="fa-solid fa-right-to-bracket me-2"></i>{% trans 'Sign in' %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Popular Groups Widget -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-fire"></i>{% trans 'Popular Groups' %}
+                    </div>
+                    <div class="card-body">
+                        {% for group in object_list|slice:":5" %}
+                            <a href="{{ group.get_absolute_url }}" class="group-list-item">
+                                <div class="group-list-icon" style="background-image: url('{{ group.get_picture }}');"></div>
+                                <div class="group-list-info">
+                                    <div class="group-list-name">{{ group.title }}</div>
+                                    <div class="group-list-meta">
+                                        <span><i class="fa-solid fa-users"></i>{{ group.subscribers.count }}</span>
+                                        <span><i class="fa-regular fa-clock"></i>{{ group.created|naturaltime }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        {% empty %}
+                            <div class="p-4 text-center text-muted">
+                                {% trans 'No groups available yet.' %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Create Group Card -->
+                <div class="promo-card">
+                    <div class="promo-icon">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+                    <h5 class="promo-title">{% trans 'Start Your Own Community' %}</h5>
+                    <p class="promo-text">{% trans 'Create a group around your interests and connect with others.' %}</p>
+                    <a href="{% url 'groups:new_group' %}" class="btn btn-primary">
+                        <i class="fa-solid fa-circle-plus me-2"></i>{% trans 'Create a Group' %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block modal %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category filter functionality
+        const categoryPills = document.querySelectorAll('.category-pill');
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', function() {
+                categoryPills.forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+
+                // Get category name
+                let category = this.innerText.trim().toLowerCase();
+                if (category === 'all') {
+                    category = '';
+                }
+
+                // Redirect to filtered URL
+                window.location.href = `?category=${category}`;
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-box input');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    window.location.href = `?search=${this.value.trim()}`;
+                }
+            });
+        }
+
+        // Subscribe group functionality
+        document.querySelectorAll('a#subscribe_group').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                {% if not request.user.is_authenticated %}
+                    window.location.href = "{% url 'login' %}";
+                {% else %}
+                    const subscribeBtn = this;
+                    const subscribeUrl = this.getAttribute("href");
+
+                    fetch(subscribeUrl)
+                        .then(response => response.text())
+                        .then(data => {
+                            if (subscribeBtn.textContent.trim().includes('Subscribe')) {
+                                subscribeBtn.classList.remove('btn-primary');
+                                subscribeBtn.classList.add('btn-secondary');
+                                subscribeBtn.innerHTML = '<i class="fa-solid fa-user-minus me-1"></i>{% trans "Unsubscribe" %}';
+                            } else {
+                                subscribeBtn.classList.remove('btn-secondary');
+                                subscribeBtn.classList.add('btn-primary');
+                                subscribeBtn.innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>{% trans "Subscribe" %}';
+                            }
+                        });
+                {% endif %}
+            });
+        });
+    });
+</script>
+{% endblock modal %}
