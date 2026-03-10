@@ -58,185 +58,76 @@
 }
 
 /* ==========================================================================
-   2. BASE STYLES
+   2. TAILWIND CUSTOM STYLES & ANIMATIONS
    ========================================================================== */
 
-body {
-    padding-top: 70px;
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--bs-body-bg);
-    color: var(--bs-body-color);
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
-a {
-    color: var(--bs-primary);
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-a:hover {
-    color: rgba(var(--bs-primary-rgb), 0.8);
+::-webkit-scrollbar-thumb {
+    background: #3a3b3c;
+    border-radius: 4px;
 }
 
-hr {
-    border-color: var(--bs-border-color);
-    opacity: 0.15;
+::-webkit-scrollbar-thumb:hover {
+    background: #4e4f50;
 }
 
-.text-muted {
-    color: var(--bs-text-muted) !important;
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+    background: #ced0d4;
 }
 
-/* ==========================================================================
-   3. NAVBAR
-   ========================================================================== */
-
-header .navbar-brand {
-    font-size: 1.4em;
-    font-weight: 200;
-    font-family: "Audiowide", cursive;
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+    background: #bcc0c4;
 }
 
-.navbar {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    padding: 0.5rem 0;
-    background: #242526 !important;
-    margin-bottom: 10px !important;
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
 
-.navbar-brand {
-    font-family: 'Audiowide', cursive;
-    font-weight: 600 !important;
-    letter-spacing: 0.5px !important;
-    color: #fff !important;
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-.navbar-brand img {
-    transition: transform 0.3s ease !important;
+/* Animations */
+.modal-enter {
+    animation: fadeIn 0.2s ease-out forwards;
 }
 
-.navbar-brand:hover img {
-    transform: scale(1.1) !important;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-.navbar-light .navbar-nav .nav-link,
-.navbar-dark .navbar-nav .nav-link,
-.navbar .nav-link {
-    color: rgba(255, 255, 255, 0.85) !important;
-    font-weight: 500 !important;
-    transition: all 0.2s !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: 0.5rem !important;
-    margin: 0 2px !important;
+.view-enter {
+    animation: slideUp 0.3s ease-out forwards;
 }
 
-.navbar-light .navbar-nav .nav-link:hover,
-.navbar-dark .navbar-nav .nav-link:hover,
-.navbar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    color: #fff !important;
-}
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 
-.navbar a {
-    font-family: 'Poppins', sans-serif !important;
-}
-
-.navbar-toggler {
-    border: none;
-    padding: 0.25rem;
-    color: #fff;
-}
-
-.navbar-toggler:focus {
-    box-shadow: none;
-}
-
-/* Fix navbar dropdown alignment and spacing */
-.navbar .dropdown-menu-right {
-    right: 0;
-    left: auto;
-}
-
-.navbar .d-flex.align-items-center {
-    height: 100%;
-}
-
-.navbar .nav-item.dropdown {
-    display: flex;
-    align-items: center;
-}
-
-.navbar .nav-link.dropdown-toggle.p-0 {
-    padding: 0.5rem !important;
-}
-
-[data-theme="light"] .navbar {
-    background: #ffffff !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-[data-theme="light"] .navbar .nav-link {
-    color: #1c1e21 !important;
-}
-
-[data-theme="light"] .navbar .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.05) !important;
-    color: #1877F2 !important;
-}
-
-[data-theme="light"] .navbar-brand {
-    color: #1877F2 !important;
-}
-
-/* ==========================================================================
-   4. DROPDOWN
-   ========================================================================== */
-
-.dropdown-menu {
-    border: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    border-radius: 1rem;
-    padding: 0.75rem 0.5rem;
-    background-color: var(--bs-card-bg);
-    border-color: var(--bs-border-color);
-    max-width: 350px;
-    width: 350px;
-}
-
-.dropdown-item {
-    padding: 0.6rem 1rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-    color: var(--bs-body-color);
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-    background-color: rgba(var(--bs-primary-rgb), 0.1);
-    color: var(--bs-primary);
-}
-
-.dropdown-item i {
-    width: 1.25rem;
-    text-align: center;
-    margin-right: 0.5rem;
-    opacity: 0.7;
-}
-
-.dropdown-divider {
-    border-top-color: var(--bs-border-color);
-}
-
-[data-theme="light"] .dropdown-menu {
-    background-color: #fff;
-    border-color: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .dropdown-item {
-    color: #212529;
-}
-
-[data-theme="light"] .dropdown-item:hover {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: #0d6efd;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ==========================================================================

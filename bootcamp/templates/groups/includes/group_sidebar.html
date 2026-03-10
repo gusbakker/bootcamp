@@ -1,101 +1,127 @@
 {% load i18n humanize %}
 
 <!-- Group Info Card -->
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-header bg-transparent">
-    <h5 class="card-title mb-0"><i class="fa-solid fa-circle-info me-2"></i>{% trans 'Group Information' %}</h5>
+<div
+  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+      <i class="fa-solid fa-circle-info text-blue-500"></i> {% trans 'Group Info' %}
+    </h5>
   </div>
-  <div class="card-body">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item bg-transparent px-0">
-        <div class="d-flex justify-content-between">
-          <span class="fw-medium">{% trans 'Created' %}</span>
-          <span class="text-muted">{{ group.created|naturaltime }}</span>
-        </div>
-      </li>
-      <li class="list-group-item bg-transparent px-0">
-        <div class="d-flex justify-content-between">
-          <span class="fw-medium">{% trans 'Subscribers' %}</span>
-          <span class="text-muted" id="group_subscribers">{{ group.subscribers.count }}</span>
-        </div>
-      </li>
-      <li class="list-group-item bg-transparent px-0">
-        <div class="d-flex justify-content-between">
-          <span class="fw-medium">{% trans 'Posts' %}</span>
-          <span class="text-muted">{{ news_list.paginator.count }}</span>
-        </div>
-      </li>
-      <li class="list-group-item bg-transparent px-0">
-        <div class="d-flex justify-content-between">
-          <span class="fw-medium">{% trans 'Category' %}</span>
-          <span class="text-muted">{{ group.category|default:"General" }}</span>
-        </div>
-      </li>
-    </ul>
+  <div class="p-4 flex flex-col gap-3">
+    <div class="flex justify-between items-center text-[14px]">
+      <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Category' %}</span>
+      <span
+        class="text-fb-lightMuted dark:text-fb-muted bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover px-2 py-0.5 rounded-md text-[13px] font-semibold">{{ group.category|title|default:"General" }}</span>
+    </div>
+    <div class="flex justify-between items-center text-[14px]">
+      <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Members' %}</span>
+      <span class="text-fb-lightMuted dark:text-fb-muted" id="group_subscribers">{{ group.subscribers.count }}</span>
+    </div>
+    <div class="flex justify-between items-center text-[14px]">
+      <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Posts' %}</span>
+      <span class="text-fb-lightMuted dark:text-fb-muted">{{ news_list.paginator.count }}</span>
+    </div>
+    <div class="flex justify-between items-center text-[14px]">
+      <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Created' %}</span>
+      <span class="text-fb-lightMuted dark:text-fb-muted">{{ group.created|naturaltime }}</span>
+    </div>
   </div>
 </div>
 
 <!-- Admins Card -->
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-header bg-transparent">
-    <h5 class="card-title mb-0"><i class="fa-solid fa-user-shield me-2"></i>{% trans 'Group Admins' %}</h5>
+<div
+  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
+  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+      <i class="fa-solid fa-user-shield text-green-500"></i> {% trans 'Admins' %}
+    </h5>
   </div>
-  <div class="card-body p-0">
-    <div class="admin-list">
-      {% for admin in admins %}
-        <div class="admin-item">
-          <img src="{{ admin.get_picture }}" class="admin-avatar" alt="{{ admin.username }}">
-          <a href="{% url 'users:detail' admin.username %}" class="admin-name">{{ admin.get_profile_name }}</a>
-        </div>
-      {% endfor %}
-    </div>
+  <div class="p-2">
+    {% for admin in admins %}
+    <a href="{% url 'users:detail' admin.username %}"
+      class="flex items-center p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition group">
+      <img src="{{ admin.get_picture }}"
+        class="w-10 h-10 rounded-full border border-fb-lightBorder dark:border-fb-border object-cover mr-3 group-hover:brightness-90 transition"
+        alt="{{ admin.username }}">
+      <span class="font-semibold text-[14px] text-fb-lightText dark:text-fb-text group-hover:underline">{{ admin.get_profile_name|title|default:admin.username }}</span>
+    </a>
+    {% endfor %}
+  </div>
 
-    {% if is_admin %}
-      <div class="card-footer bg-transparent p-0 mt-3">
-        <h6 class="text-uppercase fs-7 fw-semibold text-muted mb-2 px-3 pt-3">{% trans 'Admin Controls' %}</h6>
-        <div class="admin-controls">
-          <a href="{% url 'groups:edit_group_cover' group.slug %}" class="admin-control-item">
-            <i class="fa-solid fa-image"></i>
-            <span>{% trans 'Change Cover' %}</span>
-          </a>
-          <a href="{% url 'groups:banned_users' group.slug %}" class="admin-control-item">
-            <i class="fa-solid fa-user-slash"></i>
-            <span>{% trans 'Manage Banned Users' %}</span>
-          </a>
-          <a href="{% url 'groups:group_settings' group.slug %}" class="admin-control-item">
-            <i class="fa-solid fa-gear"></i>
-            <span>{% trans 'Group Settings' %}</span>
-          </a>
+  {% if is_admin %}
+  <div
+    class="p-3 border-t border-fb-lightBorder dark:border-fb-border bg-fb-lightSurfaceHover/50 dark:bg-fb-surfaceHover/30">
+    <h6 class="text-[12px] font-bold text-fb-lightMuted dark:text-fb-muted uppercase tracking-wider mb-2 px-1">{% trans 'Admin Controls' %}</h6>
+    <div class="flex flex-col gap-1">
+      <a href="{% url 'groups:edit_group_cover' group.slug %}"
+        class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group">
+        <div
+          class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-fb-primary flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-800/40 transition">
+          <i class="fa-solid fa-image"></i>
         </div>
-      </div>
-    {% endif %}
+        {% trans 'Change Cover' %}
+      </a>
+      <a href="{% url 'groups:banned_users' group.slug %}"
+        class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group">
+        <div
+          class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center group-hover:bg-red-200 dark:group-hover:bg-red-800/40 transition">
+          <i class="fa-solid fa-user-slash"></i>
+        </div>
+        {% trans 'Manage Banned Users' %}
+      </a>
+      <a href="{% url 'groups:group_settings' group.slug %}"
+        class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-[14px] font-semibold text-fb-lightText dark:text-fb-text group">
+        <div
+          class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition">
+          <i class="fa-solid fa-gear"></i>
+        </div>
+        {% trans 'Group Settings' %}
+      </a>
+    </div>
   </div>
+  {% endif %}
 </div>
 
 <!-- Similar Groups -->
 {% if group.get_similar_groups %}
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-header bg-transparent">
-    <h5 class="card-title mb-0"><i class="fa-solid fa-users me-2"></i>{% trans 'Similar Groups' %}</h5>
+<div
+  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
+  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+      <i class="fa-solid fa-users text-fb-primary"></i> {% trans 'Similar Groups' %}
+    </h5>
   </div>
-  <div class="card-body p-0">
-    <div class="similar-groups">
-      {% for similar_group in group.get_similar_groups %}
-        <a href="{% url 'groups:group' similar_group.slug %}" class="similar-group-item">
-          <div class="similar-group-icon" style="background-image: url('{{ similar_group.get_picture }}');"></div>
-          <div class="similar-group-info">
-            <div class="similar-group-name">{{ similar_group.title }}</div>
-            <div class="similar-group-meta">
-              <i class="fa-solid fa-users"></i> {{ similar_group.subscribers.count }}
-            </div>
-          </div>
-        </a>
-      {% empty %}
-        <div class="empty-list">
-          <span class="text-muted">{% trans 'No similar groups found' %}</span>
+  <div class="flex flex-col">
+    {% for similar_group in group.get_similar_groups %}
+    <a href="{% url 'groups:group' similar_group.slug %}"
+      class="flex items-center p-3 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group/sim">
+      <div class="flex-shrink-0 mr-3">
+        {% if similar_group.get_picture %}
+        <img src="{{ similar_group.get_picture }}"
+          class="rounded-lg w-12 h-12 object-cover border border-fb-lightBorder dark:border-fb-border shadow-sm group-hover/sim:brightness-90 transition"
+          alt="">
+        {% else %}
+        <div
+          class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-fb-primary rounded-lg flex items-center justify-center shadow-sm group-hover/sim:brightness-90 transition">
+          <i class="fa-solid fa-users text-lg"></i>
         </div>
-      {% endfor %}
+        {% endif %}
+      </div>
+      <div class="min-w-0 pr-2">
+        <h6
+          class="font-bold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover/sim:underline mb-0.5 truncate">
+          {{ similar_group.title }}</h6>
+        <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted font-medium">
+          <i class="fa-solid fa-users mr-1.5 text-[10px]"></i> {{ similar_group.subscribers.count }}
+        </div>
+      </div>
+    </a>
+    {% empty %}
+    <div class="p-4 text-center text-fb-lightMuted dark:text-fb-muted text-[13px] font-semibold">
+      {% trans 'No similar groups found' %}
     </div>
+    {% endfor %}
   </div>
 </div>
 {% endif %}

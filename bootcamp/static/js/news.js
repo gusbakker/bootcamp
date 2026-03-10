@@ -37,14 +37,21 @@ $(function () {
         }
     });
 
-    // Focus on the modal input by default.
-    $('#newsFormModal').on('shown.bs.modal', function () {
-        $('#newsInput').trigger('focus')
-    });
-
-    $('#newsThreadModal').on('shown.bs.modal', function () {
-        $('#replyInput').trigger('focus')
-    });
+    // Focus on the modal input by default using MutationObserver since Bootstrap events are gone
+    const observeModalFocus = (modalId, inputId) => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class' && !modal.classList.contains('hidden')) {
+                        setTimeout(() => document.getElementById(inputId).focus(), 100);
+                    }
+                });
+            }).observe(modal, { attributes: true });
+        }
+    };
+    observeModalFocus('newsFormModal', 'newsInput');
+    observeModalFocus('newsThreadModal', 'replyInput');
 
     // Counts textarea characters to provide data to user.
     $("#newsInput").keyup(function () {
@@ -80,7 +87,12 @@ $(function () {
             success: function (data) {
                 $("ul.stream").prepend(data);
                 $("#newsInput").val("");
-                $("#newsFormModal").modal("hide");
+                // Hide modal gracefully
+                const modal = document.getElementById("newsFormModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    modal.classList.add("hidden");
+                    document.body.style.overflow = "auto";
+                }
                 hide_stream_update();
             },
             error: function (data) {
@@ -159,7 +171,11 @@ $(function () {
             cache: false,
             success: function (data) {
                 $("#replyInput").val("");
-                $("#newsThreadModal").modal("hide");
+                const modal = document.getElementById("newsThreadModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    modal.classList.add("hidden");
+                    document.body.style.overflow = "auto";
+                }
             },
             error: function (data) {
                 alert(data.responseText);
@@ -217,8 +233,16 @@ $(function () {
         // Ajax call to request a given News object detail and thread, and to
         // show it in a modal.
         var post = $(this).closest(".news-body");
-        var news = $(post).closest("li").attr("news-id");
-        $("#newsThreadModal").modal("show");
+        if (post.length === 0) post = $(this).closest(".news-card");
+        var news = $(this).closest("li").attr("news-id");
+
+        // Show modal gracefully
+        const modal = document.getElementById("newsThreadModal");
+        if (modal && modal.classList.contains("hidden")) {
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+
         $.ajax({
             url: '/news/get-thread/',
             data: { 'news': news },

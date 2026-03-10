@@ -103,43 +103,41 @@ $(function () {
         });
     }
 
-// Initialize the popover with Bootstrap 5
-const notificationEl = document.getElementById('notifications');
-const notificationPopover = new bootstrap.Popover(notificationEl, {
-  html: true,
-  content: 'Loading...',
-  trigger: 'manual'
-});
+    // Click handler for Notifications Dropdown
+    $("#notifications").click(function (e) {
+        e.stopPropagation();
+        var menu = $("#notificationsMenu");
 
-// Click handler
-$("#notifications").click(function () {
-  if ($(".popover").is(":visible")) {
-    notificationPopover.hide();
-  } else {
-    notificationPopover.show();
-    $.ajax({
-      url: '/notifications/latest-notifications/',
-      beforeSend: function () {
-        $(".popover-body").html("<div style='text-align:center'><img src='/static/img/loading.gif'></div>");
-      },
-      success: function (data) {
-        $("#countnotif").text("");
-        $(".popover-body").html(data);
-      }
+        if (menu.hasClass("hidden") || menu.css("display") === "none") {
+            // Hide other menus
+            $("#profileMenu").addClass('hidden');
+
+            // Show notifications
+            menu.removeClass('hidden').css("display", "flex");
+
+            $.ajax({
+                url: '/notifications/latest-notifications/',
+                beforeSend: function () {
+                    $("#notificationsBody").html("<div class='py-8 flex justify-center'><div class='animate-spin rounded-full h-8 w-8 border-b-2 border-fb-primary'></div></div>");
+                },
+                success: function (data) {
+                    $("#countnotif").text("");
+                    $("#notificationsBody").html(data);
+                }
+            });
+        } else {
+            menu.addClass('hidden').css("display", "none");
+        }
+        return false;
     });
-  }
-  return false;
-});
 
-// Fix to dismiss popover when clicking outside of it
-$("html").on("mouseup", function (e) {
-    var l = $(e.target);
-    if (l[0].className.indexOf("popover") == -1) {
-        $(".popover").each(function () {
-            $(this).popover("hide");
-        });
-    }
-});
+    // Close notifications menu when clicking outside
+    $(document).on("click", function (e) {
+        var menu = $("#notificationsMenu");
+        if (!$(e.target).closest('#notifications').length && !$(e.target).closest('#notificationsMenu').length) {
+            menu.addClass('hidden').css("display", "none");
+        }
+    });
 
     // Code block to manage WebSocket connections
     // Try to correctly decide between ws:// and wss://

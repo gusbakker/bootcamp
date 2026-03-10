@@ -3,110 +3,149 @@
 {% load thumbnail %}
 {% load urlize_target_blank %}
 
-<li class="infinite-item" news-id="{{ news.uuid_id }}" data-news-uuid="{{ news.uuid_id }}">
-    <div class="card news-body news-card">
-        <div class="card-header d-flex align-items-center">
-            <div class="profile-picture me-3">
-                <a href="{% url 'users:detail' news.user.username %}">
-                    <img src="{{ news.user.get_picture }}" class="user-image rounded-circle"
-                        style="width: 50px; height: 50px; object-fit: cover;" alt="{% trans 'User Image' %}">
-                </a>
-            </div>
-            <div class="flex-grow-1">
-                <a href="{% url 'users:detail' news.user.username %}" class="text-decoration-none fw-bold text-light">
-                    {{ news.user.username }}
+<li class="infinite-item mb-4" news-id="{{ news.uuid_id }}" data-news-uuid="{{ news.uuid_id }}">
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface rounded-xl shadow-sm border border-fb-lightBorder dark:border-fb-border overflow-hidden news-card">
+        <!-- Header -->
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <a href="{% url 'users:detail' news.user.username %}" class="relative">
+                    <img src="{{ news.user.get_picture }}" class="w-10 h-10 rounded-full object-cover shadow-sm">
                 </a>
                 <div>
-                    <small class="timestamp text-muted">{{ news.timestamp|naturaltime }}</small>
-                    {% if news.user.location %}
-                    <small class="user-info d-block text-muted">{{ news.user.location }}</small>
-                    {% endif %}
+                    <div class="flex items-center gap-1">
+                        <a href="{% url 'users:detail' news.user.username %}"
+                            class="font-semibold text-[15px] hover:underline text-fb-lightText dark:text-fb-text">
+                            {{ news.user.get_profile_name|default:news.user.username }}
+                        </a>
+                    </div>
+                    <div class="flex items-center text-xs text-fb-lightMuted dark:text-fb-muted">
+                        <span class="timestamp hover:underline cursor-pointer">{{ news.timestamp|naturaltime }}</span>
+                        {% if news.user.location %}
+                        <span class="mx-1">&middot;</span>
+                        <i class="fa-solid fa-location-dot text-[10px]"></i>
+                        <span class="ml-1">{{ news.user.location }}</span>
+                        {% else %}
+                        <span class="mx-1">&middot;</span>
+                        <i class="fa-solid fa-earth-americas text-[10px]" title="Public"></i>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            <div class="dropdown">
-                <i class="fa fa-gear text-light" href="#" id="dotsDropdown-{{ news.uuid_id }}" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-                </i>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dotsDropdown-{{ news.uuid_id }}">
+
+            <div class="relative">
+                <button onclick="toggleDropdown('postOptions-{{ news.uuid_id }}')"
+                    class="w-9 h-9 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover flex items-center justify-center text-fb-lightMuted dark:text-fb-muted transition">
+                    <i class="fa-solid fa-ellipsis text-xl"></i>
+                </button>
+                <div id="postOptions-{{ news.uuid_id }}"
+                    class="hidden absolute right-0 top-10 mt-1 w-80 bg-fb-lightSurface dark:bg-fb-surface rounded-lg shadow-xl border border-fb-lightBorder dark:border-fb-border p-2 z-20">
                     {% if news.user == request.user %}
-                    <li>
-                        <a class="dropdown-item remove-news" href="#" data-news-id="{{ news.uuid_id }}">
-                            <i class="fa fa-trash-o me-2 text-danger"></i><span class="text-danger">{% trans 'Delete'%}</span>
-                        </a>
-                    </li>
+                    <a href="#"
+                        class="remove-news flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition text-red-500"
+                        data-news-id="{{ news.uuid_id }}">
+                        <i class="fa fa-trash-o text-xl w-6 text-center"></i>
+                        <span class="font-semibold">{% trans 'Delete Post'%}</span>
+                    </a>
+                    {% else %}
+                    <a href="#"
+                        class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition text-fb-lightText dark:text-fb-text">
+                        <i class="fa-regular fa-bookmark text-xl w-6 text-center"></i>
+                        <div>
+                            <p class="font-semibold">{% trans 'Save Post' %}</p>
+                            <p class="text-xs text-fb-lightMuted dark:text-fb-muted">{% trans 'Add this to your saved items.' %}</p>
+                        </div>
+                    </a>
+                    <a href="#"
+                        class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition text-fb-lightText dark:text-fb-text">
+                        <i class="fa-regular fa-bell-slash text-xl w-6 text-center"></i>
+                        <span class="font-semibold">{% trans 'Turn on notifications' %}</span>
+                    </a>
+                    <div class="h-px bg-fb-lightBorder dark:bg-fb-border my-1"></div>
+                    <a href="#"
+                        class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition text-red-500">
+                        <i class="fa fa-flag text-xl w-6 text-center"></i>
+                        <span class="font-semibold">{% trans 'Report post'%}</span>
+                    </a>
                     {% endif %}
-                    {% if news.user != request.user %}
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            <i class="fa fa-flag me-2 text-danger"></i><span class="text-danger">{% trans 'Report This'%}</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                </div>
             </div>
         </div>
 
+        <!-- Post Content -->
+        <div class="px-4 pb-3 flex flex-col gap-2 text-[15px] text-fb-lightText dark:text-fb-text post-content">
+            <p class="whitespace-pre-wrap">{{ news|urlize|urlize_target_blank }}</p>
+            {% if news.meta_url %}
+            <a href="{{ news.meta_url }}" target="_blank"
+                class="block border border-fb-lightBorder dark:border-fb-border rounded-lg overflow-hidden hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition mt-2 meta text-decoration-none">
+                {% if news.meta_image %}
+                <div class="w-full h-48 bg-cover bg-center" style="background-image: url('{{ news.meta_image }}')">
+                </div>
+                {% endif %}
+                <div class="p-3">
+                    {% if news.meta_title %}
+                    <h5 class="font-semibold text-fb-lightText dark:text-fb-text text-[15px] line-clamp-2">{{ news.meta_title }}</h5>
+                    {% endif %}
+                    <p class="text-xs text-fb-lightMuted dark:text-fb-muted uppercase mt-1">{{ news.meta_url }}</p>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Post Image -->
         {% thumbnail news.image "750x500" as im %}
-        <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}" class="card-img-top">
+        <div
+            class="w-full bg-[#f0f2f5] dark:bg-black overflow-hidden flex justify-center border-y border-fb-lightBorder dark:border-fb-border">
+            <img src="{{ im.url }}" alt="{% trans 'Featured Image' %}"
+                class="w-full max-h-[500px] object-contain cursor-pointer">
+        </div>
         {% empty %}
         {% endthumbnail %}
 
-        <div class="card-body">
-            <div class="post-content mb-3 text-light">
-                <p>{{ news|urlize|urlize_target_blank }}</p>
-                {% if news.meta_url %}
-                <a href="{{ news.meta_url }}" target="_blank" class="card meta text-decoration-none">
-                    {% if news.meta_image %}
-                    <div class="card-img-top" style="background-image: url({{ news.meta_image }})"></div>
-                    {% endif %}
-                    <div class="card-body">
-                        {% if news.meta_title %}
-                        <h5 class="card-title h6 text-light">{{ news.meta_title }}</h5>
-                        {% endif %}
+        <!-- Interactive summary -->
+        <div
+            class="px-4 py-2 flex items-center justify-between text-fb-lightMuted dark:text-fb-muted text-[15px] border-b border-fb-lightBorder dark:border-fb-border border-opacity-50">
+            <div class="flex items-center gap-2 cursor-pointer hover:underline">
+                <div class="flex items-center">
+                    <div
+                        class="w-5 h-5 rounded-full bg-fb-primary flex items-center justify-center border-2 border-fb-lightSurface dark:border-fb-surface z-10">
+                        <i class="fa-solid fa-thumbs-up text-white text-[10px]"></i>
                     </div>
-                </a>
+                </div>
+                <span class="like-count hover:underline">{{ news.count_likers }}</span>
+            </div>
+            <div class="flex gap-3">
+                <span class="hover:underline cursor-pointer"><span class="comment-count">{{ news.count_thread }}</span>
+                    {% trans 'comments' %}</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="px-4 py-1 flex items-center justify-between gap-1" id="interaction">
+            <a href="#"
+                class="like flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted font-semibold transition cursor-pointer text-decoration-none"
+                data-news-id="{{ news.uuid_id }}">
+                {% if request.user in news.get_likers %}
+                <i class="heart fa-solid fa-thumbs-up text-fb-primary text-xl"></i>
+                <span class="text-fb-primary">{% trans 'Like' %}</span>
+                {% else %}
+                <i class="heart fa-regular fa-thumbs-up text-xl"></i>
+                <span>{% trans 'Like' %}</span>
                 {% endif %}
-            </div>
+            </a>
 
-            <!-- Reaction counts -->
-            <div class="reaction-counts d-flex justify-content-between align-items-center mb-2 px-2 pb-2">
-                <div class="d-flex align-items-center text-muted small">
-                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-1"
-                        style="width: 18px; height: 18px;">
-                        <i class="fa-solid fa-thumbs-up text-white" style="font-size: 10px;"></i>
-                    </div>
-                    <span class="like-count">{{ news.count_likers }}</span>
-                </div>
-                <div class="text-muted small">
-                    <span class="comment-count">{{ news.count_thread }}</span> {% trans 'comments' %}
-                </div>
-            </div>
+            <a href="#"
+                class="comment flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted font-semibold transition cursor-pointer text-decoration-none"
+                data-news-id="{{ news.uuid_id }}">
+                <i class="fa-regular fa-comment text-xl"></i>
+                <span>{% trans 'Comment' %}</span>
+            </a>
 
-            <!-- Action buttons -->
-            <div class="interaction border-top d-flex justify-content-between pt-2 mt-1" id="interaction">
-                <a href="#"
-                    class="like btn btn-action flex-fill text-muted text-decoration-none fw-semibold rounded-pill d-flex align-items-center justify-content-center py-2"
-                    data-news-id="{{ news.uuid_id }}">
-                    {% if request.user in news.get_likers %}
-                    <i class="heart fa-solid fa-thumbs-up text-primary fs-5 me-2" aria-hidden="true"></i>
-                    <span class="text-primary">{% trans 'Like' %}</span>
-                    {% else %}
-                    <i class="heart fa-regular fa-thumbs-up fs-5 me-2" aria-hidden="true"></i>
-                    <span>{% trans 'Like' %}</span>
-                    {% endif %}
-                </a>
-                <a href="#"
-                    class="comment btn btn-action flex-fill text-muted text-decoration-none fw-semibold rounded-pill d-flex align-items-center justify-content-center py-2"
-                    data-news-id="{{ news.uuid_id }}">
-                    <i class="fa-regular fa-comment fs-5 me-2" aria-hidden="true"></i>
-                    <span>{% trans 'Comment' %}</span>
-                </a>
-                <a href="#"
-                    class="share btn btn-action flex-fill text-muted text-decoration-none fw-semibold rounded-pill d-flex align-items-center justify-content-center py-2">
-                    <i class="fa-solid fa-share fs-5 me-2" aria-hidden="true"></i>
-                    <span>{% trans 'Share' %}</span>
-                </a>
-            </div>
+            <a href="#"
+                class="share flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted font-semibold transition cursor-pointer text-decoration-none">
+                <i class="fa-solid fa-share text-xl"></i>
+                <span>{% trans 'Share' %}</span>
+            </a>
         </div>
     </div>
 </li>

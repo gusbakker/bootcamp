@@ -2,221 +2,288 @@
 {% load static i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}<title>{% trans 'Create New Group' %}</title>{% endblock %}
-
-{% block head %}
-<link href="{% static 'css/groups.css' %}" rel="stylesheet">
-{% endblock head %}
+{% block title %}{% trans 'Create New Group' %}{% endblock %}
 
 {% block content %}
-<div class="container create-group-container">
-    <div class="section-header">
-        <h1 class="section-title">{% trans 'Create a New Group' %}</h1>
+<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+    <!-- Header -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+        <div
+            class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+            <i class="fa-solid fa-users text-xl"></i>
+        </div>
+        <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">
+            {% trans 'Create a New Group' %}
+        </h1>
     </div>
 
-    <div class="row">
-        <!-- Form Column -->
-        <div class="col-lg-8">
-            <div class="card create-group-card">
-                <div class="card-body">
-                    <form action="{% url 'groups:new_group' %}" method="post" enctype="multipart/form-data"
-                        id="group-form">
-                        {% csrf_token %}
+    <!-- Form Card -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+        <div class="p-4 sm:p-6">
+            <form action="{% url 'groups:new_group' %}" method="post" enctype="multipart/form-data" id="group-form"
+                class="tailwind-crispy-form">
+                {% csrf_token %}
 
-                        <div class="mb-4">
-                            {{ group_form.title|as_crispy_field }}
-                        </div>
-
-                        <div class="mb-4">
-                            {{ group_form.description|as_crispy_field }}
-                        </div>
-
-                        <div class="mb-4">
-                            <input type="file" class="form-control d-none" id="{{ group_form.cover.id_for_label }}"
-                                name="cover" accept="image/*">
-
-                            <div class="cover-upload-area" id="cover-upload-area">
-                                <div class="cover-upload-icon">
-                                    <i class="fa-solid fa-image"></i>
-                                </div>
-                                <h5 class="cover-upload-text">{% trans 'Upload a cover photo' %}</h5>
-                                <p class="cover-upload-hint">{% trans 'Drag & drop an image here, or click to select a file' %}</p>
-                                <button type="button" class="btn btn-outline-primary">{% trans 'Choose File' %}</button>
-                            </div>
-
-                            <div class="cover-preview" id="cover-preview">
-                                <img src="" alt="Cover Preview" id="preview-image">
-                            </div>
-
-                            <div class="form-text">{% trans 'Recommended: 900 × 300 pixels. Max size: 2MB.' %}</div>
-                        </div>
-
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary rounded-pill btn-lg w-100"
-                                style="background-color: var(--bs-primary); border: none;">
-                                <i class="fa-solid fa-users me-2"></i>{% trans 'Create Group' %}
-                            </button>
-                            <a href="{% url 'groups:list' %}" class="btn btn-outline-secondary rounded-pill w-100">{% trans 'Cancel' %}</a>
-                        </div>
-                    </form>
+                <div class="mb-5">
+                    {{ group_form.title|as_crispy_field }}
                 </div>
-            </div>
-        </div>
 
-        <!-- Guidelines Column -->
-        <div class="col-lg-4">
-            <!-- Guidelines Card -->
-            <div class="sidebar-card">
-                <div class="card-header">
-                    <i class="fa-solid fa-lightbulb me-2"></i>{% trans 'Group Guidelines' %}
+                <div class="mb-5">
+                    {{ group_form.description|as_crispy_field }}
                 </div>
-                <div class="card-body">
-                    <ul class="tips-list">
-                        <li>{% trans 'Choose a clear title that accurately represents your group.' %}</li>
-                        <li>{% trans 'Write a comprehensive description.' %}</li>
-                        <li>{% trans 'Groups with cover images get more engagement.' %}</li>
-                        <li>{% trans 'You will automatically become the first admin. You can add up to 2 more later.' %}
-                        </li>
-                    </ul>
+
+                <div class="mb-5">
+                    <label class="block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
+                        {% trans 'Group Cover Photo' %}
+                    </label>
+                    <input type="file" class="hidden" id="{{ group_form.cover.id_for_label }}" name="cover"
+                        accept="image/*">
+
+                    <div class="w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-fb-primary transition relative group"
+                        id="cover-upload-area">
+                        <div
+                            class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-600/50 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-image text-gray-500 dark:text-gray-400 text-xl"></i>
+                        </div>
+                        <h5 class="font-bold text-fb-lightText dark:text-fb-text mb-1">{% trans 'Add a cover photo' %}
+                        </h5>
+                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted px-4 text-center mb-3">{% trans 'Drag & drop an image here, or click to select a file' %}</p>
+                        <span
+                            class="bg-fb-lightSurface dark:bg-[#4e4f50] border border-fb-lightBorder dark:border-fb-border px-4 py-1.5 rounded-md font-semibold text-sm text-fb-lightText dark:text-fb-text shadow-sm">{%trans 'Choose File' %}</span>
+                    </div>
+
+                    <div class="hidden w-full h-48 rounded-xl overflow-hidden border border-fb-lightBorder dark:border-fb-border mt-2 relative"
+                        id="cover-preview">
+                        <img src="" alt="Cover Preview" id="preview-image" class="w-full h-full object-cover">
+                        <button type="button"
+                            class="absolute top-2 right-2 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full text-white flex items-center justify-center transition"
+                            id="remove-preview" title="{% trans 'Remove photo' %}">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-2">{% trans 'Recommended: 900 × 300 pixels. Max size: 2MB.' %}</div>
                 </div>
-            </div>
+
+                <div
+                    class="pt-4 border-t border-fb-lightBorder dark:border-fb-border mt-6 flex flex-col sm:flex-row-reverse gap-3">
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-fb-primary hover:bg-blue-600 transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-white shadow-sm">
+                        <i class="fa-solid fa-users"></i>{% trans 'Create Group' %}
+                    </button>
+                    <a href="{% url 'groups:list' %}"
+                        class="w-full sm:w-auto bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text">
+                        {% trans 'Cancel' %}
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 {% endblock content %}
 
+{% block right_sidebar_widgets %}
+<!-- Guidelines Card -->
+<div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+    <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+        <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+            <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Group Guidelines' %}
+        </h5>
+    </div>
+    <div class="p-4">
+        <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
+            <li>{% trans 'Choose a clear title that accurately represents your group.' %}</li>
+            <li>{% trans 'Write a comprehensive description.' %}</li>
+            <li>{% trans 'Groups with cover images get more engagement.' %}</li>
+            <li>{% trans 'You will automatically become the first admin. You can add up to 2 more later.' %}</li>
+        </ul>
+    </div>
+</div>
+{% endblock right_sidebar_widgets %}
+
 {% block modal %}
+<style>
+    /* Tailwind overrides for Django forms */
+    .tailwind-crispy-form .form-group {
+        width: 100%;
+    }
+
+    .tailwind-crispy-form label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--fb-lightText, #050505);
+    }
+
+    html[data-theme='dark'] .tailwind-crispy-form label {
+        color: #e4e6eb;
+    }
+
+    .tailwind-crispy-form .form-control,
+    .tailwind-crispy-form .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        background-color: transparent !important;
+        border: 1px solid #ced0d4;
+        color: #050505 !important;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    html[data-theme='dark'] .tailwind-crispy-form .form-control,
+    html[data-theme='dark'] .tailwind-crispy-form .form-select {
+        border-color: #3e4042;
+        color: #e4e6eb !important;
+    }
+
+    .tailwind-crispy-form .form-control:focus,
+    .tailwind-crispy-form .form-select:focus {
+        outline: none;
+        border-color: #1877F2;
+        box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    }
+
+    .tailwind-crispy-form .asteriskField {
+        color: #e41e3f;
+        margin-left: 2px;
+    }
+
+    .tailwind-crispy-form .help-block {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 0.85rem;
+        color: #65676B;
+    }
+
+    html[data-theme='dark'] .tailwind-crispy-form .help-block {
+        color: #b0b3b8;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const coverInput = document.getElementById('{{ group_form.cover.id_for_label }}');
         const uploadArea = document.getElementById('cover-upload-area');
         const previewContainer = document.getElementById('cover-preview');
         const previewImage = document.getElementById('preview-image');
+        const removePreviewBtn = document.getElementById('remove-preview');
 
         // Handle click on upload area
-        uploadArea.addEventListener('click', function () {
-            coverInput.click();
-        });
+        if (uploadArea && coverInput) {
+            uploadArea.addEventListener('click', function () {
+                coverInput.click();
+            });
+        }
 
         // Handle file selection
-        coverInput.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
-                const file = this.files[0];
+        if (coverInput) {
+            coverInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
 
-                // Check file size
-                if (file.size > 2 * 1024 * 1024) {
-                    alert("{% trans 'Image size should be less than 2 megabytes.' %}");
-                    this.value = '';
-                    return;
+                    // Check file size
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert("{% trans 'Image size should be less than 2 megabytes.' %}");
+                        this.value = '';
+                        return;
+                    }
+
+                    // Display preview
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.classList.remove('hidden');
+                        uploadArea.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
                 }
+            });
+        }
 
-                // Display preview
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'block';
-                    uploadArea.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        // Handle preview removal
+        if (removePreviewBtn) {
+            removePreviewBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                coverInput.value = '';
+                previewImage.src = '';
+                previewContainer.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            });
+        }
 
         // Handle drag and drop
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, preventDefaults, false);
-        });
+        if (uploadArea) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, highlight, false);
-        });
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
 
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, unhighlight, false);
-        });
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
 
-        function highlight() {
-            uploadArea.classList.add('bg-light');
-        }
+            function highlight() {
+                uploadArea.classList.add('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
+            }
 
-        function unhighlight() {
-            uploadArea.classList.remove('bg-light');
-        }
+            function unhighlight() {
+                uploadArea.classList.remove('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
+            }
 
-        uploadArea.addEventListener('drop', handleDrop, false);
+            uploadArea.addEventListener('drop', handleDrop, false);
 
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
 
-            if (files && files.length) {
-                coverInput.files = files;
-
-                // Trigger change event manually
-                const event = new Event('change', { bubbles: true });
-                coverInput.dispatchEvent(event);
+                if (files && files.length) {
+                    coverInput.files = files;
+                    const event = new Event('change', { bubbles: true });
+                    coverInput.dispatchEvent(event);
+                }
             }
         }
 
         // Handle form submission
         const groupForm = document.getElementById('group-form');
-        groupForm.addEventListener('submit', function (event) {
-            const titleInput = document.querySelector('[name="title"]');
-            const descriptionInput = document.querySelector('[name="description"]');
+        if (groupForm) {
+            groupForm.addEventListener('submit', function (event) {
+                const titleInput = document.querySelector('[name="title"]');
+                const descriptionInput = document.querySelector('[name="description"]');
 
-            // Basic validation
-            let isValid = true;
+                let isValid = true;
 
-            if (!titleInput.value.trim()) {
-                isValid = false;
-                titleInput.classList.add('is-invalid');
-            } else {
-                titleInput.classList.remove('is-invalid');
-            }
+                if (!titleInput.value.trim()) {
+                    isValid = false;
+                    titleInput.style.borderColor = '#e41e3f';
+                } else {
+                    titleInput.style.borderColor = '';
+                }
 
-            if (!descriptionInput.value.trim()) {
-                isValid = false;
-                descriptionInput.classList.add('is-invalid');
-            } else {
-                descriptionInput.classList.remove('is-invalid');
-            }
+                if (!descriptionInput.value.trim()) {
+                    isValid = false;
+                    descriptionInput.style.borderColor = '#e41e3f';
+                } else {
+                    descriptionInput.style.borderColor = '';
+                }
 
-            if (!isValid) {
-                event.preventDefault();
-                alert("{% trans 'Please fill in all required fields.' %}");
-            }
-        });
-
-        // Handle light mode specific styling
-        function updateThemeStyles() {
-            if (document.documentElement.getAttribute('data-theme') === 'light') {
-                document.querySelectorAll('.bg-dark').forEach(el => {
-                    el.classList.remove('bg-dark');
-                    el.classList.add('bg-light');
-                });
-
-                document.querySelectorAll('.bg-opacity-10').forEach(el => {
-                    el.classList.remove('bg-opacity-10');
-                    el.classList.add('bg-opacity-25');
-                });
-            }
-        }
-
-        // Run on page load
-        updateThemeStyles();
-
-        // Listen for theme changes
-        document.addEventListener('themeChanged', updateThemeStyles);
-
-        // Hook into the dark mode switch
-        const darkSwitch = document.getElementById('darkSwitch');
-        if (darkSwitch) {
-            darkSwitch.addEventListener('change', function () {
-                setTimeout(updateThemeStyles, 50);
+                if (!isValid) {
+                    event.preventDefault();
+                    alert("{% trans 'Please fill in all required fields.' %}");
+                }
             });
         }
     });

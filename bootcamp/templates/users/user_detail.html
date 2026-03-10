@@ -4,202 +4,231 @@
 {% block title %}{% trans "Profile" %}{% endblock %}
 
 {% block head %}
-<link href="{% static 'css/user_profile.css' %}?v=2" rel="stylesheet">
-<link href="{% static 'css/news.css' %}?v=3" rel="stylesheet">
-<link href="{% static 'css/users.css' %}" rel="stylesheet">
+<link href="{% static 'css/users.css' %}?v=2" rel="stylesheet">
 {% endblock head %}
 
 {% block content %}
-<div class="container">
-    <!-- Profile Header -->
-    <div class="profile-header">
-        <div class="profile-cover"></div>
-        <img src="{{ object.get_picture }}" class="profile-avatar" alt="{% trans 'User Image' %}">
+<div class="max-w-5xl mx-auto w-full px-0 sm:px-4 py-4">
+    <!-- Unified Profile Header Card -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface sm:rounded-xl shadow-sm border-x border-b sm:border-t border-fb-lightBorder dark:border-fb-border mb-4 overflow-hidden">
+        <!-- Cover Image bg -->
+        <div
+            class="h-[250px] sm:h-[350px] bg-gradient-to-tr from-blue-600 to-indigo-700 relative w-full bg-cover bg-center">
+        </div>
 
-        <div class="profile-actions">
-            {% if request.user == object %}
-            <a href="{% url 'users:update' %}" class="btn btn-primary">
-                <i class="fa-solid fa-pen-to-square me-1"></i>{% trans 'Edit Profile' %}
-            </a>
-            {% else %}
-            <div class="d-flex">
-                {% if not request.user in object.contact_list.all %}
-                {% if request.user in object.pending_list.all %}
-                <a href="{% url 'users:send_message_request' object.id %}" class="btn btn-primary me-2"
-                    id="send_message_request">
-                    <i class="fa-solid fa-clock me-1"></i>{% trans 'Request Sent' %}
+        <!-- Avatar Wrapper -->
+        <div
+            class="relative -mt-[85px] pl-4 sm:pl-8 flex items-end mb-4 z-10 flex-col sm:flex-row items-center sm:items-end">
+            <img src="{{ object.get_picture }}"
+                class="w-[170px] h-[170px] rounded-full border-4 border-fb-lightSurface dark:border-fb-surface object-cover shadow-sm bg-fb-lightSurface dark:bg-fb-surface"
+                alt="{% trans 'User Image' %}">
+
+            <!-- Mobile name (shows on under sm) -->
+            <div class="block sm:hidden text-center mt-2">
+                <h1 class="text-2xl font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ object.get_profile_name }}</h1>
+                <p class="text-sm font-semibold text-fb-lightMuted dark:text-fb-muted">@{{ object.username }}</p>
+            </div>
+        </div>
+
+        <!-- Main Info and Actions Flex Container -->
+        <div
+            class="px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-center sm:items-start flex-wrap gap-4 pb-4">
+
+            <!-- Left Side Info -->
+            <div class="flex-1 min-w-[300px] text-center sm:text-left">
+                <div class="hidden sm:block">
+                    <h1 class="text-[2rem] font-bold leading-tight text-fb-lightText dark:text-fb-text">{{ object.get_profile_name }}</h1>
+                    <p class="text-[1.1rem] font-semibold text-fb-lightMuted dark:text-fb-muted mb-2">@{{ object.username }}</p>
+                </div>
+
+                <div class="flex items-center justify-center sm:justify-start gap-4 mb-3 text-[1.05rem]">
+                    <span class="text-fb-lightMuted dark:text-fb-muted"><strong
+                            class="text-fb-lightText dark:text-fb-text font-semibold">{{ object.followers.count }}</strong> {% trans 'Followers' %}</span>
+                    <span class="text-fb-lightMuted dark:text-fb-muted"><strong
+                            class="text-fb-lightText dark:text-fb-text font-semibold">{{ object.following.count }}</strong> {% trans 'Following' %}</span>
+                    <span class="text-fb-lightMuted dark:text-fb-muted"><strong
+                            class="text-fb-lightText dark:text-fb-text font-semibold">{{ object.contact_list.count }}</strong> {% trans 'Friends' %}</span>
+                </div>
+
+                {% if object.bio %}
+                <div
+                    class="mt-2 mb-4 text-[1rem] leading-relaxed max-w-[600px] text-fb-lightText dark:text-fb-text mx-auto sm:mx-0">
+                    {{ object.bio }}
+                </div>
+                {% endif %}
+
+                <div
+                    class="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2 mb-3 text-[0.95rem] font-medium text-fb-lightMuted dark:text-fb-muted">
+                    {% if object.job_title %}
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-briefcase opacity-80"></i>
+                        {{ object.job_title }}
+                    </div>
+                    {% endif %}
+
+                    {% if object.location %}
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-location-dot opacity-80"></i>
+                        {{ object.location }}
+                    </div>
+                    {% endif %}
+
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-regular fa-clock opacity-80"></i>
+                        {% trans 'Last online' %} {{ object.last_login|naturaltime }}
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar opacity-80"></i>
+                        {% trans 'Joined' %} {{ object.member_since|naturaltime }}
+                    </div>
+
+                    {% if object.personal_url %}
+                    <div class="flex items-center gap-1.5">
+                        <a href="{{ object.personal_url }}" target="_blank" title="{% trans 'Personal Website' %}"
+                            class="hover:underline flex items-center text-fb-primary">
+                            <i class="fa-solid fa-link mr-1"></i> {{ object.personal_url }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Side Actions -->
+            <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                {% if request.user == object %}
+                <a href="{% url 'users:update' %}"
+                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold flex items-center gap-2 text-fb-lightText dark:text-fb-text border border-transparent">
+                    <i class="fa-solid fa-pen-to-square"></i>{% trans 'Edit Profile' %}
                 </a>
                 {% else %}
-                <a href="{% url 'users:send_message_request' object.id %}" class="btn btn-outline-primary me-2"
+                <!-- Intercept current user context logic -->
+                {% if not request.user in object.contact_list.all %}
+                {% if request.user in object.pending_list.all %}
+                <a href="{% url 'users:send_message_request' object.id %}"
+                    class="bg-fb-primary hover:bg-blue-600 transition px-4 py-2 rounded-md font-semibold flex items-center gap-2 text-white"
                     id="send_message_request">
-                    <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Send Request' %}
+                    <i class="fa-solid fa-clock"></i>{% trans 'Request Sent' %}
+                </a>
+                {% else %}
+                <a href="{% url 'users:send_message_request' object.id %}"
+                    class="bg-fb-primary hover:bg-blue-600 transition px-4 py-2 rounded-md font-semibold flex items-center gap-2 text-white"
+                    id="send_message_request">
+                    <i class="fa-solid fa-user-plus"></i>{% trans 'Add Friend' %}
                 </a>
                 {% endif %}
                 {% else %}
-                <a href="{% url 'messager:conversation_detail' object.username %}" class="btn btn-outline-primary me-2"
-                    id="send_msg">
-                    <i class="fa-solid fa-message me-1"></i>{% trans 'Message' %}
-                </a>
-                <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal"
-                    data-bs-target="#blockUserModal">
-                    <i class="fa-solid fa-ban me-1"></i>{% trans 'Block' %}
-                </button>
-
-                <!-- Block User Modal -->
-                <div class="modal fade" id="blockUserModal" tabindex="-1" role="dialog"
-                    aria-labelledby="blockUserModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content bg-dark">
-                            <div class="modal-header border-bottom border-dark">
-                                <h5 class="modal-title text-light" id="blockUserModalLabel">{% trans 'Are you sure?' %}
-                                </h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p class="mb-0 text-light">{% trans 'Once you block the user, you cannot message them
-                                    again until they accept your request.' %}</p>
-                            </div>
-                            <div class="modal-footer border-top border-dark">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    {% trans 'Cancel' %}
-                                </button>
-                                <a href="{% url 'users:block_spammer' object.id %}" class="btn btn-danger"
-                                    id="block_spammer">{% trans 'Block' %}</a>
-                            </div>
+                <!-- We will use toggleModal for blocking instead of bootstrap -->
+                <div id="blockUserModal"
+                    class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+                    <div
+                        class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-fb-lightBorder dark:border-fb-border">
+                        <div
+                            class="flex justify-between items-center p-4 border-b border-fb-lightBorder dark:border-fb-border">
+                            <h3 class="text-xl font-bold text-fb-lightText dark:text-fb-text">{% trans 'Are you sure?' %}</h3>
+                            <button onclick="toggleModal('blockUserModal')"
+                                class="w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 flex items-center justify-center text-fb-lightMuted dark:text-fb-muted transition">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="p-4 text-fb-lightText dark:text-fb-text">
+                            {% trans 'Once you block the user, you cannot message them again until they accept your request.' %}
+                        </div>
+                        <div class="p-4 border-t border-fb-lightBorder dark:border-fb-border flex justify-end gap-2">
+                            <button onclick="toggleModal('blockUserModal')"
+                                class="px-4 py-2 font-semibold text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition">
+                                {% trans 'Cancel' %}
+                            </button>
+                            <a href="{% url 'users:block_spammer' object.id %}"
+                                class="px-4 py-2 font-semibold bg-red-600 hover:bg-red-700 text-white rounded-md transition"
+                                id="block_spammer">
+                                {% trans 'Block' %}
+                            </a>
                         </div>
                     </div>
                 </div>
                 {% endif %}
 
                 {% if request.user in object.followers.all %}
-                <a href="{% url 'users:follow_user' object.id %}" class="btn btn-primary" id="follow_user">
-                    <i class="fa-solid fa-user-check me-1"></i>{% trans 'Following' %}
+                <a href="{% url 'users:follow_user' object.id %}"
+                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold flex items-center gap-2 text-fb-lightText dark:text-fb-text"
+                    id="follow_user">
+                    <i class="fa-solid fa-user-check"></i>{% trans 'Following' %}
                 </a>
                 {% else %}
-                <a href="{% url 'users:follow_user' object.id %}" class="btn btn-outline-primary" id="follow_user">
-                    <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Follow' %}
+                <a href="{% url 'users:follow_user' object.id %}"
+                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold flex items-center gap-2 text-fb-lightText dark:text-fb-text"
+                    id="follow_user">
+                    <i class="fa-solid fa-rss"></i>{% trans 'Follow' %}
                 </a>
                 {% endif %}
+
+                <a href="{% url 'messager:conversation_detail' object.username %}"
+                    class="bg-fb-primary hover:bg-blue-600 transition px-4 py-2 rounded-md font-semibold flex items-center gap-2 text-white"
+                    id="send_msg">
+                    <i class="fa-brands fa-facebook-messenger"></i>{% trans 'Message' %}
+                </a>
+
+                {% if request.user in object.contact_list.all %}
+                <button type="button" onclick="toggleModal('blockUserModal')"
+                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold flex items-center text-fb-lightText dark:text-fb-text">
+                    <i class="fa-solid fa-ban"></i>
+                </button>
+                {% endif %}
+                {% endif %}
             </div>
-            {% endif %}
+
+        </div>
+
+        <!-- Horizontal Tabs Bar -->
+        <div class="border-t border-fb-lightBorder dark:border-fb-border px-4 mt-2">
+            <div class="flex overflow-x-auto no-scrollbar gap-1" id="profileTabs">
+                <button onclick="switchProfileTab('activity')" id="activity-btn"
+                    class="nav-link px-4 py-3.5 font-semibold text-fb-primary border-b-[3px] border-fb-primary transition whitespace-nowrap">
+                    {% trans 'Posts' %}
+                </button>
+                <button onclick="switchProfileTab('friends')" id="friends-btn"
+                    class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap">
+                    {% trans 'Friends' %} <span class="font-normal opacity-80 ml-1">{{ object.contact_list.count }}</span>
+                </button>
+                <button onclick="switchProfileTab('followers')" id="followers-btn"
+                    class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap">
+                    {% trans 'Followers' %} <span class="font-normal opacity-80 ml-1">{{ object.followers.count }}</span>
+                </button>
+                <button onclick="switchProfileTab('following')" id="following-btn"
+                    class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap">
+                    {% trans 'Following' %} <span class="font-normal opacity-80 ml-1">{{ object.following.count }}</span>
+                </button>
+                {% if request.user == object %}
+                <button onclick="switchProfileTab('requests')" id="requests-btn"
+                    class="nav-link px-4 py-3.5 font-semibold text-fb-lightMuted dark:text-fb-muted hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-t-lg transition border-b-[3px] border-transparent whitespace-nowrap flex items-center gap-1.5">
+                    {% trans 'Requests' %}
+                    {% if object.pending_list.count > 0 %}
+                    <span class="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{{ object.pending_list.count }}</span>
+                    {% endif %}
+                </button>
+                {% endif %}
+            </div>
         </div>
     </div>
 
-    <!-- Profile Info -->
-    <div class="row">
-        <div class="col-md-8">
-            <div class="profile-info">
-                <h1 class="profile-name">{{ object.get_profile_name }}</h1>
-                <p class="profile-username">@{{ object.username }}</p>
+    <!-- Profile Bottom Content Layout -->
+    <div class="flex flex-col lg:flex-row gap-4">
 
-                <div class="profile-meta">
-                    {% if object.job_title %}
-                    <div class="profile-meta-item">
-                        <i class="fa-solid fa-briefcase"></i>
-                        {{ object.job_title }}
-                    </div>
-                    {% endif %}
+        <!-- Left Column: Tabs Content (Feed, Friends, etc) -->
+        <div class="flex-grow lg:w-2/3">
+            <div id="profileTabsContent" class="mb-4">
 
-                    {% if object.location %}
-                    <div class="profile-meta-item">
-                        <i class="fa-solid fa-location-dot"></i>
-                        {{ object.location }}
-                    </div>
-                    {% endif %}
-
-                    <div class="profile-meta-item">
-                        <i class="fa-regular fa-clock"></i>
-                        {% trans 'Last online' %} {{ object.last_login|naturaltime }}
-                    </div>
-
-                    <div class="profile-meta-item">
-                        <i class="fa-regular fa-calendar"></i>
-                        {% trans 'Member since' %} {{ object.member_since|naturaltime }}
-                    </div>
-                </div>
-
-                {% if object.bio %}
-                <div class="profile-bio">
-                    {{ object.bio }}
-                </div>
-                {% endif %}
-
-                {% if object.personal_url %}
-                <div class="profile-social">
-                    <a href="{{ object.personal_url }}" target="_blank" title="{% trans 'Personal Website' %}">
-                        <i class="fa-solid fa-globe"></i>
-                    </a>
-                    <a href="#" title="{% trans 'RSS Feed' %}">
-                        <i class="fa-solid fa-rss"></i>
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-
-            <!-- Profile Stats -->
-            <div class="profile-stats mb-4">
-                <div class="profile-stat">
-                    <div class="profile-stat-value">{{ object.followers.count }}</div>
-                    <div class="profile-stat-label">{% trans 'Followers' %}</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-value">{{ object.following.count }}</div>
-                    <div class="profile-stat-label">{% trans 'Following' %}</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-value">{{ object.contact_list.count }}</div>
-                    <div class="profile-stat-label">{% trans 'Friends' %}</div>
-                </div>
-            </div>
-
-            <!-- Content Tabs -->
-            <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity"
-                        type="button" role="tab" aria-controls="activity" aria-selected="true">
-                        <i class="fa-solid fa-newspaper me-1"></i>{% trans 'Activity' %}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="friends-tab" data-bs-toggle="tab" data-bs-target="#friends"
-                        type="button" role="tab" aria-controls="friends" aria-selected="false">
-                        <i class="fa-solid fa-user-group me-1"></i>{% trans 'Friends' %}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="followers-tab" data-bs-toggle="tab" data-bs-target="#followers"
-                        type="button" role="tab" aria-controls="followers" aria-selected="false">
-                        <i class="fa-solid fa-users me-1"></i>{% trans 'Followers' %}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="following-tab" data-bs-toggle="tab" data-bs-target="#following"
-                        type="button" role="tab" aria-controls="following" aria-selected="false">
-                        <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Following' %}
-                    </button>
-                </li>
-                {% if request.user == object %}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests"
-                        type="button" role="tab" aria-controls="requests" aria-selected="false">
-                        <i class="fa-solid fa-user-clock me-1"></i>{% trans 'Requests' %}
-                        {% if object.pending_list.count > 0 %}
-                        <span class="badge bg-danger rounded-pill">{{ object.pending_list.count }}</span>
-                        {% endif %}
-                    </button>
-                </li>
-                {% endif %}
-            </ul>
-
-            <div class="tab-content" id="profileTabsContent">
-                <div class="tab-pane fade show active" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+                <!-- Posts Tab -->
+                <div class="tab-pane block" id="activity">
                     <div class="infinite-container">
-                        <ul class="stream">
+                        <ul class="stream list-none p-0 m-0">
                             {% for news in user_activity %}
                             {% include 'news/news_single.html' with news=news %}
                             {% empty %}
-                            <div class="alert alert-light text-center">
+                            <div
+                                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl p-8 text-center text-fb-lightMuted dark:text-fb-muted font-semibold shadow-sm">
                                 {% trans 'No activity found' %}
                             </div>
                             {% endfor %}
@@ -207,36 +236,34 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                <!-- Friends Tab -->
+                <div class="tab-pane hidden" id="friends">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {% for user in object.contact_list.all %}
-                        <div class="col">
-                            <div class="card user-card h-100">
-                                <div class="card-body d-flex">
-                                    <img src="{{ user.get_picture }}" alt="{{ user.username }}"
-                                        class="rounded-circle me-3"
-                                        style="width: 64px; height: 64px; object-fit: cover;">
-                                    <div>
-                                        <h5 class="card-title fs-6 mb-1">
-                                            <a href="{% url 'users:detail' user.username %}"
-                                                class="text-decoration-none">
-                                                {{ user.get_profile_name|default:user.username }}
-                                            </a>
-                                        </h5>
-                                        <p class="card-text text-muted small mb-2">@{{ user.username }}</p>
-                                        <div class="d-flex gap-2">
-                                            <a href="{% url 'messager:conversation_detail' user.username %}"
-                                                class="btn btn-sm btn-outline-primary">
-                                                <i class="fa-solid fa-message me-1"></i>{% trans 'Message' %}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- Tailwind User Card -->
+                        <div
+                            class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
+                            <img src="{{ user.get_picture }}" alt="{{ user.username }}"
+                                class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
+                            <div class="flex-grow flex flex-col justify-center">
+                                <h5
+                                    class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
+                                    <a href="{% url 'users:detail' user.username %}" class="hover:underline">
+                                        {{ user.get_profile_name|default:user.username }}
+                                    </a>
+                                </h5>
+                                <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{ user.username }}
+                                </p>
+                                <a href="{% url 'messager:conversation_detail' user.username %}"
+                                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text w-full sm:w-auto self-start">
+                                    <i class="fa-solid fa-message text-[11px]"></i>{% trans 'Message' %}
+                                </a>
                             </div>
                         </div>
                         {% empty %}
-                        <div class="col-12">
-                            <div class="alert alert-light text-center">
+                        <div class="col-span-full">
+                            <div
+                                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl p-8 text-center text-fb-lightMuted dark:text-fb-muted font-semibold shadow-sm">
                                 {% trans 'No friends found' %}
                             </div>
                         </div>
@@ -244,45 +271,44 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="followers" role="tabpanel" aria-labelledby="followers-tab">
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                <!-- Followers Tab -->
+                <div class="tab-pane hidden" id="followers">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {% for user in object.followers.all %}
-                        <div class="col">
-                            <div class="card user-card h-100">
-                                <div class="card-body d-flex">
-                                    <img src="{{ user.get_picture }}" alt="{{ user.username }}"
-                                        class="rounded-circle me-3"
-                                        style="width: 64px; height: 64px; object-fit: cover;">
-                                    <div>
-                                        <h5 class="card-title fs-6 mb-1">
-                                            <a href="{% url 'users:detail' user.username %}"
-                                                class="text-decoration-none">
-                                                {{ user.get_profile_name|default:user.username }}
-                                            </a>
-                                        </h5>
-                                        <p class="card-text text-muted small mb-2">@{{ user.username }}</p>
-                                        <div class="d-flex gap-2">
-                                            {% if request.user != user %}
-                                            {% if user in request.user.following.all %}
-                                            <a href="{% url 'users:follow_user' user.id %}"
-                                                class="btn btn-sm btn-primary" id="follow_user">
-                                                <i class="fa-solid fa-user-check me-1"></i>{% trans 'Following' %}
-                                            </a>
-                                            {% else %}
-                                            <a href="{% url 'users:follow_user' user.id %}"
-                                                class="btn btn-sm btn-outline-primary" id="follow_user">
-                                                <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Follow' %}
-                                            </a>
-                                            {% endif %}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
+                        <div
+                            class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
+                            <img src="{{ user.get_picture }}" alt="{{ user.username }}"
+                                class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
+                            <div class="flex-grow flex flex-col justify-center">
+                                <h5
+                                    class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
+                                    <a href="{% url 'users:detail' user.username %}" class="hover:underline">
+                                        {{ user.get_profile_name|default:user.username }}
+                                    </a>
+                                </h5>
+                                <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{ user.username }}
+                                </p>
+                                {% if request.user != user %}
+                                {% if user in request.user.following.all %}
+                                <a href="{% url 'users:follow_user' user.id %}"
+                                    class="bg-fb-primary hover:bg-blue-600 transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-white w-full sm:w-auto self-start"
+                                    id="follow_user">
+                                    <i class="fa-solid fa-user-check text-[11px]"></i>{% trans 'Following' %}
+                                </a>
+                                {% else %}
+                                <a href="{% url 'users:follow_user' user.id %}"
+                                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text w-full sm:w-auto self-start"
+                                    id="follow_user">
+                                    <i class="fa-solid fa-user-plus text-[11px]"></i>{% trans 'Follow' %}
+                                </a>
+                                {% endif %}
+                                {% endif %}
                             </div>
                         </div>
                         {% empty %}
-                        <div class="col-12">
-                            <div class="alert alert-light text-center">
+                        <div class="col-span-full">
+                            <div
+                                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl p-8 text-center text-fb-lightMuted dark:text-fb-muted font-semibold shadow-sm">
                                 {% trans 'No followers found' %}
                             </div>
                         </div>
@@ -290,36 +316,34 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                <!-- Following Tab -->
+                <div class="tab-pane hidden" id="following">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {% for user in object.following.all %}
-                        <div class="col">
-                            <div class="card user-card h-100">
-                                <div class="card-body d-flex">
-                                    <img src="{{ user.get_picture }}" alt="{{ user.username }}"
-                                        class="rounded-circle me-3"
-                                        style="width: 64px; height: 64px; object-fit: cover;">
-                                    <div>
-                                        <h5 class="card-title fs-6 mb-1">
-                                            <a href="{% url 'users:detail' user.username %}"
-                                                class="text-decoration-none">
-                                                {{ user.get_profile_name|default:user.username }}
-                                            </a>
-                                        </h5>
-                                        <p class="card-text text-muted small mb-2">@{{ user.username }}</p>
-                                        <div class="d-flex gap-2">
-                                            <a href="{% url 'users:follow_user' user.id %}"
-                                                class="btn btn-sm btn-primary" id="follow_user">
-                                                <i class="fa-solid fa-user-check me-1"></i>{% trans 'Following' %}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div
+                            class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
+                            <img src="{{ user.get_picture }}" alt="{{ user.username }}"
+                                class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
+                            <div class="flex-grow flex flex-col justify-center">
+                                <h5
+                                    class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
+                                    <a href="{% url 'users:detail' user.username %}" class="hover:underline">
+                                        {{ user.get_profile_name|default:user.username }}
+                                    </a>
+                                </h5>
+                                <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-2">@{{ user.username }}
+                                </p>
+                                <a href="{% url 'users:follow_user' user.id %}"
+                                    class="bg-fb-primary hover:bg-blue-600 transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-white w-full sm:w-auto self-start"
+                                    id="follow_user">
+                                    <i class="fa-solid fa-user-check text-[11px]"></i>{% trans 'Following' %}
+                                </a>
                             </div>
                         </div>
                         {% empty %}
-                        <div class="col-12">
-                            <div class="alert alert-light text-center">
+                        <div class="col-span-full">
+                            <div
+                                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl p-8 text-center text-fb-lightMuted dark:text-fb-muted font-semibold shadow-sm">
                                 {% trans 'No following found' %}
                             </div>
                         </div>
@@ -328,39 +352,40 @@
                 </div>
 
                 {% if request.user == object %}
-                <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                <!-- Requests Tab -->
+                <div class="tab-pane hidden" id="requests">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {% for user in object.pending_list.all %}
-                        <div class="col">
-                            <div class="card user-card h-100">
-                                <div class="card-body d-flex">
-                                    <img src="{{ user.get_picture }}" alt="{{ user.username }}"
-                                        class="rounded-circle me-3"
-                                        style="width: 64px; height: 64px; object-fit: cover;">
-                                    <div>
-                                        <h5 class="card-title fs-6 mb-1">
-                                            <a href="{% url 'users:detail' user.username %}"
-                                                class="text-decoration-none">
-                                                {{ user.get_profile_name|default:user.username }}
-                                            </a>
-                                        </h5>
-                                        <p class="card-text text-muted small mb-2">@{{ user.username }}</p>
-                                        <div class="d-flex gap-2">
-                                            <a href="{% url 'users:accept_message_request' user.id %}"
-                                                class="btn btn-sm btn-success" id="accept_message_request">
-                                                <i class="fa-solid fa-check me-1"></i>{% trans 'Accept' %}
-                                            </a>
-                                            <a href="#" class="btn btn-sm btn-outline-danger">
-                                                <i class="fa-solid fa-times me-1"></i>{% trans 'Decline' %}
-                                            </a>
-                                        </div>
-                                    </div>
+                        <div
+                            class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl overflow-hidden shadow-sm flex items-center p-4 hover:shadow-md transition">
+                            <img src="{{ user.get_picture }}" alt="{{ user.username }}"
+                                class="w-16 h-16 rounded-full object-cover mr-4 border border-fb-lightBorder dark:border-fb-border">
+                            <div class="flex-grow flex flex-col justify-center">
+                                <h5
+                                    class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5">
+                                    <a href="{% url 'users:detail' user.username %}" class="hover:underline">
+                                        {{ user.get_profile_name|default:user.username }}
+                                    </a>
+                                </h5>
+                                <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-3">@{{ user.username }}
+                                </p>
+                                <div class="flex gap-2">
+                                    <a href="{% url 'users:accept_message_request' user.id %}"
+                                        class="bg-green-600 hover:bg-green-700 transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 text-white flex-1"
+                                        id="accept_message_request">
+                                        <i class="fa-solid fa-check text-[11px]"></i>{% trans 'Accept' %}
+                                    </a>
+                                    <a href="#"
+                                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-red-500 transition px-3 py-1.5 rounded-md font-semibold text-sm flex items-center justify-center gap-1.5 flex-1">
+                                        <i class="fa-solid fa-times text-[11px]"></i>{% trans 'Decline' %}
+                                    </a>
                                 </div>
                             </div>
                         </div>
                         {% empty %}
-                        <div class="col-12">
-                            <div class="alert alert-light text-center">
+                        <div class="col-span-full">
+                            <div
+                                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl p-8 text-center text-fb-lightMuted dark:text-fb-muted font-semibold shadow-sm">
                                 {% trans 'No friend requests' %}
                             </div>
                         </div>
@@ -371,82 +396,99 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <!-- Right Column: Sidebar Widgets -->
+        <div class="lg:w-1/3 flex flex-col gap-4">
             <!-- Suggested Friends Widget -->
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 fs-6">{% trans 'People You May Know' %}</h5>
-                    <a href="{% url 'users:list' %}" class="text-primary">
+            <div
+                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden">
+                <div class="flex justify-between items-center p-4 pb-2">
+                    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px]">{% trans 'People You May Know' %}</h5>
+                    <a href="{% url 'users:list' %}"
+                        class="text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover p-1.5 rounded-md transition">
                         <i class="fa-solid fa-users"></i>
                     </a>
                 </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        <!-- This would be populated from a view with suggested friends -->
-                        <div class="list-group-item d-flex align-items-center">
-                            <img src="{% static 'img/favicon.png' %}" alt="User" class="rounded-circle me-3"
-                                style="width: 40px; height: 40px;">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0 fs-6">Chris Parker</h6>
-                                <p class="text-muted mb-0 small">3 mutual connections</p>
-                            </div>
-                            <button class="btn btn-sm btn-outline-primary">
-                                <i class="fa-solid fa-user-plus"></i>
-                            </button>
+                <div class="flex flex-col gap-1 p-2">
+                    <!-- This would be populated from a view with suggested friends -->
+                    <div
+                        class="flex items-center p-2 rounded-lg hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition">
+                        <img src="{% static 'img/favicon.png' %}" alt="User"
+                            class="w-10 h-10 rounded-full mr-3 object-cover">
+                        <div class="flex-grow">
+                            <h6 class="font-semibold text-[14px] text-fb-lightText dark:text-fb-text leading-tight">
+                                Chris Parker</h6>
+                            <p class="text-[12px] text-fb-lightMuted dark:text-fb-muted">3 mutual connections</p>
                         </div>
-                        <div class="list-group-item d-flex align-items-center">
-                            <img src="{% static 'img/favicon.png' %}" alt="User" class="rounded-circle me-3"
-                                style="width: 40px; height: 40px;">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0 fs-6">Robin Chen</h6>
-                                <p class="text-muted mb-0 small">5 mutual connections</p>
-                            </div>
-                            <button class="btn btn-sm btn-outline-primary">
-                                <i class="fa-solid fa-user-plus"></i>
-                            </button>
+                        <button
+                            class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-fb-primary p-2 rounded-full transition">
+                            <i class="fa-solid fa-user-plus text-sm"></i>
+                        </button>
+                    </div>
+                    <div
+                        class="flex items-center p-2 rounded-lg hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition">
+                        <img src="{% static 'img/favicon.png' %}" alt="User"
+                            class="w-10 h-10 rounded-full mr-3 object-cover">
+                        <div class="flex-grow">
+                            <h6 class="font-semibold text-[14px] text-fb-lightText dark:text-fb-text leading-tight">
+                                Robin Chen</h6>
+                            <p class="text-[12px] text-fb-lightMuted dark:text-fb-muted">5 mutual connections</p>
                         </div>
+                        <button
+                            class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-blue-50 dark:hover:bg-blue-900/30 text-fb-primary p-2 rounded-full transition">
+                            <i class="fa-solid fa-user-plus text-sm"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="card-footer text-center">
-                    <a href="{% url 'users:list' %}" class="btn btn-sm btn-primary">
+                <div class="p-3 pt-0 text-center mt-1">
+                    <a href="{% url 'users:list' %}"
+                        class="block w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text font-semibold py-1.5 rounded-md transition text-[15px]">
                         {% trans 'Find More Friends' %}
                     </a>
                 </div>
             </div>
 
             <!-- Groups Widget -->
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 fs-6">{% trans 'Groups' %}</h5>
-                    <a href="{% url 'groups:list' %}" class="text-primary">
+            <div
+                class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+                <div class="flex justify-between items-center p-4 pb-2">
+                    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px]">{% trans 'Groups' %}</h5>
+                    <a href="{% url 'groups:list' %}"
+                        class="text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover p-1.5 rounded-md transition">
                         <i class="fa-solid fa-user-group"></i>
                     </a>
                 </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        <!-- This would be populated from a view with user's groups -->
-                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
-                            <div class="rounded-3 bg-primary bg-opacity-10 p-2 me-3">
-                                <i class="fa-solid fa-code text-primary"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0 fs-6">Web Developers</h6>
-                                <span class="text-muted small">1,245 members</span>
-                            </div>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
-                            <div class="rounded-3 bg-danger bg-opacity-10 p-2 me-3">
-                                <i class="fa-solid fa-camera text-danger"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0 fs-6">Photography</h6>
-                                <span class="text-muted small">892 members</span>
-                            </div>
-                        </a>
-                    </div>
+                <div class="flex flex-col gap-1 p-2">
+                    <!-- This would be populated from a view with user's groups -->
+                    <a href="#"
+                        class="flex items-center p-2 rounded-lg hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-3 flex-shrink-0">
+                            <i class="fa-solid fa-code text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h6
+                                class="font-semibold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover:underline">
+                                Web Developers</h6>
+                            <span class="text-[12px] text-fb-lightMuted dark:text-fb-muted">1,245 members</span>
+                        </div>
+                    </a>
+                    <a href="#"
+                        class="flex items-center p-2 rounded-lg hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center mr-3 flex-shrink-0">
+                            <i class="fa-solid fa-camera text-red-600 dark:text-red-400"></i>
+                        </div>
+                        <div>
+                            <h6
+                                class="font-semibold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover:underline">
+                                Photography</h6>
+                            <span class="text-[12px] text-fb-lightMuted dark:text-fb-muted">892 members</span>
+                        </div>
+                    </a>
                 </div>
-                <div class="card-footer text-center">
-                    <a href="{% url 'groups:list' %}" class="btn btn-sm btn-primary">
+                <div class="p-3 pt-0 text-center mt-1">
+                    <a href="{% url 'groups:list' %}"
+                        class="block w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text font-semibold py-1.5 rounded-md transition text-[15px]">
                         {% trans 'Discover Groups' %}
                     </a>
                 </div>
@@ -463,6 +505,35 @@
 <script src="{% static 'js/news.js' %}" type="text/javascript"></script>
 
 <script>
+    // Native JS Tab Switching logic
+    function switchProfileTab(tabId) {
+        // Hide all tab panes
+        document.querySelectorAll('.tab-pane').forEach(el => {
+            el.classList.add('hidden');
+            el.classList.remove('block');
+        });
+
+        // Deactivate all links
+        document.querySelectorAll('.nav-link').forEach(el => {
+            el.classList.remove('text-fb-primary', 'border-fb-primary');
+            el.classList.add('text-fb-lightMuted', 'dark:text-fb-muted', 'border-transparent', 'hover:bg-fb-lightSurfaceHover', 'dark:hover:bg-fb-surfaceHover');
+        });
+
+        // Show selected tab pane
+        const targetPane = document.getElementById(tabId);
+        if (targetPane) {
+            targetPane.classList.remove('hidden');
+            targetPane.classList.add('block');
+        }
+
+        // Activate selected link
+        const activeBtn = document.getElementById(tabId + '-btn');
+        if (activeBtn) {
+            activeBtn.classList.add('text-fb-primary', 'border-fb-primary');
+            activeBtn.classList.remove('text-fb-lightMuted', 'dark:text-fb-muted', 'border-transparent', 'hover:bg-fb-lightSurfaceHover', 'dark:hover:bg-fb-surfaceHover');
+        }
+    }
+
     // Initialize infinite scroll for the activity tab
     var infinite = new Waypoint.Infinite({
         element: $('.infinite-container')[0],
@@ -474,46 +545,5 @@
         }
     });
 
-    // Handle light mode specific styling
-    function updateThemeStyles() {
-        if (document.documentElement.getAttribute('data-theme') === 'light') {
-            // Update modal content in light mode
-            document.querySelectorAll('.modal-content.bg-dark').forEach(content => {
-                content.classList.remove('bg-dark');
-                content.classList.add('bg-white');
-            });
-
-            // Update modal header/footer borders
-            document.querySelectorAll('.modal-header.border-dark, .modal-footer.border-dark').forEach(el => {
-                el.classList.remove('border-dark');
-                el.classList.add('border-light');
-            });
-
-            // Update modal text colors
-            document.querySelectorAll('.modal-title.text-light, .modal-body .text-light').forEach(text => {
-                text.classList.remove('text-light');
-                text.classList.add('text-dark');
-            });
-
-            // Update modal close button
-            document.querySelectorAll('.btn-close-white').forEach(btn => {
-                btn.classList.remove('btn-close-white');
-            });
-        }
-    }
-
-    // Run on page load
-    document.addEventListener('DOMContentLoaded', updateThemeStyles);
-
-    // Listen for theme changes
-    document.addEventListener('themeChanged', updateThemeStyles);
-
-    // Hook into the dark mode switch
-    const darkSwitch = document.getElementById('darkSwitch');
-    if (darkSwitch) {
-        darkSwitch.addEventListener('change', function () {
-            setTimeout(updateThemeStyles, 50);
-        });
-    }
 </script>
 {% endblock modal %}

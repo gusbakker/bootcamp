@@ -1,93 +1,166 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags i18n %}
 
-{% block title %}<title>{% trans 'Change Group Cover' %}</title>{% endblock %}
-
-{% block head %}
-{% endblock %}
+{% block title %}{% trans 'Change Group Cover' %}{% endblock %}
 
 {% block content %}
-<div class="container cover-upload-container">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'groups:list' %}">{% trans 'Groups' %}</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'groups:group' group.slug %}">{{ group.title }}</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{% trans 'Change Cover' %}</li>
-        </ol>
-      </nav>
-
-      <div class="card cover-card">
-        <div class="card-header">
-          <h5 class="card-title">{% trans 'Update Group Cover Image' %}</h5>
+<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+  <!-- Breadcrumb -->
+  <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 sm:space-x-3">
+      <li class="inline-flex items-center">
+        <a href="{% url 'groups:list' %}"
+          class="inline-flex items-center hover:text-fb-primary hover:underline transition">
+          <i class="fa-solid fa-house mr-2 text-xs"></i>
+          {% trans 'Groups' %}
+        </a>
+      </li>
+      <li>
+        <div class="flex items-center">
+          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+          <a href="{% url 'groups:group' group.slug %}" class="hover:text-fb-primary hover:underline transition">
+            {{ group.title|truncatechars:20 }}
+          </a>
         </div>
-        <div class="card-body">
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          {% endif %}
+      </li>
+      <li aria-current="page">
+        <div class="flex items-center">
+          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+          <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Change Cover' %}</span>
+        </div>
+      </li>
+    </ol>
+  </nav>
 
-          <!-- Current Cover Image -->
-          <div class="current-cover">
-            <h6 class="mb-2">{% trans 'Current Cover:' %}</h6>
-            <img src="{{ group.get_picture }}" alt="{{ group.title }} cover">
+  <!-- Header -->
+  <div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+    <div
+      class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+      <i class="fa-solid fa-image text-xl"></i>
+    </div>
+    <div>
+      <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight mb-0.5">
+        {% trans 'Update Group Cover Image' %}
+      </h1>
+      <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted font-medium">{% trans 'Change the main photo representing your group' %}</p>
+    </div>
+  </div>
+
+  <!-- Alert Messages (if any) -->
+  {% if messages %}
+  <div class="mb-4 flex flex-col gap-2">
+    {% for message in messages %}
+    <div
+      class="p-3 rounded-lg text-[14px] font-medium flex items-start gap-2 {% if message.tags == 'error' %}bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50{% else %}bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-900/50{% endif %}">
+      <i
+        class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %} mt-0.5"></i>
+      <div>{{ message }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="flex flex-col md:flex-row gap-4">
+    <!-- Main Form Column -->
+    <div class="flex-grow">
+      <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+        <div class="p-4 sm:p-6">
+          <!-- Current Cover Display -->
+          <div class="mb-6">
+            <h3 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] mb-3">{% trans 'Current Cover' %}</h3>
+            <div
+              class="w-full h-48 sm:h-64 rounded-xl overflow-hidden border border-fb-lightBorder dark:border-fb-border relative bg-fb-lightSurfaceHover dark:bg-[#4e4f50]">
+              {% if group.get_picture %}
+              <img src="{{ group.get_picture }}" alt="{{ group.title }} cover" class="w-full h-full object-cover">
+              {% else %}
+              <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fa-solid fa-users text-5xl opacity-30 text-fb-lightMuted dark:text-fb-muted"></i>
+              </div>
+              {% endif %}
+            </div>
           </div>
 
           <form method="POST" enctype="multipart/form-data" id="coverForm">
             {% csrf_token %}
+            <input type="file" class="hidden" id="id_cover" name="cover" accept="image/*">
 
-            <!-- Hidden file input -->
-            <input type="file" class="d-none" id="id_cover" name="cover" accept="image/*">
+            <h3
+              class="font-bold text-fb-lightText dark:text-fb-text text-[15px] mb-3 pt-6 border-t border-fb-lightBorder dark:border-fb-border">
+              {% trans 'Upload New Cover' %}</h3>
 
             <!-- Upload Area -->
-            <div class="cover-upload-area" id="upload-area">
-              <div class="cover-upload-icon">
-                <i class="fa-solid fa-image"></i>
+            <div
+              class="w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-fb-primary transition relative group mb-2"
+              id="upload-area">
+              <div
+                class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-600/50 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                <i class="fa-solid fa-cloud-arrow-up text-gray-500 dark:text-gray-400 text-xl"></i>
               </div>
-              <div class="cover-upload-text">{% trans 'Choose a new cover image' %}</div>
-              <div class="cover-upload-hint">{% trans 'Drag & drop an image here or click to browse' %}</div>
-              <button type="button" class="btn btn-outline-primary">{% trans 'Select File' %}</button>
+              <h5 class="font-bold text-fb-lightText dark:text-fb-text mb-1 text-[15px]">{% trans 'Choose a new cover image' %}</h5>
+              <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted px-4 text-center mb-3">{% trans 'Drag & drop an image here or click to browse' %}</p>
+              <span
+                class="bg-fb-lightSurface dark:bg-[#4e4f50] border border-fb-lightBorder dark:border-fb-border px-4 py-1.5 rounded-md font-semibold text-sm text-fb-lightText dark:text-fb-text shadow-sm">{% trans 'Select File' %}</span>
             </div>
 
-            <!-- Preview Area (hidden initially) -->
-            <div class="cover-preview" id="cover-preview">
-              <img src="" alt="Preview" class="cover-preview-image" id="preview-image">
-              <div class="cover-preview-remove" id="remove-preview">
-                <i class="fa-solid fa-times"></i>
+            <!-- Preview Area -->
+            <div
+              class="hidden w-full h-48 sm:h-64 rounded-xl overflow-hidden border border-fb-primary relative mb-2 shadow-sm"
+              id="cover-preview">
+              <img src="" alt="Preview" class="w-full h-full object-cover" id="preview-image">
+              <!-- Overlay to indicate it's a preview -->
+              <div
+                class="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/60 to-transparent p-3 flex justify-between items-center">
+                <span
+                  class="bg-black/40 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">Preview</span>
+                <button type="button"
+                  class="w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full text-white flex items-center justify-center transition"
+                  id="remove-preview" title="{% trans 'Remove photo' %}">
+                  <i class="fa-solid fa-times"></i>
+                </button>
               </div>
             </div>
 
-            <div class="form-text mb-3">
-              {% trans 'Recommended dimensions: 900 × 300 pixels. Maximum file size: 2MB.' %}
+            <div class="text-[12px] text-fb-lightMuted dark:text-fb-muted mb-6 flex items-start gap-1.5">
+              <i class="fa-solid fa-circle-info mt-0.5"></i>
+              <span>{% trans 'Recommended dimensions: 900 × 300 pixels. Maximum file size: 2MB.' %}</span>
             </div>
 
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary btn-lg" id="submit-cover">
-                <i class="fa-solid fa-cloud-arrow-up me-2"></i>{% trans 'Upload New Cover' %}
+            <div
+              class="flex flex-col sm:flex-row-reverse gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border">
+              <button type="submit"
+                class="w-full sm:w-auto bg-fb-primary hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-white shadow-sm"
+                id="submit-cover">
+                <i class="fa-solid fa-cloud-arrow-up"></i>{% trans 'Upload New Cover' %}
               </button>
-              <a href="{% url 'groups:group' group.slug %}" class="btn btn-outline-secondary">
-                <i class="fa-solid fa-arrow-left me-2"></i>{% trans 'Back to Group' %}
+              <a href="{% url 'groups:group' group.slug %}"
+                class="w-full sm:w-auto bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-8 py-2.5 rounded-md font-semibold text-[15px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border relative overflow-hidden">
+                <i class="fa-solid fa-arrow-left"></i>{% trans 'Cancel' %}
               </a>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
 
-          <div class="guidelines">
-            <div class="guidelines-title">
-              <i class="fa-solid fa-circle-info"></i>
-              <span>{% trans 'Cover Image Guidelines' %}</span>
-            </div>
-            <ul>
-              <li>{% trans 'Use a high-quality image that represents your group.' %}</li>
-              <li>{% trans 'Ideal dimensions are 900 × 300 pixels (3:1 ratio).' %}</li>
-              <li>{% trans 'Maximum file size is 2MB.' %}</li>
-              <li>{% trans 'Supported formats: JPEG, PNG, and GIF.' %}</li>
-            </ul>
-          </div>
+    <!-- Guidelines Sidebar Column -->
+    <div class="w-full md:w-64 flex-shrink-0">
+      <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden sticky top-20">
+        <div
+          class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border bg-blue-50/50 dark:bg-blue-900/10">
+          <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[14px] flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-blue-500"></i> {% trans 'Cover Image Guidelines' %}
+          </h5>
+        </div>
+        <div class="p-4">
+          <ul class="list-disc pl-5 text-[13px] text-fb-lightText dark:text-fb-text space-y-2.5 marker:text-fb-primary">
+            <li>{% trans 'Use a high-quality image that represents your group.' %}</li>
+            <li>{% trans 'Ideal dimensions are 900 × 300 pixels (3:1 ratio).' %}</li>
+            <li>{% trans 'Maximum file size is 2MB.' %}</li>
+            <li>{% trans 'Supported formats: JPEG, PNG, and GIF.' %}</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -95,7 +168,7 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     const fileInput = document.getElementById('id_cover');
     const uploadArea = document.getElementById('upload-area');
     const previewContainer = document.getElementById('cover-preview');
@@ -104,86 +177,96 @@
     const submitButton = document.getElementById('submit-cover');
 
     // Handle click on upload area
-    uploadArea.addEventListener('click', function() {
-      fileInput.click();
-    });
+    if (uploadArea && fileInput) {
+      uploadArea.addEventListener('click', function () {
+        fileInput.click();
+      });
+    }
 
     // Handle file selection
-    fileInput.addEventListener('change', function() {
-      if (this.files && this.files[0]) {
-        const file = this.files[0];
+    if (fileInput) {
+      fileInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
 
-        // Check file size (2MB limit)
-        if (file.size > 2 * 1024 * 1024) {
-          alert("{% trans 'Image size should be less than 2 megabytes.' %}");
-          this.value = '';
-          return;
+          // Check file size (2MB limit)
+          if (file.size > 2 * 1024 * 1024) {
+            alert("{% trans 'Image size should be less than 2 megabytes.' %}");
+            this.value = '';
+            return;
+          }
+
+          // Preview selected image
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            previewImage.src = e.target.result;
+            uploadArea.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+            submitButton.disabled = false;
+          };
+          reader.readAsDataURL(file);
         }
-
-        // Preview selected image
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImage.src = e.target.result;
-          uploadArea.style.display = 'none';
-          previewContainer.style.display = 'block';
-          submitButton.disabled = false;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+      });
+    }
 
     // Handle remove preview
-    removePreview.addEventListener('click', function() {
-      fileInput.value = '';
-      previewImage.src = '';
-      previewContainer.style.display = 'none';
-      uploadArea.style.display = 'block';
-      submitButton.disabled = true;
-    });
-
-    // Handle drag and drop
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      uploadArea.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
+    if (removePreview) {
+      removePreview.addEventListener('click', function (e) {
+        e.stopPropagation();
+        fileInput.value = '';
+        previewImage.src = '';
+        previewContainer.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
+        submitButton.disabled = true;
+      });
     }
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-      uploadArea.addEventListener(eventName, highlight, false);
-    });
+    // Drag and drop setup
+    if (uploadArea) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+      });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-      uploadArea.addEventListener(eventName, unhighlight, false);
-    });
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
 
-    function highlight() {
-      uploadArea.classList.add('highlight');
-    }
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+      });
 
-    function unhighlight() {
-      uploadArea.classList.remove('highlight');
-    }
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+      });
 
-    uploadArea.addEventListener('drop', handleDrop, false);
+      function highlight() {
+        uploadArea.classList.add('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
+      }
 
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
+      function unhighlight() {
+        uploadArea.classList.remove('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
+      }
 
-      if (files && files.length) {
-        fileInput.files = files;
+      uploadArea.addEventListener('drop', handleDrop, false);
 
-        // Trigger change event manually
-        const event = new Event('change', { bubbles: true });
-        fileInput.dispatchEvent(event);
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files && files.length) {
+          fileInput.files = files;
+          // Trigger change event manually
+          const event = new Event('change', { bubbles: true });
+          fileInput.dispatchEvent(event);
+        }
       }
     }
 
     // Initialize with submit button disabled
-    submitButton.disabled = true;
+    if (submitButton) {
+      submitButton.disabled = true;
+    }
   });
 </script>
 {% endblock %}

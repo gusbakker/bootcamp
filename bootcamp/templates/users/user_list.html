@@ -3,101 +3,126 @@
 {% load thumbnail %}
 {% block title %}{% trans 'Network' %}{% endblock %}
 
-{% block head %}
-<link href="{% static 'css/users.css' %}" rel="stylesheet">
-{% endblock head %}
-
 {% block content %}
-<div class="container">
-    <div class="section-header">
-        <h1 class="section-title"></h1>
-        <!--            <div class="section-actions">-->
-        <!--                <a href="#" class="btn btn-primary">-->
-        <!--                    <i class="fa-solid fa-user-plus me-2"></i>{% trans 'Find People' %}-->
-        <!--                </a>-->
-        <!--            </div>-->
+<div class="max-w-[1200px] mx-auto w-full px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-fb-lightText dark:text-fb-text">{% trans 'Network' %}</h1>
     </div>
 
     <!-- Search Bar -->
-    <div class="search-bar">
-        <i class="fa-solid fa-search search-icon"></i>
-        <input type="text" class="form-control" placeholder="{% trans 'Search for people...' %}">
+    <div class="relative max-w-[600px] mx-auto mb-6">
+        <i
+            class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-fb-lightMuted dark:text-fb-muted"></i>
+        <input type="text"
+            class="w-full bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-full py-3 pl-12 pr-6 text-fb-lightText dark:text-fb-text focus:outline-none focus:ring-2 focus:ring-fb-primary/50 shadow-sm transition"
+            placeholder="{% trans 'Search for people...' %}">
     </div>
 
     <!-- Filters -->
-    <div class="network-filters">
-        <div class="network-filter active">{% trans 'All' %}</div>
-        <div class="network-filter">{% trans 'Friends' %}</div>
-        <div class="network-filter">{% trans 'Following' %}</div>
-        <div class="network-filter">{% trans 'Followers' %}</div>
-        <div class="network-filter">{% trans 'Suggestions' %}</div>
+    <div class="flex flex-wrap justify-center gap-2 mb-8">
+        <div
+            class="network-filter active px-5 py-2 rounded-full cursor-pointer font-semibold text-sm transition bg-fb-primary text-white shadow-sm">
+            {% trans 'All' %}</div>
+        <div
+            class="network-filter px-5 py-2 rounded-full cursor-pointer font-semibold text-sm transition bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
+            {% trans 'Friends' %}</div>
+        <div
+            class="network-filter px-5 py-2 rounded-full cursor-pointer font-semibold text-sm transition bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
+            {% trans 'Following' %}</div>
+        <div
+            class="network-filter px-5 py-2 rounded-full cursor-pointer font-semibold text-sm transition bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
+            {% trans 'Followers' %}</div>
+        <div
+            class="network-filter px-5 py-2 rounded-full cursor-pointer font-semibold text-sm transition bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
+            {% trans 'Suggestions' %}</div>
     </div>
 
-    <!-- User List -->
-    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 justify-content-center g-4">
+    <!-- User List Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {% if user_list %}
         {% for user in user_list %}
-        <div class="col">
-            <div class="card user-card h-100">
-                <div class="card-header"></div>
-                <div class="avatar-wrapper">
-                    <a href="{% url 'users:detail' user.username %}">
-                        <img src="{{ user.get_picture }}" class="avatar" alt="{{ user.username }}">
+        <div
+            class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm hover:shadow-md transition overflow-hidden flex flex-col h-full">
+            <!-- Card Header Gradient -->
+            <div class="h-20 bg-gradient-to-tr from-blue-500 to-indigo-600"></div>
+
+            <!-- Avatar -->
+            <div class="relative -mt-10 text-center mb-2 px-4">
+                <a href="{% url 'users:detail' user.username %}">
+                    <img src="{{ user.get_picture }}"
+                        class="w-20 h-20 rounded-full border-4 border-fb-lightSurface dark:border-fb-surface object-cover mx-auto shadow-sm inline-block bg-white dark:bg-gray-800"
+                        alt="{{ user.username }}">
+                </a>
+            </div>
+
+            <!-- Body -->
+            <div class="px-4 pb-5 text-center flex-grow flex flex-col">
+                <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[17px] leading-tight mb-0.5">
+                    <a href="{% url 'users:detail' user.username %}" class="hover:underline">
+                        {{ user.get_profile_name|default:user.username }}
                     </a>
+                </h5>
+                <p class="text-[14px] text-fb-lightMuted dark:text-fb-muted mb-3">@{{ user.username }}</p>
+
+                <div
+                    class="text-[13px] text-fb-lightMuted dark:text-fb-muted mb-4 flex-grow flex flex-col gap-1 justify-center">
+                    {% if user.job_title %}
+                    <div class="flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-briefcase"></i> {{ user.job_title }}
+                    </div>
+                    {% endif %}
+                    {% if user.location %}
+                    <div class="flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-location-dot"></i> {{ user.location }}
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center justify-center gap-1.5">
+                        <i class="fa-regular fa-calendar"></i> {% trans 'Member since' %} {{ user.member_since|date:"M Y" }}
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h5 class="user-name">
-                        <a href="{% url 'users:detail' user.username %}" class="text-decoration-none">
-                            {{ user.get_profile_name|default:user.username }}
-                        </a>
-                    </h5>
-                    <p class="user-username">@{{ user.username }}</p>
 
-                    <div class="user-meta">
-                        {% if user.job_title %}
-                        <div>{{ user.job_title }}</div>
-                        {% endif %}
-                        {% if user.location %}
-                        <div>{{ user.location }}</div>
-                        {% endif %}
-                        <div>{% trans 'Member since' %} {{ user.member_since|date:"M Y" }}</div>
-                    </div>
-
+                <!-- Actions -->
+                <div class="flex justify-center gap-2 mt-auto">
                     {% if request.user != user %}
-                    <div class="action-buttons">
-                        {% if not request.user in user.contact_list.all %}
-                        {% if request.user in user.pending_list.all %}
-                        <a href="{% url 'users:send_message_request' user.id %}" class="btn btn-primary"
-                            id="send_message_request">
-                            <i class="fa-solid fa-clock"></i>{% trans 'Request Sent' %}
-                        </a>
-                        {% else %}
-                        <a href="{% url 'users:send_message_request' user.id %}" class="btn btn-outline-primary"
-                            id="send_message_request">
-                            <i class="fa-solid fa-user-plus"></i>{% trans 'Connect' %}
-                        </a>
-                        {% endif %}
-                        {% else %}
-                        <a href="{% url 'messager:conversation_detail' user.username %}" class="btn btn-outline-primary"
-                            title="{% trans 'Send a message' %}">
-                            <i class="fa-solid fa-message"></i>{% trans 'Message' %}
-                        </a>
-                        {% endif %}
-
-                        {% if request.user in user.followers.all %}
-                        <a href="{% url 'users:follow_user' user.id %}" class="btn btn-primary" id="follow_user">
-                            <i class="fa-solid fa-user-check"></i>{% trans 'Following' %}
-                        </a>
-                        {% else %}
-                        <a href="{% url 'users:follow_user' user.id %}" class="btn btn-outline-primary"
-                            id="follow_user">
-                            <i class="fa-solid fa-user-plus"></i>{% trans 'Follow' %}
-                        </a>
-                        {% endif %}
-                    </div>
+                    {% if not request.user in user.contact_list.all %}
+                    {% if request.user in user.pending_list.all %}
+                    <a href="{% url 'users:send_message_request' user.id %}"
+                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-full font-semibold text-sm flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text flex-1"
+                        id="send_message_request">
+                        <i class="fa-solid fa-clock text-[12px]"></i>{% trans 'Sent' %}
+                    </a>
                     {% else %}
-                    <a href="{% url 'users:update' %}" class="btn btn-outline-primary">
-                        <i class="fa-solid fa-pen-to-square me-1"></i>{% trans 'Edit Profile' %}
+                    <a href="{% url 'users:send_message_request' user.id %}"
+                        class="bg-fb-primary hover:bg-blue-600 transition px-3 py-1.5 rounded-full font-semibold text-sm flex items-center justify-center gap-1.5 text-white flex-1"
+                        id="send_message_request">
+                        <i class="fa-solid fa-user-plus text-[12px]"></i>{% trans 'Connect' %}
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'messager:conversation_detail' user.username %}"
+                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-full font-semibold text-sm flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text flex-1"
+                        title="{% trans 'Send a message' %}">
+                        <i class="fa-solid fa-message text-[12px]"></i>{% trans 'Message' %}
+                    </a>
+                    {% endif %}
+
+                    {% if request.user in user.followers.all %}
+                    <a href="{% url 'users:follow_user' user.id %}"
+                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-full font-semibold text-sm flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text flex-1"
+                        id="follow_user">
+                        <i class="fa-solid fa-user-check text-[12px]"></i>{% trans 'Following' %}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'users:follow_user' user.id %}"
+                        class="bg-fb-primary hover:bg-blue-600 transition px-3 py-1.5 rounded-full font-semibold text-sm flex items-center justify-center gap-1.5 text-white flex-1"
+                        id="follow_user">
+                        <i class="fa-solid fa-user-plus text-[12px]"></i>{% trans 'Follow' %}
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'users:update' %}"
+                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-3 py-1.5 rounded-full font-semibold text-sm flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text w-full">
+                        <i class="fa-solid fa-pen-to-square text-[12px]"></i>{% trans 'Edit Profile' %}
                     </a>
                     {% endif %}
                 </div>
@@ -105,60 +130,68 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="col-12">
-            <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="fa-solid fa-users-slash"></i>
-                </div>
-                <h5 class="empty-state-title">{% trans 'No Users Found' %}</h5>
-                <p class="empty-state-description">
-                    {% trans 'There are no users in your network yet.' %}
-                </p>
-                <a href="#" class="btn btn-primary">
-                    <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Find People' %}
-                </a>
+        <div class="col-span-1 border border-transparent"></div>
+        <div
+            class="col-span-1 sm:col-span-2 md:col-span-1 lg:col-span-2 text-center py-12 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm">
+            <div
+                class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-fb-primary rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-users-slash"></i>
             </div>
+            <h5 class="text-xl font-bold text-fb-lightText dark:text-fb-text mb-2">{% trans 'No Users Found' %}</h5>
+            <p class="text-fb-lightMuted dark:text-fb-muted mb-6">{% trans 'There are no users in your network yet.' %}
+            </p>
         </div>
+        <div class="col-span-1 border border-transparent"></div>
         {% endif %}
     </div>
 
     <!-- Pagination -->
     {% if is_paginated %}
-    <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center">
+    <nav aria-label="Page navigation" class="mt-8">
+        <ul class="flex justify-center flex-wrap gap-1">
             {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
+            <li>
+                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
+                    href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
                 </a>
             </li>
             {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">&laquo;</span>
+            <li>
+                <span
+                    class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface opacity-50 dark:bg-fb-surface text-fb-lightText dark:text-fb-text flex items-center justify-center cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </span>
             </li>
             {% endif %}
 
             {% for i in paginator.page_range %}
             {% if page_obj.number == i %}
-            <li class="page-item active">
-                <span class="page-link">{{ i }}</span>
+            <li>
+                <span
+                    class="px-3 py-1.5 rounded-md border border-fb-primary bg-fb-primary text-white font-semibold flex items-center justify-center">{{ i }}</span>
             </li>
             {% else %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            <li>
+                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition font-semibold flex items-center justify-center"
+                    href="?page={{ i }}">{{ i }}</a>
             </li>
             {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
+            <li>
+                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
+                    href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
                 </a>
             </li>
             {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">&raquo;</span>
+            <li>
+                <span
+                    class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface opacity-50 dark:bg-fb-surface text-fb-lightText dark:text-fb-text flex items-center justify-center cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </span>
             </li>
             {% endif %}
         </ul>
@@ -175,18 +208,26 @@
         const filters = document.querySelectorAll('.network-filter');
         filters.forEach(filter => {
             filter.addEventListener('click', function () {
-                filters.forEach(f => f.classList.remove('active'));
-                this.classList.add('active');
+                filters.forEach(f => {
+                    f.classList.remove('bg-fb-primary', 'text-white', 'border-transparent', 'active');
+                    f.classList.add('bg-fb-lightSurface', 'dark:bg-fb-surface', 'border-fb-lightBorder', 'dark:border-fb-border', 'text-fb-lightText', 'dark:text-fb-text', 'hover:bg-fb-lightSurfaceHover', 'dark:hover:bg-fb-surfaceHover');
+                });
+
+                this.classList.add('bg-fb-primary', 'text-white', 'border-transparent', 'active');
+                this.classList.remove('bg-fb-lightSurface', 'dark:bg-fb-surface', 'border-fb-lightBorder', 'dark:border-fb-border', 'text-fb-lightText', 'dark:text-fb-text', 'hover:bg-fb-lightSurfaceHover', 'dark:hover:bg-fb-surfaceHover');
+
                 // Here you would implement filtering logic
             });
         });
 
         // Search functionality
-        const searchInput = document.querySelector('.search-bar input');
-        searchInput.addEventListener('keyup', function (e) {
-            // Implement search filtering logic here
-            console.log('Searching for:', this.value);
-        });
+        const searchInput = document.querySelector('.relative input');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function (e) {
+                // Implement search filtering logic here
+                console.log('Searching for:', this.value);
+            });
+        }
     });
 </script>
 {% endblock modal %}

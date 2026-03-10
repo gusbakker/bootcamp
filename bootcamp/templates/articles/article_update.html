@@ -5,69 +5,89 @@
 
 {% block title %}{% trans 'Edit Article' %}{% endblock %}
 
-{% block head %}
-<link href="{% static 'css/articles.css' %}" rel="stylesheet">
-{% endblock head %}
-
 {% block content %}
-<div class="container editor-container">
-  <nav aria-label="breadcrumb" class="mb-3">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'news:list' %}">{% trans 'Home' %}</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'articles:drafts' %}">{% trans 'Drafts' %}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{% trans 'Update an article' %}</li>
+<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+
+  <!-- Breadcrumb (Tailwind) -->
+  <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 sm:space-x-3">
+      <li class="inline-flex items-center">
+        <a href="{% url 'news:list' %}"
+          class="inline-flex items-center hover:text-fb-primary hover:underline transition">
+          <i class="fa-solid fa-house mr-2 text-xs"></i>
+          {% trans 'Home' %}
+        </a>
+      </li>
+      <li>
+        <div class="flex items-center">
+          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+          <a href="{% url 'articles:drafts' %}" class="hover:text-fb-primary hover:underline transition">
+            {% trans 'Drafts' %}
+          </a>
+        </div>
+      </li>
+      <li aria-current="page">
+        <div class="flex items-center">
+          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+          <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Update an article' %}</span>
+        </div>
+      </li>
     </ol>
   </nav>
 
-  <div class="editor-header">
-    <h1 class="editor-title">{% trans 'Edit Article' %}</h1>
+  <!-- Header -->
+  <div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+    <div
+      class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+      <i class="fa-solid fa-pen text-xl"></i>
+    </div>
+    <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">
+      {% trans 'Edit Article' %}
+    </h1>
   </div>
 
-  <div class="row">
-    <div class="col-lg-8">
-      <div class="editor-card">
-        <div class="card-header">
-          <h2 class="card-title">{% trans 'Article Editor' %}</h2>
-        </div>
-        <div class="card-body">
-          <form action="{% url 'articles:edit_article' form.instance.pk %}" enctype="multipart/form-data"
-            id="article-form" method="post" role="form">
-            {% csrf_token %}
-            {{ form|crispy }}
+  <!-- Editor Card -->
+  <div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+    <div class="p-4 sm:p-6">
+      <form action="{% url 'articles:edit_article' form.instance.pk %}" enctype="multipart/form-data" id="article-form"
+        method="post" role="form" class="tailwind-crispy-form">
+        {% csrf_token %}
 
-            <div class="image-preview mt-3 mb-4" id="image-preview">
-              {% if form.instance.image %}
-              <img src="{{ form.instance.image.url }}" alt="{% trans 'Current image' %}">
-              {% else %}
-              <i class="fa-solid fa-image fa-2x"></i>
-              {% endif %}
-            </div>
+        {{ form|crispy }}
 
-            <div class="editor-actions">
-              <button type="button" class="btn btn-primary update">{% trans 'Update' %}</button>
-              <button type="button" class="btn btn-outline-primary draft">{% trans 'Save as draft' %}</button>
-              <a href="{% url 'articles:drafts' %}" class="btn btn-outline-secondary">{% trans 'Cancel' %}</a>
-            </div>
-          </form>
+        <!-- Image Preview -->
+        <div
+          class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
+          id="image-preview">
+          {% if form.instance.image %}
+          <img src="{{ form.instance.image.url }}" alt="{% trans 'Current image' %}" class="w-full h-full object-cover">
+          {% else %}
+          <div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center">
+            <i class="fa-solid fa-image text-4xl mb-2 opacity-50 group-hover:opacity-80 transition"></i>
+            <span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span>
+          </div>
+          {% endif %}
         </div>
-      </div>
-    </div>
 
-    <div class="col-lg-4">
-      <!-- Writing Tips -->
-      <div class="sidebar-card">
-        <div class="card-header">
-          <i class="fa-solid fa-lightbulb me-2"></i>{% trans 'Writing Tips' %}
+        <!-- Actions -->
+        <div
+          class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
+          <a href="{% url 'articles:drafts' %}"
+            class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+            {% trans 'Cancel' %}
+          </a>
+          <button type="button"
+            class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+            <i class="fa-solid fa-file-lines"></i> {% trans 'Save as draft' %}
+          </button>
+          <button type="button"
+            class="update bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
+            <i class="fa-solid fa-cloud-arrow-up"></i> {% trans 'Update' %}
+          </button>
         </div>
-        <div class="card-body">
-          <ul class="tips-list">
-            <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
-            <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
-            <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
-            <li>{% trans 'Use examples to illustrate your points.' %}</li>
-          </ul>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 </div>
@@ -75,7 +95,87 @@
 {{ form.media }}
 {% endblock content %}
 
+{% block right_sidebar_widgets %}
+<!-- Writing Tips -->
+<div
+  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+      <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
+    </h5>
+  </div>
+  <div class="p-4">
+    <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
+      <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
+      <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
+      <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
+      <li>{% trans 'Use examples to illustrate your points.' %}</li>
+    </ul>
+  </div>
+</div>
+{% endblock right_sidebar_widgets %}
+
 {% block modal %}
+<style>
+  /* Tailwind overrides for Django forms */
+  .tailwind-crispy-form .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .tailwind-crispy-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--fb-lightText, #050505);
+  }
+
+  html[data-theme='dark'] .tailwind-crispy-form label {
+    color: #e4e6eb;
+  }
+
+  .tailwind-crispy-form .form-control,
+  .tailwind-crispy-form .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background-color: transparent !important;
+    border: 1px solid #ced0d4;
+    color: #050505 !important;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+
+  html[data-theme='dark'] .tailwind-crispy-form .form-control,
+  html[data-theme='dark'] .tailwind-crispy-form .form-select {
+    border-color: #3e4042;
+    color: #e4e6eb !important;
+  }
+
+  .tailwind-crispy-form .form-control:focus,
+  .tailwind-crispy-form .form-select:focus {
+    outline: none;
+    border-color: #1877F2;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+  }
+
+  .tailwind-crispy-form .asteriskField {
+    color: #e41e3f;
+    margin-left: 2px;
+  }
+
+  .tailwind-crispy-form .help-block {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    color: #65676B;
+  }
+
+  html[data-theme='dark'] .tailwind-crispy-form .help-block {
+    color: #b0b3b8;
+  }
+</style>
+
 <script src="{% static 'js/articles.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -89,41 +189,12 @@
         if (file) {
           const reader = new FileReader();
           reader.onload = function (e) {
-            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">`;
           }
           reader.readAsDataURL(file);
         } else {
-          imagePreview.innerHTML = '<i class="fa-solid fa-image fa-2x"></i>';
+          imagePreview.innerHTML = `<div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center"><i class="fa-solid fa-image text-4xl mb-2 opacity-50"></i><span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span></div>`;
         }
-      });
-    }
-
-    // Dark mode support for form elements
-    function updateThemeStyles() {
-      if (document.documentElement.getAttribute('data-theme') === 'light') {
-        document.querySelectorAll('.form-control, .form-select').forEach(el => {
-          el.style.backgroundColor = '#ffffff';
-          el.style.color = '#212529';
-        });
-      } else {
-        document.querySelectorAll('.form-control, .form-select').forEach(el => {
-          el.style.backgroundColor = '#1e1e1e';
-          el.style.color = '#e0e0e0';
-        });
-      }
-    }
-
-    // Run on page load
-    updateThemeStyles();
-
-    // Listen for theme changes
-    document.addEventListener('themeChanged', updateThemeStyles);
-
-    // Hook into the dark mode switch
-    const darkSwitch = document.getElementById('darkSwitch');
-    if (darkSwitch) {
-      darkSwitch.addEventListener('change', function () {
-        setTimeout(updateThemeStyles, 50);
       });
     }
   });
