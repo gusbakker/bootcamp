@@ -2,236 +2,246 @@
 {% load static i18n %}
 {% load humanize thumbnail %}
 {% block title %}
-    {% trans 'Articles' %}
+{% trans 'Articles' %}
 {% endblock %}
 {% block content %}
-    <div class="max-w-[680px] mx-auto w-full pt-4">
-        <!-- Header & Actions -->
-        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
-                    <i class="fa-solid fa-newspaper text-xl"></i>
-                </div>
-                <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Articles' %}</h1>
+<div class="max-w-[680px] mx-auto w-full pt-4">
+    <!-- Header & Actions -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+                <i class="fa-solid fa-newspaper text-xl"></i>
             </div>
-            <div class="flex gap-2 w-full sm:w-auto">
-                {% if request.user.is_authenticated %}
-                    <a href="{% url 'articles:drafts' %}"
-                       class="flex-1 sm:flex-none justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-fb-lightText dark:text-fb-text">
-                        <i class="fa-solid fa-file"></i>{% trans 'My Drafts' %}
-                    </a>
-                    <a href="{% url 'articles:write_new' %}"
-                       class="flex-1 sm:flex-none justify-center bg-fb-primary hover:bg-blue-600 transition px-4 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-white">
-                        <i class="fa-solid fa-pen-to-square"></i>{% trans 'Write Article' %}
-                    </a>
-                {% endif %}
-            </div>
+            <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Articles' %}</h1>
         </div>
-        <!-- Filter/Sort Controls -->
-        {% if view.kwargs.tag %}
-            <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-3 mb-4 flex items-center gap-2">
-                <span class="text-fb-lightMuted dark:text-fb-muted text-sm font-semibold">{% trans 'Filtered by tag:' %}</span>
-                <span class="bg-fb-primary text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
-                    {{view.kwargs.tag}}
-                    <a href="{% url 'articles:list' %}"
-                       class="hover:text-blue-200 transition">
-                        <i class="fa-solid fa-times"></i>
-                    </a>
-                </span>
-            </div>
-        {% endif %}
-        <!-- Articles Timeline -->
-        {% if articles %}
-            <div class="flex flex-col gap-4">
-                {% for article in articles %}
-                    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col">
-                        <!-- Article Header (Author) -->
-                        <div class="p-4 flex flex-row items-center gap-3">
-                            <a href="{% url 'users:detail' article.user.username %}"
-                               class="flex-shrink-0">
-                                <img src="{{article.user.get_picture}}"
-                                     alt="{{article.user.username}}"
-                                     class="w-10 h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border">
-                            </a>
-                            <div class="flex-grow">
-                                <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5 hover:underline">
-                                    <a href="{% url 'users:detail' article.user.username %}">
-                                        {{article.user.get_profile_name|title|default:article.user.username}}
-                                    </a>
-                                </h5>
-                                <div class="flex items-center text-[13px] text-fb-lightMuted dark:text-fb-muted">
-                                    {% if article.user.job_title %}
-                                        <span class="truncate max-w-[150px]">{{article.user.job_title}}</span>
-                                        <span class="mx-1.5">•</span>
-                                    {% endif %}
-                                    <span>{{article.timestamp|naturaltime}}</span>
-                                    <span class="mx-1.5">•</span>
-                                    <i class="fa-solid fa-earth-americas text-[11px]"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Article Content Preview -->
-                        <div class="px-4 pb-3">
-                            <h2 class="text-[1.25rem] font-bold text-fb-lightText dark:text-fb-text hover:underline mb-1.5 leading-tight">
-                                <a href="{% url 'articles:article' article.slug %}">{{article.title|title}}</a>
-                            </h2>
-                            <p class="text-[15px] text-fb-lightText dark:text-fb-text leading-snug">
-                                {{article.get_markdown|safe|striptags|truncatechars:180}}
-                            </p>
-                        </div>
-                        <!-- Article Image -->
-                        <a href="{% url 'articles:article' article.slug %}" class="block group">
-                            {% thumbnail article.image "750x400" crop="center" as im %}
-                                <img src="{{im.url}}"
-                                     alt="{% trans 'Article Image' %}"
-                                     class="w-full h-auto max-h-[400px] object-cover group-hover:opacity-95 transition">
-                            {% empty %}
-                                <div class="w-full h-[200px] bg-fb-lightSurfaceHover dark:bg-[#4e4f50] flex flex-col items-center justify-center text-fb-lightMuted dark:text-fb-muted group-hover:opacity-95 transition border-y border-fb-lightBorder dark:border-fb-border">
-                                    <i class="fa-solid fa-newspaper text-4xl mb-2 opacity-50"></i>
-                                    <span class="font-semibold text-sm">{% trans 'Read Article' %}</span>
-                                </div>
-                            {% endthumbnail %}
-                        </a>
-                        <!-- Actions Row -->
-                        <div class="p-2 border-t border-fb-lightBorder dark:border-fb-border flex justify-between">
-                            <a href="{% url 'articles:article' article.slug %}"
-                               class="flex-1 bg-fb-lightSurface dark:bg-fb-surface hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition py-2 rounded-md font-semibold text-fb-lightText dark:text-fb-text flex items-center justify-center gap-2 text-[15px]">
-                                <i class="fa-brands fa-readme"></i> {% trans 'Read Full Article' %}
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <!-- Pagination -->
-            {% if is_paginated %}
-                <nav aria-label="Page navigation" class="mt-6">
-                    <ul class="flex justify-center flex-wrap gap-1">
-                        {% if page_obj.has_previous %}
-                            <li>
-                                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
-                                   href="?page={{page_obj.previous_page_number}}"
-                                   aria-label="Previous">
-                                    <i class="fa-solid fa-chevron-left text-xs"></i>
-                                </a>
-                            </li>
-                        {% else %}
-                            <li>
-                                <span class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface opacity-50 dark:bg-fb-surface text-fb-lightText dark:text-fb-text flex items-center justify-center cursor-not-allowed">
-                                    <i class="fa-solid fa-chevron-left text-xs"></i>
-                                </span>
-                            </li>
-                        {% endif %}
-                        {% for i in paginator.page_range %}
-                            {% if page_obj.number == i %}
-                                <li>
-                                    <span class="px-3 py-1.5 rounded-md border border-fb-primary bg-fb-primary text-white font-semibold flex items-center justify-center">{{i}}</span>
-                                </li>
-                            {% else %}
-                                <li>
-                                    <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition font-semibold flex items-center justify-center"
-                                       href="?page={{i}}">{{i}}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if page_obj.has_next %}
-                            <li>
-                                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
-                                   href="?page={{page_obj.next_page_number}}"
-                                   aria-label="Next">
-                                    <i class="fa-solid fa-chevron-right text-xs"></i>
-                                </a>
-                            </li>
-                        {% else %}
-                            <li>
-                                <span class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface opacity-50 dark:bg-fb-surface text-fb-lightText dark:text-fb-text flex items-center justify-center cursor-not-allowed">
-                                    <i class="fa-solid fa-chevron-right text-xs"></i>
-                                </span>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+        <div class="flex gap-2 w-full sm:w-auto">
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'articles:drafts' %}"
+                class="flex-1 sm:flex-none justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+                <i class="fa-solid fa-file"></i>{% trans 'My Drafts' %}
+            </a>
+            <a href="{% url 'articles:write_new' %}"
+                class="flex-1 sm:flex-none justify-center bg-fb-primary hover:bg-blue-600 transition px-4 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-white">
+                <i class="fa-solid fa-pen-to-square"></i>{% trans 'Write Article' %}
+            </a>
             {% endif %}
-        {% else %}
-            <!-- Empty State -->
-            <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-12 text-center flex flex-col items-center">
-                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-fb-primary rounded-full flex items-center justify-center mb-4 text-2xl">
-                    <i class="fa-solid fa-newspaper text-3xl"></i>
+        </div>
+    </div>
+    <!-- Filter/Sort Controls -->
+    {% if view.kwargs.tag %}
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-3 mb-4 flex items-center gap-2">
+        <span class="text-fb-lightMuted dark:text-fb-muted text-sm font-semibold">{% trans 'Filtered by tag:' %}</span>
+        <span class="bg-fb-primary text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
+            {{view.kwargs.tag}}
+            <a href="{% url 'articles:list' %}" class="hover:text-blue-200 transition">
+                <i class="fa-solid fa-times"></i>
+            </a>
+        </span>
+    </div>
+    {% endif %}
+    <!-- Articles Timeline -->
+    {% if articles %}
+    <div class="flex flex-col gap-4">
+        {% for article in articles %}
+        <div
+            class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <!-- Article Header (Author) -->
+            <div class="p-4 flex flex-row items-center gap-3">
+                <a href="{% url 'users:detail' article.user.username %}" class="flex-shrink-0">
+                    <img src="{{article.user.get_picture}}" alt="{{article.user.username}}"
+                        class="w-10 h-10 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border">
+                </a>
+                <div class="flex-grow">
+                    <h5
+                        class="font-bold text-fb-lightText dark:text-fb-text text-[15px] leading-tight mb-0.5 hover:underline">
+                        <a href="{% url 'users:detail' article.user.username %}">
+                            {{article.user.get_profile_name|title|default:article.user.username}}
+                        </a>
+                    </h5>
+                    <div class="flex items-center text-[13px] text-fb-lightMuted dark:text-fb-muted">
+                        {% if article.user.job_title %}
+                        <span class="truncate max-w-[150px]">{{article.user.job_title}}</span>
+                        <span class="mx-1.5">•</span>
+                        {% endif %}
+                        <span>{{article.timestamp|naturaltime}}</span>
+                        <span class="mx-1.5">•</span>
+                        <i class="fa-solid fa-earth-americas text-[11px]"></i>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-fb-lightText dark:text-fb-text mb-2">{% trans 'No Articles Yet' %}</h3>
-                <p class="text-fb-lightMuted dark:text-fb-muted mb-6">{% trans 'There are no published articles yet.' %}</p>
-                <a href="{% url 'articles:write_new' %}"
-                   class="justify-center bg-fb-primary hover:bg-blue-600 transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm hover:shadow">
-                    <i class="fa-solid fa-pen-to-square"></i>{% trans 'Write First Article' %}
+            </div>
+            <!-- Article Content Preview -->
+            <div class="px-4 pb-3">
+                <h2
+                    class="text-[1.25rem] font-bold text-fb-lightText dark:text-fb-text hover:underline mb-1.5 leading-tight">
+                    <a href="{% url 'articles:article' article.slug %}">{{article.title|title}}</a>
+                </h2>
+                <p class="text-[15px] text-fb-lightText dark:text-fb-text leading-snug">
+                    {{article.get_markdown|safe|striptags|truncatechars:180}}
+                </p>
+            </div>
+            <!-- Article Image -->
+            <a href="{% url 'articles:article' article.slug %}" class="block group">
+                {% thumbnail article.image "750x400" crop="center" as im %}
+                <img src="{{im.url}}" alt="{% trans 'Article Image' %}"
+                    class="w-full h-auto max-h-[400px] object-cover group-hover:opacity-95 transition">
+                {% empty %}
+                <div
+                    class="w-full h-[200px] bg-fb-lightSurfaceHover dark:bg-[#4e4f50] flex flex-col items-center justify-center text-fb-lightMuted dark:text-fb-muted group-hover:opacity-95 transition border-y border-fb-lightBorder dark:border-fb-border">
+                    <i class="fa-solid fa-newspaper text-4xl mb-2 opacity-50"></i>
+                    <span class="font-semibold text-sm">{% trans 'Read Article' %}</span>
+                </div>
+                {% endthumbnail %}
+            </a>
+            <!-- Actions Row -->
+            <div class="p-2 border-t border-fb-lightBorder dark:border-fb-border flex justify-between">
+                <a href="{% url 'articles:article' article.slug %}"
+                    class="flex-1 bg-fb-lightSurface dark:bg-fb-surface hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition py-2 rounded-md font-semibold text-fb-lightText dark:text-fb-text flex items-center justify-center gap-2 text-[15px]">
+                    <i class="fa-brands fa-readme"></i> {% trans 'Read Full Article' %}
                 </a>
             </div>
-        {% endif %}
+        </div>
+        {% endfor %}
     </div>
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-6">
+        <ul class="flex justify-center flex-wrap gap-1">
+            {% if page_obj.has_previous %}
+            <li>
+                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
+                    href="?page={{page_obj.previous_page_number}}" aria-label="Previous">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <span
+                    class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface opacity-50 dark:bg-fb-surface text-fb-lightText dark:text-fb-text flex items-center justify-center cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </span>
+            </li>
+            {% endif %}
+            {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+            <li>
+                <span
+                    class="px-3 py-1.5 rounded-md border border-fb-primary bg-fb-primary text-white font-semibold flex items-center justify-center">{{i}}</span>
+            </li>
+            {% else %}
+            <li>
+                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition font-semibold flex items-center justify-center"
+                    href="?page={{i}}">{{i}}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li>
+                <a class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center"
+                    href="?page={{page_obj.next_page_number}}" aria-label="Next">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <span
+                    class="px-3 py-1.5 rounded-md border border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface opacity-50 dark:bg-fb-surface text-fb-lightText dark:text-fb-text flex items-center justify-center cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% else %}
+    <!-- Empty State -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-12 text-center flex flex-col items-center">
+        <div
+            class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-fb-primary rounded-full flex items-center justify-center mb-4 text-2xl">
+            <i class="fa-solid fa-newspaper text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-fb-lightText dark:text-fb-text mb-2">{% trans 'No Articles Yet' %}</h3>
+        <p class="text-fb-lightMuted dark:text-fb-muted mb-6">{% trans 'There are no published articles yet.' %}</p>
+        <a href="{% url 'articles:write_new' %}"
+            class="justify-center bg-fb-primary hover:bg-blue-600 transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm hover:shadow">
+            <i class="fa-solid fa-pen-to-square"></i>{% trans 'Write First Article' %}
+        </a>
+    </div>
+    {% endif %}
+</div>
 {% endblock content %}
 {% block right_sidebar_widgets %}
-    <!-- Tag Cloud Widget -->
-    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
-        <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
-            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-                <i class="fa-solid fa-tags text-fb-lightMuted dark:text-fb-muted"></i> {% trans 'Popular Tags' %}
-            </h5>
-        </div>
-        <div class="p-4 flex flex-wrap gap-2">
-            {% for tag, tag_props in popular_tags %}
-                {% if tag_props.slug == view.kwargs.tag %}
-                    <a href="{% url 'articles:list' %}"
-                       class="inline-block bg-fb-primary text-white hover:brightness-95 transition px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5">
-                        {{tag}} <span class="opacity-80 font-normal">({{tag_props.count}})</span>
-                        <i class="fa-solid fa-times ml-1"></i>
-                    </a>
-                {% else %}
-                    <a href="{% url 'articles:list' %}tag/{{tag_props.slug}}"
-                       class="inline-block bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border transition px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5">
-                        {{tag}} <span class="opacity-60 font-normal">({{tag_props.count}})</span>
-                    </a>
-                {% endif %}
-            {% empty %}
-                <p class="text-fb-lightMuted dark:text-fb-muted text-sm mb-0">{% trans 'No tags available yet.' %}</p>
-            {% endfor %}
-        </div>
+<!-- Tag Cloud Widget -->
+<div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mt-4">
+    <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+        <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+            <i class="fa-solid fa-tags text-fb-lightMuted dark:text-fb-muted"></i> {% trans 'Popular Tags' %}
+        </h5>
     </div>
-    <!-- Popular Articles Widget -->
-    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4">
-        <div class="flex items-center p-4 pb-2">
-            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-                <i class="fa-solid fa-fire text-orange-500"></i> {% trans 'Popular Articles' %}
-            </h5>
-        </div>
-        <div class="flex flex-col">
-            {% for popular_article in popular_articles|default:articles|slice:":5" %}
-                <a href="{% url 'articles:article' popular_article.slug %}"
-                   class="flex items-center p-3 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
-                    <div class="flex-shrink-0 mr-3">
-                        {% thumbnail popular_article.image "100x100" crop="center" as im %}
-                            <img src="{{im.url}}"
-                                 class="rounded-lg w-14 h-14 object-cover border border-fb-lightBorder dark:border-fb-border shadow-sm group-hover:brightness-90 transition"
-                                 alt="">
-                        {% empty %}
-                            <div class="w-14 h-14 bg-fb-lightSurfaceHover dark:bg-[#4e4f50] rounded-lg flex items-center justify-center text-fb-lightMuted dark:text-fb-muted shadow-sm group-hover:brightness-90 transition">
-                                <i class="fa-solid fa-newspaper text-xl"></i>
-                            </div>
-                        {% endthumbnail %}
-                    </div>
-                    <div>
-                        <h6 class="font-bold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover:underline mb-1">
-                            {{popular_article.title|title|truncatechars:45}}
-                        </h6>
-                        <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted font-medium">
-                            <span>{{popular_article.user.get_profile_name|title|default:popular_article.user.username}}</span>
-                            <span class="mx-1.5">•</span>
-                            <span>{{popular_article.timestamp|naturaltime}}</span>
-                        </div>
-                    </div>
-                </a>
-            {% empty %}
-                <div class="p-4 text-center text-fb-lightMuted dark:text-fb-muted text-sm">
-                    {% trans 'No articles available yet.' %}
+    <div class="p-4 flex flex-wrap gap-2">
+        {% for tag, tag_props in popular_tags %}
+        {% if tag_props.slug == view.kwargs.tag %}
+        <a href="{% url 'articles:list' %}"
+            class="inline-block bg-fb-primary text-white hover:brightness-95 transition px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5">
+            {{tag}} <span class="opacity-80 font-normal">({{tag_props.count}})</span>
+            <i class="fa-solid fa-times ml-1"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'articles:list' %}tag/{{tag_props.slug}}"
+            class="inline-block bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border transition px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5">
+            {{tag}} <span class="opacity-60 font-normal">({{tag_props.count}})</span>
+        </a>
+        {% endif %}
+        {% empty %}
+        <p class="text-fb-lightMuted dark:text-fb-muted text-sm mb-0">{% trans 'No tags available yet.' %}</p>
+        {% endfor %}
+    </div>
+</div>
+<!-- Popular Articles Widget -->
+<div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+    <div class="flex items-center p-4 pb-2">
+        <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+            <i class="fa-solid fa-fire text-orange-500"></i> {% trans 'Popular Articles' %}
+        </h5>
+    </div>
+    <div class="flex flex-col">
+        {% for popular_article in popular_articles|default:articles|slice:":5" %}
+        <a href="{% url 'articles:article' popular_article.slug %}"
+            class="flex items-center p-3 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
+            <div class="flex-shrink-0 mr-3">
+                {% thumbnail popular_article.image "100x100" crop="center" as im %}
+                <img src="{{im.url}}"
+                    class="rounded-lg w-14 h-14 object-cover border border-fb-lightBorder dark:border-fb-border shadow-sm group-hover:brightness-90 transition"
+                    alt="">
+                {% empty %}
+                <div
+                    class="w-14 h-14 bg-fb-lightSurfaceHover dark:bg-[#4e4f50] rounded-lg flex items-center justify-center text-fb-lightMuted dark:text-fb-muted shadow-sm group-hover:brightness-90 transition">
+                    <i class="fa-solid fa-newspaper text-xl"></i>
                 </div>
-            {% endfor %}
+                {% endthumbnail %}
+            </div>
+            <div>
+                <h6
+                    class="font-bold text-[14px] text-fb-lightText dark:text-fb-text leading-tight group-hover:underline mb-1">
+                    {{popular_article.title|title|truncatechars:45}}
+                </h6>
+                <div class="flex items-center text-[12px] text-fb-lightMuted dark:text-fb-muted font-medium">
+                    <span>{{popular_article.user.get_profile_name|title|default:popular_article.user.username}}</span>
+                    <span class="mx-1.5">•</span>
+                    <span>{{popular_article.timestamp|naturaltime}}</span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="p-4 text-center text-fb-lightMuted dark:text-fb-muted text-sm">
+            {% trans 'No articles available yet.' %}
         </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock right_sidebar_widgets %}

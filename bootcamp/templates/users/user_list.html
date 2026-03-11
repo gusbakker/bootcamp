@@ -4,15 +4,25 @@
 {% block title %}
 {% trans 'Network' %}
 {% endblock %}
+
+{% block main_class %}
+w-full lg:max-w-full xl:max-w-full 2xl:max-w-full
+{% endblock main_class %}
+
+{% block right_sidebar %}
+{% endblock right_sidebar %}
+
 {% block content %}
-<div class="max-w-[1200px] mx-auto w-full px-4 py-6">
-    <!-- Search Bar -->
-    <div class="relative max-w-[600px] mx-auto mb-6">
-        <i
-            class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-fb-lightMuted dark:text-fb-muted"></i>
-        <input type="text"
-            class="w-full bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-full py-3 pl-12 pr-6 text-fb-lightText dark:text-fb-text focus:outline-none focus:ring-2 focus:ring-fb-primary/50 shadow-sm transition"
-            placeholder="{% trans 'Search for people...' %}">
+<div class="max-w-[1000px] mx-auto w-full px-4 py-6">
+    <!-- Search Bar and Title -->
+    <div class="flex flex-col items-center mb-6 mt-2">
+        <div class="relative w-full max-w-[600px]">
+            <i
+                class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-fb-lightMuted dark:text-fb-muted"></i>
+            <input type="text"
+                class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover border-none rounded-full py-3 pl-11 pr-6 text-fb-lightText dark:text-fb-text focus:outline-none focus:ring-2 focus:ring-fb-primary/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] dark:shadow-none transition placeholder-fb-lightMuted dark:placeholder-fb-muted text-[15px]"
+                placeholder="{% trans 'Search for people...' %}">
+        </div>
     </div>
     <!-- Filters -->
     <div class="flex flex-wrap justify-center gap-2 mb-8">
@@ -38,7 +48,7 @@
         </div>
     </div>
     <!-- User List Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {% if user_list %}
         {% for user in user_list %}
         <div
@@ -75,7 +85,8 @@
                     {% endif %}
                     {% if not user.job_title and not user.location %}
                     <span class="truncate block max-w-full"><i
-                            class="fa-regular fa-clock w-4 text-center opacity-70"></i> {% trans "Joined" %} {{user.member_since|date:"M Y"|default:"Recently"}}</span>
+                            class="fa-regular fa-clock w-4 text-center opacity-70"></i> {% trans "Joined" %}
+                        {{user.member_since|date:"M Y"|default:"Recently"}}</span>
                     {% endif %}
                 </div>
                 <!-- Actions -->

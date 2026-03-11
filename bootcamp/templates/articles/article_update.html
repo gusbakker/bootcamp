@@ -3,109 +3,134 @@
 {% load static i18n %}
 {% load crispy_forms_tags %}
 {% block title %}
-    {% trans 'Edit Article' %}
+{% trans 'Edit Article' %}
 {% endblock %}
 {% block content %}
-    <div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
-        <!-- Breadcrumb (Tailwind) -->
-        <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2"
-             aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 sm:space-x-3">
-                <li class="inline-flex items-center">
-                    <a href="{% url 'news:list' %}"
-                       class="inline-flex items-center hover:text-fb-primary hover:underline transition">
-                        <i class="fa-solid fa-house mr-2 text-xs"></i>
-                        {% trans 'Home' %}
-                    </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
-                        <a href="{% url 'articles:drafts' %}"
-                           class="hover:text-fb-primary hover:underline transition">{% trans 'Drafts' %}</a>
-                    </div>
-                </li>
-                <li aria-current="page">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
-                        <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Update an article' %}</span>
-                    </div>
-                </li>
-            </ol>
-        </nav>
-        <!-- Header -->
-        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
-                <i class="fa-solid fa-pen text-xl"></i>
-            </div>
-            <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Edit Article' %}</h1>
+<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+  <!-- Breadcrumb (Tailwind) -->
+  <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 sm:space-x-3">
+      <li class="inline-flex items-center">
+        <a href="{% url 'news:list' %}"
+          class="inline-flex items-center hover:text-fb-primary hover:underline transition">
+          <i class="fa-solid fa-house mr-2 text-xs"></i>
+          {% trans 'Home' %}
+        </a>
+      </li>
+      <li>
+        <div class="flex items-center">
+          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+          <a href="{% url 'articles:drafts' %}" class="hover:text-fb-primary hover:underline transition">{% trans 'Drafts' %}</a>
         </div>
-        <!-- Editor Card -->
-        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
-            <div class="p-4 sm:p-6">
-                <form action="{% url 'articles:edit_article' form.instance.pk %}"
-                      enctype="multipart/form-data"
-                      id="article-form"
-                      method="post"
-                      role="form"
-                      class="tailwind-crispy-form">
-                    {% csrf_token %}
-                    {{form|crispy}}
-                    <!-- Image Preview -->
-                    <div class="mt-4 mb-6 w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex items-center justify-center overflow-hidden relative group transition hover:border-fb-primary"
-                         id="image-preview">
-                        {% if form.instance.image %}
-                            <img src="{{form.instance.image.url}}"
-                                 alt="{% trans 'Current image' %}"
-                                 class="w-full h-full object-cover">
-                        {% else %}
-                            <div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center">
-                                <i class="fa-solid fa-image text-4xl mb-2 opacity-50 group-hover:opacity-80 transition"></i>
-                                <span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <!-- Actions -->
-                    <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
-                        <a href="{% url 'articles:drafts' %}"
-                           class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
-                            {% trans 'Cancel' %}
-                        </a>
-                        <button type="button"
-                                class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
-                            <i class="fa-solid fa-file-lines"></i> {% trans 'Save as draft' %}
-                        </button>
-                        <button type="button"
-                                class="update bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> {% trans 'Update' %}
-                        </button>
-                    </div>
-                </form>
-            </div>
+      </li>
+      <li aria-current="page">
+        <div class="flex items-center">
+          <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+          <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Update an article' %}</span>
         </div>
+      </li>
+    </ol>
+  </nav>
+  <!-- Header -->
+  <div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+    <div
+      class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+      <i class="fa-solid fa-pen text-xl"></i>
     </div>
-    {{form.media}}
+    <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Edit Article' %}</h1>
+  </div>
+  <!-- Editor Card -->
+  <div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+    <div class="p-4 sm:p-6">
+      <form action="{% url 'articles:edit_article' form.instance.pk %}" enctype="multipart/form-data" id="article-form"
+        method="post" role="form" class="tailwind-crispy-form">
+        {% csrf_token %}
+        <div class="mb-5">{{form.title|as_crispy_field}}</div>
+        <div class="mb-5">{{form.content|as_crispy_field}}</div>
+        <div class="mb-5">{{form.tags|as_crispy_field}}</div>
+        <!-- Hidden field to clear image in django -->
+        <div class="hidden">
+          <input type="checkbox" name="image-clear" id="image-clear_id">
+        </div>
+        <div class="mb-5">
+          <label class="block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
+            {% trans 'Article Image' %}
+          </label>
+          <input type="file" class="hidden" id="{{form.image.id_for_label}}" name="image" accept="image/*">
+          <div
+            class="w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-fb-primary transition relative group {% if form.instance.image %}hidden{% endif %}"
+            id="image-upload-area">
+            <div
+              class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-600/50 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+              <i class="fa-solid fa-image text-gray-500 dark:text-gray-400 text-xl"></i>
+            </div>
+            <h5 class="font-bold text-fb-lightText dark:text-fb-text mb-1">{% trans 'Add a cover image' %}</h5>
+            <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted px-4 text-center mb-3">
+              {% trans 'Drag & drop an image here, or click to select a file' %}
+            </p>
+            <span
+              class="bg-fb-lightSurface dark:bg-[#4e4f50] border border-fb-lightBorder dark:border-fb-border px-4 py-1.5 rounded-md font-semibold text-sm text-fb-lightText dark:text-fb-text shadow-sm">{% trans 'Choose File' %}</span>
+          </div>
+          <div
+            class="w-full h-48 rounded-xl overflow-hidden border border-fb-lightBorder dark:border-fb-border mt-2 relative {% if not form.instance.image %}hidden{% endif %}"
+            id="image-preview-container">
+            <img src="{% if form.instance.image %}{{form.instance.image.url}}{% endif %}" alt="Image Preview"
+              id="preview-image" class="w-full h-full object-cover">
+            <button type="button"
+              class="absolute top-2 right-2 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full text-white flex items-center justify-center transition"
+              id="remove-preview" title="{% trans 'Remove photo' %}">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+          <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-2">
+            {% trans 'Recommended: 1200 × 630 pixels. Max size: 2MB.' %}
+          </div>
+        </div>
+        <!-- Actions -->
+        <div
+          class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
+          <a href="{% url 'articles:drafts' %}"
+            class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+            {% trans 'Cancel' %}
+          </a>
+          <button type="button"
+            class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+            <i class="fa-solid fa-file-lines"></i> {% trans 'Save as draft' %}
+          </button>
+          <button type="button"
+            class="update bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
+            <i class="fa-solid fa-cloud-arrow-up"></i> {% trans 'Update' %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{form.media}}
 {% endblock content %}
 {% block right_sidebar_widgets %}
-    <!-- Writing Tips -->
-    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
-        <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
-            <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
-                <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
-            </h5>
-        </div>
-        <div class="p-4">
-            <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
-                <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
-                <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
-                <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
-                <li>{% trans 'Use examples to illustrate your points.' %}</li>
-            </ul>
-        </div>
-    </div>
+<!-- Writing Tips -->
+<div
+  class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+  <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+    <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+      <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
+    </h5>
+  </div>
+  <div class="p-4">
+    <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
+      <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
+      <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
+      <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
+      <li>{% trans 'Use examples to illustrate your points.' %}</li>
+    </ul>
+  </div>
+</div>
 {% endblock right_sidebar_widgets %}
 {% block modal %}
-    <style>
+<style>
   /* Tailwind overrides for Django forms */
   .tailwind-crispy-form .form-group {
     margin-bottom: 1.25rem;
@@ -163,28 +188,104 @@
   html[data-theme='dark'] .tailwind-crispy-form .help-block {
     color: #b0b3b8;
   }
-    </style>
-    <script src="{% static 'js/articles.js' %}"></script>
-    <script>
+</style>
+<script src="{% static 'js/articles.js' %}"></script>
+<script>
   document.addEventListener('DOMContentLoaded', function () {
     // Image preview
-    const imageInput = document.querySelector('input[type="file"]');
-    const imagePreview = document.getElementById('image-preview');
+    const imageInput = document.getElementById('{{form.image.id_for_label}}');
+    const uploadArea = document.getElementById('image-upload-area');
+    const previewContainer = document.getElementById('image-preview-container');
+    const previewImage = document.getElementById('preview-image');
+    const removePreviewBtn = document.getElementById('remove-preview');
+    const clearImageCheckbox = document.getElementById('image-clear_id');
 
+    // Handle click on upload area
+    if (uploadArea && imageInput) {
+      uploadArea.addEventListener('click', function () {
+        imageInput.click();
+      });
+    }
+
+    // Handle file selection
     if (imageInput) {
       imageInput.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file) {
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
+
+          // Check file size
+          if (file.size > 2 * 1024 * 1024) {
+            alert("{% trans 'Image size should be less than 2 megabytes.' %}");
+            this.value = '';
+            return;
+          }
+
+          if (clearImageCheckbox) clearImageCheckbox.checked = false;
+
+          // Display preview
           const reader = new FileReader();
           reader.onload = function (e) {
-            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">`;
-          }
+            previewImage.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+            uploadArea.classList.add('hidden');
+          };
           reader.readAsDataURL(file);
-        } else {
-          imagePreview.innerHTML = `<div class="text-fb-lightMuted dark:text-fb-muted flex flex-col items-center"><i class="fa-solid fa-image text-4xl mb-2 opacity-50"></i><span class="text-sm font-semibold opacity-80">{% trans 'Image Preview' %}</span></div>`;
         }
       });
     }
+
+    // Handle preview removal
+    if (removePreviewBtn) {
+      removePreviewBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        imageInput.value = '';
+        previewImage.src = '';
+        if (clearImageCheckbox) clearImageCheckbox.checked = true;
+        previewContainer.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
+      });
+    }
+
+    // Handle drag and drop
+    if (uploadArea) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight() {
+        uploadArea.classList.add('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
+      }
+
+      function unhighlight() {
+        uploadArea.classList.remove('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
+      }
+
+      uploadArea.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files && files.length) {
+          imageInput.files = files;
+          const event = new Event('change', { bubbles: true });
+          imageInput.dispatchEvent(event);
+        }
+      }
+    }
   });
-    </script>
+</script>
 {% endblock modal %}

@@ -35,27 +35,4 @@
             </div>
         </div>
     </div>
-    <!-- Group Stats -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-px bg-fb-lightBorder dark:border-fb-border">
-        <!-- Subscribers -->
-        <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{group.subscribers.count}}</div>
-            <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Members' %}</div>
-        </div>
-        <!-- Posts -->
-        <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{news_list.paginator.count}}</div>
-            <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Posts' %}</div>
-        </div>
-        <!-- Admins -->
-        <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{group.admins.count}}</div>
-            <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Admins' %}</div>
-        </div>
-        <!-- Recent Activity -->
-        <div class="bg-fb-lightSurface dark:bg-fb-surface p-3 text-center transition hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover">
-            <div class="text-xl font-bold text-fb-primary mb-0.5">{{group.recent_posts}}</div>
-            <div class="text-[12px] font-semibold text-fb-lightMuted dark:text-fb-muted">{% trans 'Recent Activity' %}</div>
-        </div>
-    </div>
 </div>
