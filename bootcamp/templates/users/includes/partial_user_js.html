@@ -3,7 +3,7 @@
 $(document).ready(function(){
   $("a#send_message_request").on("click", function () {
     {% if not request.user.is_authenticated %}
-    window.location.href = "{% url 'login' %}";
+    window.location.href = "{% url 'account_login' %}";
     {% else %}
     var $add_btn = $(this);
     var $add_url = $(this).attr("href");
@@ -33,7 +33,7 @@ $(document).ready(function(){
 $(document).ready(function(){
   $("a#accept_message_request").on("click", function () {
     {% if not request.user.is_authenticated %}
-    window.location.href = "{% url 'login' %}";
+    window.location.href = "{% url 'account_login' %}";
     {% else %}
     var $confirm_btn = $(this);
     var $confirm_url = $(this).attr("href");
@@ -60,7 +60,7 @@ $(document).ready(function(){
 $(document).ready(function(){
     $("a#follow_user").on("click", function () {
     {% if not request.user.is_authenticated %}
-    window.location.href = "{% url 'login' %}";
+    window.location.href = "{% url 'account_login' %}";
     {% else %}
     var $follow_btn = $(this);
     var $follow_url = $(this).attr("href");
@@ -86,5 +86,3 @@ $(document).ready(function(){
   });
 });
 </script>
-
-

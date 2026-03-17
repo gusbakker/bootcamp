@@ -1,69 +1,108 @@
 {% load i18n %}
-
-<div class="modal fade" id="newsFormModal" tabindex="-1" aria-labelledby="newsFormModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark">
-      <div class="modal-header border-bottom border-dark">
-        <h5 class="modal-title fw-bold text-light" id="newsFormModalTitle">
-          {% if group %}
-            {% trans "Share something with" %} {{ group.title }}
-          {% else %}
-            {% trans "Share something new!" %}
-          {% endif %}
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form enctype="multipart/form-data" id="postNewsForm" role="form" method="post" action="">
-          {% csrf_token %}
-          {% if group %}
-          <input type="hidden" name="group" value="{{ group.id }}">
-          {% endif %}
-          <div class="mb-3">
-            <textarea id="newsInput" name="post" rows="3" class="form-control bg-dark text-light border-dark" maxlength="280" placeholder="{% trans 'What\'s on your mind?' %}"></textarea>
-            <div class="d-flex justify-content-end mt-2">
-              <span id="newsCounter" class="text-muted small">280</span>
-            </div>
-
-            <!-- Uploaded image preview -->
-            <div id="imagePreviewContainer" class="mt-3 position-relative d-none">
-              <img id="imageResult" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block" style="max-height: 250px;">
-              <button type="button" id="removeImage" class="btn btn-danger position-absolute top-0 end-0 m-2">
-                <i class="fa-solid fa-times"></i>
-              </button>
-            </div>
-
-            <!-- Upload image area -->
-            <div id="uploadImageArea" class="mt-3 upload-area">
-              <input id="imageInput" type="file" name="image" class="d-none" accept="image/*">
-              <div class="upload-area-inner">
-                <div class="upload-icon">
-                  <i class="fa-regular fa-image"></i>
+<div id="newsFormModal"
+     class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center px-4">
+    <div class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-[500px] rounded-xl shadow-2xl border border-fb-lightBorder dark:border-fb-border flex flex-col modal-enter relative"
+         onclick="event.stopPropagation()">
+        <div class="flex items-center justify-center p-4 border-b border-fb-lightBorder dark:border-fb-border relative">
+            <h2 class="text-xl font-bold text-fb-lightText dark:text-fb-text">
+                {% if group %}
+                    {% trans "Share something with" %} {{group.title}}
+                {% else %}
+                    {% trans "Create post" %}
+                {% endif %}
+            </h2>
+            <button type="button"
+                    onclick="toggleModal('newsFormModal')"
+                    class="absolute right-4 w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 dark:hover:bg-[#4e4f50] flex items-center justify-center text-fb-lightMuted dark:text-fb-muted transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <div class="p-4">
+            <form enctype="multipart/form-data"
+                  id="postNewsForm"
+                  role="form"
+                  method="post"
+                  action="">
+                {% csrf_token %}
+                {% if group %}<input type="hidden" name="group" value="{{group.id}}">{% endif %}
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="{{user.get_picture}}" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h4 class="font-semibold text-[15px] text-fb-lightText dark:text-fb-text">
+                            {{request.user.get_full_name|default:request.user.username}}
+                        </h4>
+                        <!-- Simulated audience selector -->
+                        <button type="button"
+                                class="flex items-center gap-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text px-2 py-0.5 rounded-md text-xs font-semibold mt-1">
+                            <i class="fa-solid fa-user-group text-[10px]"></i> {% trans 'Friends' %} <i class="fa-solid fa-caret-down ml-1"></i>
+                        </button>
+                    </div>
                 </div>
-                <span class="upload-text">{% trans 'Add an image' %}</span>
-                <span class="upload-hint">{% trans 'Drag & drop or click to upload' %}</span>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer border-top border-dark">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel' %}</button>
-        <button type="button" id="postNews" class="btn btn-primary">
-          <i class="fa-regular fa-paper-plane me-2"></i>{% trans 'Post' %}
-        </button>
-      </div>
+                <textarea id="newsInput"
+                          name="post"
+                          class="w-full bg-transparent border-none outline-none resize-none text-xl placeholder-fb-lightMuted dark:placeholder-fb-muted mb-4 h-32 text-fb-lightText dark:text-fb-text"
+                          placeholder="{% trans 'What\'s on your mind?' %}"></textarea>
+                <div class="flex justify-end mt-2">
+                    <span id="newsCounter"
+                          class="text-fb-lightMuted dark:text-fb-muted text-xs font-medium">280</span>
+                </div>
+                <!-- Uploaded image preview -->
+                <div id="imagePreviewContainer" class="mt-3 relative hidden">
+                    <img id="imageResult"
+                         src="#"
+                         alt=""
+                         class="w-full max-h-[250px] object-cover rounded shadow-sm mx-auto block mb-4">
+                    <button type="button"
+                            id="removeImage"
+                            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition shadow-md">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <!-- Upload image area -->
+                <div id="uploadImageArea"
+                     class="mt-3 mb-4 border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition group">
+                    <input id="imageInput"
+                           type="file"
+                           name="image"
+                           class="hidden"
+                           accept="image/*">
+                    <div class="w-10 h-10 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover group-hover:bg-gray-200 dark:group-hover:bg-gray-600 flex items-center justify-center mb-2 transition">
+                        <i class="fa-regular fa-image text-xl text-fb-lightText dark:text-fb-text transition"></i>
+                    </div>
+                    <span class="font-semibold text-fb-lightText dark:text-fb-text">{% trans 'Add Photos/Videos' %}</span>
+                    <span class="text-xs text-fb-lightMuted dark:text-fb-muted mt-1">{% trans 'or drag and drop' %}</span>
+                </div>
+                <button type="button"
+                        id="postNews"
+                        class="w-full bg-fb-primary hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition mt-2 opacity-50 cursor-not-allowed"
+                        disabled>{% trans 'Post' %}</button>
+            </form>
+        </div>
     </div>
-  </div>
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Image upload handling
     const imageInput = document.getElementById('imageInput');
     const imageResult = document.getElementById('imageResult');
     const removeImage = document.getElementById('removeImage');
     const uploadImageArea = document.getElementById('uploadImageArea');
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const newsInput = document.getElementById('newsInput');
+    const newsCounter = document.getElementById('newsCounter');
+    const postBtn = document.getElementById('postNews');
+
+    // Enable/disable Post button
+    function updatePostButton() {
+      const hasText = newsInput.value.trim().length > 0;
+      const hasImage = imageInput.files && imageInput.files.length > 0;
+      if (hasText || hasImage) {
+        postBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        postBtn.disabled = false;
+      } else {
+        postBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        postBtn.disabled = true;
+      }
+    }
 
     // Handle click on upload area
     uploadImageArea.addEventListener('click', () => {
@@ -71,26 +110,32 @@
     });
 
     // Handle image selection
-    imageInput.addEventListener('change', function() {
+    imageInput.addEventListener('change', function () {
       if (this.files && this.files[0]) {
         const reader = new FileReader();
 
-        reader.onload = function(e) {
+        reader.onload = function (e) {
           imageResult.src = e.target.result;
-          uploadImageArea.classList.add('d-none');
-          imagePreviewContainer.classList.remove('d-none');
+          uploadImageArea.classList.add('hidden');
+          uploadImageArea.classList.remove('flex');
+          imagePreviewContainer.classList.remove('hidden');
+          imagePreviewContainer.classList.add('block');
         }
 
         reader.readAsDataURL(this.files[0]);
+        updatePostButton();
       }
     });
 
     // Handle remove image button
-    removeImage.addEventListener('click', function() {
+    removeImage.addEventListener('click', function () {
       imageInput.value = '';
       imageResult.src = '';
-      imagePreviewContainer.classList.add('d-none');
-      uploadImageArea.classList.remove('d-none');
+      imagePreviewContainer.classList.add('hidden');
+      imagePreviewContainer.classList.remove('block');
+      uploadImageArea.classList.remove('hidden');
+      uploadImageArea.classList.add('flex');
+      updatePostButton();
     });
 
     // Drag and drop functionality
@@ -112,11 +157,13 @@
     });
 
     function highlight() {
-      uploadImageArea.classList.add('highlight');
+      uploadImageArea.classList.add('bg-fb-lightSurfaceHover');
+      uploadImageArea.classList.add('dark:bg-fb-surfaceHover');
     }
 
     function unhighlight() {
-      uploadImageArea.classList.remove('highlight');
+      uploadImageArea.classList.remove('bg-fb-lightSurfaceHover');
+      uploadImageArea.classList.remove('dark:bg-fb-surfaceHover');
     }
 
     uploadImageArea.addEventListener('drop', handleDrop, false);
@@ -135,77 +182,35 @@
     }
 
     // Character counter
-    const newsInput = document.getElementById('newsInput');
-    const newsCounter = document.getElementById('newsCounter');
-
-    newsInput.addEventListener('keyup', function() {
+    newsInput.addEventListener('input', function () {
       const charCount = this.value.length;
       newsCounter.textContent = 280 - charCount;
 
       if (charCount > 240) {
-        newsCounter.classList.add('text-danger');
+        newsCounter.classList.add('text-red-500');
       } else {
-        newsCounter.classList.remove('text-danger');
+        newsCounter.classList.remove('text-red-500');
       }
+
+      updatePostButton();
     });
 
-    // Light/Dark mode adaptation
-    function updateModalTheme() {
-      const isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
-      const modal = document.querySelector('#newsFormModal .modal-content');
-      const inputs = document.querySelectorAll('#newsFormModal .form-control, #newsFormModal .input-group-text');
-      const modalTitle = document.querySelector('#newsFormModal .modal-title');
-      const borders = document.querySelectorAll('#newsFormModal .border-dark');
-      const closeBtn = document.querySelector('#newsFormModal .btn-close');
-
-      if (isLightMode) {
-        modal.classList.remove('bg-dark');
-        modal.classList.add('bg-white');
-
-        inputs.forEach(input => {
-          input.classList.remove('bg-dark', 'text-light', 'border-dark');
-          input.classList.add('bg-white', 'text-dark', 'border-light');
-        });
-
-        modalTitle.classList.remove('text-light');
-        modalTitle.classList.add('text-dark');
-
-        borders.forEach(border => {
-          border.classList.remove('border-dark');
-          border.classList.add('border-light');
-        });
-
-        closeBtn.classList.remove('btn-close-white');
-      } else {
-        modal.classList.add('bg-dark');
-        modal.classList.remove('bg-white');
-
-        inputs.forEach(input => {
-          input.classList.add('bg-dark', 'text-light', 'border-dark');
-          input.classList.remove('bg-white', 'text-dark', 'border-light');
-        });
-
-        modalTitle.classList.add('text-light');
-        modalTitle.classList.remove('text-dark');
-
-        borders.forEach(border => {
-          border.classList.add('border-dark');
-          border.classList.remove('border-light');
-        });
-
-        closeBtn.classList.add('btn-close-white');
-      }
-    }
-
-    // Run on initial load
-    updateModalTheme();
-
-    // Listen for theme changes
-    const darkSwitch = document.getElementById('darkSwitch');
-    if (darkSwitch) {
-      darkSwitch.addEventListener('change', function() {
-        setTimeout(updateModalTheme, 50);
+    // Auto-focus textarea when modal opens
+    // We observe the hidden class on the modal
+    const modalObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (mutation.attributeName === "class") {
+          const modal = mutation.target;
+          if (!modal.classList.contains('hidden')) {
+            setTimeout(() => newsInput.focus(), 100);
+          }
+        }
       });
+    });
+
+    const modalTarget = document.getElementById('newsFormModal');
+    if (modalTarget) {
+      modalObserver.observe(modalTarget, { attributes: true });
     }
   });
 </script>

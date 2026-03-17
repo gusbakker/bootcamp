@@ -1,279 +1,369 @@
 {% load static i18n thumbnail %}
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-<script>
+    <script>
     // Apply theme BEFORE first paint to prevent dark-mode flash
     (function () {
         var theme = localStorage.getItem('darkMode') === 'false' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', theme);
     })();
-</script>
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Antisocial Network{% endblock title %}</title>
-    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
-    <meta name="description" content="Antisocial Network">
-    <meta name="author" content="Gustavo Bakker">
-
-    {% block css %}
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Audiowide&display=swap"
-        rel="stylesheet">
-
-    <!-- Bootstrap 5.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Project CSS (includes dark/light mode variables) -->
-    <link href="{% static 'css/bootcamp.css' %}?v=4" rel="stylesheet">
-    <link href="{% static 'css/notifications-page.css' %}?v=2" rel="stylesheet">
-    {% endblock css %}
-    {% block head %}{% endblock head %}
-</head>
-
-<body>
-    {% block body %}
-    <div class="mb-3">
-        {% if request.user.is_authenticated %}
-        <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand d-flex align-items-center" href="{% url 'news:list' %}">
-                    <img src="{% static 'img/favicon.png' %}" alt="Antisocial" height="28" class="me-2">
-                    <span class="d-none d-md-inline">Antisocial</span>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
-                    aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarMain">
-                    <!-- ─── Left nav links ─────────────────── -->
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'articles:list' %}"><i
-                                    class="fa-solid fa-newspaper me-1"></i>Blog</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'users:list' %}"><i
-                                    class="fa-solid fa-user-group me-1"></i>{% trans 'Network' %}</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'groups:list' %}"><i
-                                    class="fa-solid fa-people-group me-1"></i>{% trans 'Groups' %}</a></li>
-                    </ul>
-
-                    <!-- ─── Right: search + icons + profile ── -->
-                    <div class="d-flex align-items-center gap-2">
+    </script>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            {% block title %}
+                Connect - Social Network
+            {% endblock title %}
+        </title>
+        <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+        <meta name="description" content="Antisocial Network">
+        <meta name="author" content="Gustavo Bakker">
+        {% block css %}
+            <!-- Tailwind CSS CDN -->
+            <script src="https://cdn.tailwindcss.com"></script>
+            <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        fb: {
+                            bg: '#18191a',
+                            surface: '#242526',
+                            surfaceHover: '#3a3b3c',
+                            primary: '#2d88ff',
+                            text: '#e4e6eb',
+                            muted: '#b0b3b8',
+                            border: '#3e4042',
+                            lightBg: '#f0f2f5',
+                            lightSurface: '#ffffff',
+                            lightSurfaceHover: '#f0f2f5',
+                            lightText: '#050505',
+                            lightMuted: '#65676b',
+                            lightBorder: '#ced0d4',
+                        }
+                    }
+                }
+            }
+        }
+            </script>
+            <!-- Google Fonts -->
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+                  rel="stylesheet">
+            <!-- Font Awesome 6 -->
+            <link rel="stylesheet"
+                  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+                  integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer" />
+            <!-- Project CSS -->
+            <link href="{% static 'css/bootcamp.css' %}?v=5" rel="stylesheet">
+            <link href="{% static 'css/notifications-page.css' %}?v=3" rel="stylesheet">
+        {% endblock css %}
+        {% block head %}
+        {% endblock head %}
+    </head>
+    <body class="font-sans antialiased overflow-y-scroll overflow-x-hidden pt-14 bg-fb-lightBg dark:bg-fb-bg text-fb-lightText dark:text-fb-text">
+        {% block body %}
+            {% if request.user.is_authenticated %}
+                <!-- ================= NAVBAR ================= -->
+                <nav class="fixed top-0 left-0 w-full h-14 bg-fb-lightSurface dark:bg-fb-surface border-b border-fb-lightBorder dark:border-fb-border flex items-center justify-between px-4 z-40 shadow-sm">
+                    <!-- Left: Logo & Search -->
+                    <div class="flex items-center gap-2 w-1/4">
+                        <a href="{% url 'news:list' %}"
+                           class="text-fb-primary text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover transition">
+                            <img src="{% static 'img/favicon.png' %}" alt="Antisocial" class="w-8 h-8">
+                        </a>
                         {% if not hide_search %}
-                        <form class="d-flex" role="search" action="{% url 'search:results' %}">
-                            <input name="query" type="search" id="searchInput"
-                                class="form-control form-control-sm nav-search" placeholder="{% trans 'Search' %}"
-                                aria-label="Search">
-                        </form>
+                            <form action="{% url 'search:results' %}"
+                                  method="GET"
+                                  class="hidden md:flex items-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-full px-3 py-2 w-64 h-10">
+                                <i class="fa-solid fa-search text-fb-lightMuted dark:text-fb-muted"></i>
+                                <input type="text"
+                                       name="query"
+                                       placeholder="{% trans 'Search Anything' %}"
+                                       class="bg-transparent border-none outline-none text-fb-lightText dark:text-fb-text ml-2 w-full placeholder-fb-lightMuted dark:placeholder-fb-muted">
+                            </form>
                         {% endif %}
-
-                        <!-- Notification icon -->
-                        <a class="nav-icon-btn" href="#" id="notifications" data-bs-container="body"
-                            data-bs-toggle="popover" data-bs-placement="bottom"
-                            data-bs-title="{% trans 'Notifications' %}" title="{% trans 'Notifications' %}">
-                            <i class="fa-solid fa-bell"></i>
-                            <span id="countnotif" class="nav-icon-badge"></span>
+                    </div>
+                    <!-- Center: Navigation Tabs -->
+                    <div class="hidden md:flex items-center justify-center w-2/4 h-full gap-2">
+                        <a href="{% url 'news:list' %}"
+                           class="nav-tab relative w-24 h-full flex items-center justify-center rounded-lg transition group hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover {% if request.resolver_match.url_name == 'list' and request.resolver_match.app_name == 'news' %}text-fb-primary dark:text-fb-primary{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %}">
+                            <i class="fa-solid fa-house text-xl"></i>
+                            {% if request.resolver_match.url_name == 'list' and request.resolver_match.app_name == 'news' %}
+                                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-fb-primary rounded-t-md indicator"></div>
+                            {% endif %}
                         </a>
-
-                        <!-- Messages icon -->
-                        <a class="nav-icon-btn" href="{% url 'messager:messages_list' %}" id="inbox"
-                            data-bs-toggle="popover" data-bs-title="{% trans 'Inbox' %}" title="{% trans 'Messages' %}">
-                            <i class="fa-solid fa-comment-dots"></i>
-                            <span id="countmsg" class="nav-icon-badge"></span>
+                        <a href="{% url 'users:list' %}"
+                           class="nav-tab relative w-24 h-full flex items-center justify-center rounded-lg transition group hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover {% if request.resolver_match.app_name == 'users' and request.resolver_match.url_name != 'detail' %}text-fb-primary dark:text-fb-primary{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %}">
+                            <i class="fa-solid fa-user-group text-xl"></i>
+                            {% if request.resolver_match.app_name == 'users' and request.resolver_match.url_name != 'detail' %}
+                                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-fb-primary rounded-t-md indicator"></div>
+                            {% endif %}
                         </a>
-
-                        <!-- Profile dropdown -->
-                        <div class="dropdown">
-                            <a class="nav-profile-btn" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <img src="{{ user.get_picture }}" class="nav-avatar" alt="{{ request.user.username }}">
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end nav-dropdown" aria-labelledby="profileDropdown">
-                                <!-- User info header -->
-                                <li class="dropdown-header-user">
-                                    <img src="{{ user.get_picture }}" class="dropdown-user-avatar"
-                                        alt="{{ request.user.username }}">
+                        <a href="{% url 'groups:list' %}"
+                           class="nav-tab relative w-24 h-full flex items-center justify-center rounded-lg transition group hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover {% if request.resolver_match.app_name == 'groups' %}text-fb-primary dark:text-fb-primary{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %}">
+                            <i class="fa-solid fa-people-group text-xl"></i>
+                            {% if request.resolver_match.app_name == 'groups' %}
+                                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-fb-primary rounded-t-md indicator"></div>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'articles:list' %}"
+                           class="nav-tab relative w-24 h-full flex items-center justify-center rounded-lg transition group hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover {% if request.resolver_match.app_name == 'articles' %}text-fb-primary dark:text-fb-primary{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %}">
+                            <i class="fa-solid fa-newspaper text-xl"></i>
+                            {% if request.resolver_match.app_name == 'articles' %}
+                                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-fb-primary rounded-t-md indicator"></div>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <!-- Right: Profile & Actions -->
+                    <div class="flex items-center justify-end w-1/4 gap-2">
+                        <a href="{% url 'messager:messages_list' %}"
+                           class="w-10 h-10 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text hover:brightness-110 transition hidden sm:flex relative">
+                            <i class="fa-brands fa-facebook-messenger"></i>
+                            <span id="countmsg"
+                                  class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface hidden"></span>
+                        </a>
+                        <div class="relative">
+                            <button id="notifications"
+                                    class="w-10 h-10 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text hover:brightness-110 transition relative">
+                                <i class="fa-solid fa-bell"></i>
+                                <span id="countnotif"
+                                      class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface hidden"></span>
+                            </button>
+                            <!-- Notifications Dropdown -->
+                            <div id="notificationsMenu"
+                                 class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-fb-lightSurface dark:bg-fb-surface rounded-xl shadow-xl border border-fb-lightBorder dark:border-fb-border z-50 flex-col max-h-[85vh]">
+                                <div class="px-4 py-3 flex justify-between items-center">
+                                    <h2 class="text-2xl font-bold text-fb-lightText dark:text-fb-text">{% trans 'Notifications' %}</h2>
+                                </div>
+                                <div id="notificationsBody" class="overflow-y-auto px-2 pb-2">
+                                    <!-- Loaded via AJAX -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button onclick="toggleDropdown('profileMenu')"
+                                    class="w-10 h-10 rounded-full overflow-hidden border border-fb-lightBorder dark:border-fb-border ml-1 focus:outline-none">
+                                <img src="{{user.get_picture}}"
+                                     alt="Profile"
+                                     class="w-full h-full object-cover">
+                            </button>
+                            <div id="profileMenu"
+                                 class="hidden absolute right-0 mt-2 w-80 bg-fb-lightSurface dark:bg-fb-surface rounded-lg shadow-xl border border-fb-lightBorder dark:border-fb-border p-3 z-50">
+                                <a href="{% url 'users:detail' request.user.username %}"
+                                   class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg cursor-pointer transition shadow-sm border border-fb-lightBorder dark:border-fb-border mb-2">
+                                    <img src="{{user.get_picture}}" class="w-12 h-12 rounded-full">
                                     <div>
-                                        <div class="dropdown-user-name">
-                                            {{request.user.get_full_name|default:request.user.username }}</div>
-                                        <div class="dropdown-user-handle">@{{ request.user.username }}</div>
+                                        <h3 class="font-semibold text-fb-lightText dark:text-fb-text">
+                                            {{request.user.get_full_name|default:request.user.username}}
+                                        </h3>
+                                        <p class="text-sm text-fb-lightMuted dark:text-fb-muted">See your profile</p>
                                     </div>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'users:detail' request.user.username %}">
-                                        <i class="fa-regular fa-user"></i> {% trans 'My Profile' %}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'users:update' %}">
-                                        <i class="fa-solid fa-gear"></i> {% trans 'Settings' %}
-                                    </a>
-                                </li>
-                                <li>
-                                    <div class="dropdown-item d-flex align-items-center justify-content-between">
-                                        <span><i class="fa-solid fa-moon"></i> {% trans 'Dark Mode' %}</span>
-                                        <div class="form-check form-switch mb-0 ms-2">
-                                            <input class="form-check-input" type="checkbox" id="darkSwitch" checked>
+                                </a>
+                                <hr class="border-fb-lightBorder dark:border-fb-border my-2">
+                                <a href="{% url 'users:update' %}"
+                                   class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
+                                    <div class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center">
+                                        <i class="fa-solid fa-gear"></i>
+                                    </div>
+                                    <span class="font-medium">Settings</span>
+                                </a>
+                                <div class="w-full flex items-center justify-between p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition cursor-pointer"
+                                     onclick="document.getElementById('darkSwitch').click()">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center">
+                                            <i class="fa-solid fa-moon"></i>
                                         </div>
+                                        <span class="font-medium">Dark Mode</span>
                                     </div>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger-subtle" href="{% url 'account_logout' %}">
-                                        <i class="fa-solid fa-right-from-bracket"></i> {% trans 'Log Out' %}
-                                    </a>
-                                </li>
-                            </ul>
+                                    <input type="checkbox" id="darkSwitch" class="cursor-pointer">
+                                </div>
+                                <hr class="border-fb-lightBorder dark:border-fb-border my-2">
+                                <a href="{% url 'account_logout' %}"
+                                   class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-red-500 dark:text-red-400">
+                                    <div class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center">
+                                        <i class="fa-solid fa-right-from-bracket"></i>
+                                    </div>
+                                    <span class="font-medium">Log Out</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </nav>
-        {% endif %}
-    </div>
-    <div id="header" class="container">
-        {% if messages %}
-        <!-- Toast container — bottom-right corner -->
-        <div id="toast-container" aria-live="polite" aria-atomic="true">
-            {% for message in messages %}
-            <div class="app-toast {% if message.tags %}toast-{{ message.tags }}{% else %}toast-info{% endif %}"
-                role="alert">
-                <div class="toast-icon-wrap">
-                    {% if 'success' in message.tags %}
-                    <i class="fa-solid fa-circle-check"></i>
-                    {% elif 'error' in message.tags or 'danger' in message.tags %}
-                    <i class="fa-solid fa-circle-xmark"></i>
-                    {% elif 'warning' in message.tags %}
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    {% else %}
-                    <i class="fa-solid fa-circle-info"></i>
+                </nav>
+            {% endif %}
+            <!-- ================= MAIN LAYOUT ================= -->
+            <div class="flex justify-between max-w-[1600px] mx-auto w-full min-h-[calc(100vh-56px)] {% if not request.user.is_authenticated %}pt-4{% endif %}">
+                <!-- === LEFT SIDEBAR === -->
+                {% if request.user.is_authenticated %}
+                    <aside class="hidden xl:block w-[320px] p-4 h-full sticky top-14 overflow-y-auto">
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="{% url 'users:detail' request.user.username %}"
+                                   class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
+                                    <img src="{{user.get_picture}}" class="w-8 h-8 rounded-full">
+                                    <span class="font-medium">{{request.user.get_full_name|default:request.user.username}}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'users:list' %}"
+                                   class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
+                                    <i class="fa-solid fa-user-group text-blue-400 text-xl w-8 text-center"></i>
+                                    <span class="font-medium">Friends</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'groups:list' %}"
+                                   class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
+                                    <i class="fa-solid fa-people-group text-blue-500 text-xl w-8 text-center"></i>
+                                    <span class="font-medium">Groups</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'articles:list' %}"
+                                   class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
+                                    <i class="fa-solid fa-newspaper text-purple-500 text-xl w-8 text-center"></i>
+                                    <span class="font-medium">Articles</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </aside>
+                {% endif %}
+                <!-- === DYNAMIC CENTER CONTENT === -->
+                <main class="w-full {% block main_class %}{% if request.user.is_authenticated %}max-w-[800px] xl:max-w-[680px] lg:px-8{% else %}max-w-[1000px]{% endif %}{% endblock main_class %} mx-auto p-4 pb-20">
+                    {% if messages %}
+                        <!-- Toasts -->
+                        <div id="toast-container" class="mb-4 space-y-2">
+                            {% for message in messages %}
+                                <div class="bg-fb-lightSurface dark:bg-fb-surface border-l-4 {% if 'success' in message.tags %}border-green-500{% elif 'error' in message.tags or 'danger' in message.tags %}border-red-500{% else %}border-blue-500{% endif %} p-4 rounded shadow-sm text-fb-lightText dark:text-fb-text flex justify-between items-center toast-message"
+                                     role="alert">
+                                    <div>{{message}}</div>
+                                    <button class="text-fb-lightMuted dark:text-fb-muted hover:text-fb-lightText dark:hover:text-fb-text focus:outline-none"
+                                            onclick="this.parentElement.style.opacity='0'; setTimeout(()=>this.parentElement.remove(), 300)">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
                     {% endif %}
-                </div>
-                <div class="toast-body-wrap">
-                    <div class="toast-msg">{{ message }}</div>
-                </div>
-                <button class="toast-close" aria-label="Close">&times;</button>
-                <div class="toast-progress"></div>
+                    {% block content %}
+                    {% endblock content %}
+                </main>
+                <!-- === RIGHT SIDEBAR (Contacts & Widgets) === -->
+                {% block right_sidebar %}
+                    {% if request.user.is_authenticated %}
+                        <aside class="hidden lg:block w-[320px] p-4 h-full sticky top-14 overflow-y-auto">
+                            {% block right_sidebar_widgets %}
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-fb-lightMuted dark:text-fb-muted font-semibold">Contacts</h3>
+                                </div>
+                                <ul class="space-y-1">
+                                    {% for friend in request.user.get_friends|slice:":10" %}
+                                        <li>
+                                            <a href="{% url 'messager:conversation_detail' friend.username %}"
+                                               class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition relative">
+                                                <div class="relative">
+                                                    <img src="{{friend.get_picture}}" class="w-8 h-8 rounded-full">
+                                                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-fb-lightBg dark:border-fb-bg">
+                                                    </div>
+                                                </div>
+                                                <span class="font-medium text-[15px]">{{friend.get_profile_name|default:friend.username}}</span>
+                                            </a>
+                                        </li>
+                                    {% empty %}
+                                        <li class="text-sm text-fb-lightMuted dark:text-fb-muted px-2">No contacts</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endblock right_sidebar_widgets %}
+                        </aside>
+                    {% endif %}
+                {% endblock right_sidebar %}
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
-        {% endblock content %}
-
-    </div>
-    <!-- /container -->
-    <!-- JavaScript
+            <!-- JavaScript
     ================================================== -->
-    {% block javascript %}
-    <!-- Bootstrap 5.3 Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
+            {% block javascript %}
+                <!-- jQuery (still needed for legacy ajax functions temporarily) -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+                        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"></script>
+                <!-- Custom JS -->
+                <script src="{% static 'js/bootcamp.js' %}" type="text/javascript"></script>
+                <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+                <script type="text/javascript">
+        var currentUser = "{{request.user.username}}";
 
-    <!-- jQuery (still needed for some legacy components) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+            }
+        }
 
-    <!-- jQuery UI (for autocomplete) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"
-        integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- Custom JS -->
-    <script src="{% static 'js/bootcamp.js' %}" type="text/javascript"></script>
-    <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
-
-    <script type="text/javascript">
-        var currentUser = "{{ request.user.username }}";
-
-        // Initialize popovers
-        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
-        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
-
-        // Dark mode toggle — theme already set in <head>, just sync the checkbox and wire the toggle
-        document.addEventListener('DOMContentLoaded', () => {
-            const darkSwitch = document.getElementById('darkSwitch');
-            if (!darkSwitch) return;
-
-            // Sync checkbox state with the theme already applied
-            darkSwitch.checked = document.documentElement.getAttribute('data-theme') !== 'light';
-
-            // Toggle event
-            darkSwitch.addEventListener('change', function () {
-                if (this.checked) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    localStorage.setItem('darkMode', 'true');
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                if (modal.classList.contains('hidden')) {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
                 } else {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    localStorage.setItem('darkMode', 'false');
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
                 }
-            });
-        });
-    </script>
+            }
+        }
 
-    <!-- ─── Toast notification logic ─────────────────── -->
-    <script>
-        (function () {
-            const DURATION = 4000; // ms before auto-dismiss
-
-            function dismissToast(toast) {
-                toast.classList.add('toast-hiding');
-                toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+        window.addEventListener('click', function (e) {
+            const profileMenu = document.getElementById('profileMenu');
+            // If they click outside the dropdown and outside the trigger button, hide it
+            if (profileMenu && !e.target.closest('#profileMenu') && !e.target.closest('button[onclick*="toggleDropdown(\'profileMenu\')"]')) {
+                profileMenu.classList.add('hidden');
             }
 
-            document.querySelectorAll('.app-toast').forEach(function (toast) {
-                // Trigger slide-in on next frame
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => toast.classList.add('toast-visible'));
-                });
-
-                // Progress bar animation
-                const bar = toast.querySelector('.toast-progress');
-                if (bar) {
-                    bar.style.transition = `width ${DURATION}ms linear`;
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => { bar.style.width = '0%'; });
-                    });
-                }
-
-                // Auto-dismiss
-                const timer = setTimeout(() => dismissToast(toast), DURATION);
-
-                // Manual close
-                const btn = toast.querySelector('.toast-close');
-                if (btn) {
-                    btn.addEventListener('click', () => {
-                        clearTimeout(timer);
-                        dismissToast(toast);
-                    });
-                }
+            // Close modals on outside click
+            ['newsFormModal', 'newsThreadModal'].forEach(id => {
+                const modal = document.getElementById(id);
+                if (modal && e.target === modal) toggleModal(id);
             });
-        })();
-    </script>
+        });
 
-    {% endblock javascript %}
+        // Dark mode toggle wired to inline Tailwind dark mode
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkSwitch = document.getElementById('darkSwitch');
+            if (darkSwitch) {
+                darkSwitch.checked = document.documentElement.getAttribute('data-theme') !== 'light';
 
-    {% block modal %}{% endblock modal %}
+                darkSwitch.addEventListener('change', function () {
+                    if (this.checked) {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('darkMode', 'true');
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        localStorage.setItem('darkMode', 'false');
+                    }
+                });
+            }
 
-    {% endblock body %}
-</body>
-
-<!-- /.container -->
-
+            // Auto dismiss toasts
+            setTimeout(function () {
+                const toasts = document.querySelectorAll('.toast-message');
+                toasts.forEach(t => {
+                    t.style.transition = "opacity 0.3s ease-out";
+                    t.style.opacity = '0';
+                    setTimeout(() => t.remove(), 300);
+                });
+            }, 4000);
+        });
+                </script>
+            {% endblock javascript %}
+            {% block modal %}
+            {% endblock modal %}
+        {% endblock body %}
+    </body>
 </html>

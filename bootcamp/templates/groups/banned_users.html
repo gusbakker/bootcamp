@@ -1,61 +1,154 @@
 {% extends "base.html" %}
 {% load humanize %}
-
-{% block title %}<title>Banned Users</title>{% endblock %}
-
+{% block title %}Banned Users{% endblock %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-8 mx-auto">
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-transparent">
-          <h1 class="h4 mb-0">Banned Users</h1>
-        </div>
-        <div class="card-body">
-          {% if users %}
-            <p class="text-muted text-center mb-4">Unban users if they were banned by mistake from this group.</p>
-
-            <div class="list-group list-group-flush">
-              {% for user in users %}
-                <div class="list-group-item border-0 border-bottom py-3">
-                  <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                      {% if user.get_picture %}
-                        <img src="{{ user.get_picture }}" class="rounded-circle" width="48" height="48" alt="{{ user.username }}">
-                      {% endif %}
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                      <h6 class="mb-0">
-                        <a href="{% url 'users:detail' user.username %}" class="text-decoration-none">
-                          {{ user.get_profile_name }}
+    <div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+        <!-- Breadcrumb -->
+        <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2"
+             aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 sm:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{% url 'groups:list' %}"
+                       class="inline-flex items-center hover:text-fb-primary hover:underline transition">
+                        <i class="fa-solid fa-house mr-2 text-xs"></i>
+                        Groups
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+                        <a href="{% url 'groups:group' group.slug %}"
+                           class="hover:text-fb-primary hover:underline transition">
+                            {{group.title|truncatechars:20}}
                         </a>
-                      </h6>
                     </div>
-                    <div>
-                      <a href="{% url 'groups:ban_user' group.slug user.id %}" class="btn btn-outline-primary btn-sm">
-                        <i class="fa-solid fa-user-check me-1"></i>Unban User
-                      </a>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+                        <span class="text-fb-lightText dark:text-fb-text font-semibold">Banned Users</span>
                     </div>
-                  </div>
+                </li>
+            </ol>
+        </nav>
+        <!-- Header Card -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 shadow-sm">
+                    <i class="fa-solid fa-user-slash text-2xl"></i>
                 </div>
-              {% endfor %}
+                <div>
+                    <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight mb-0.5">Banned Users</h1>
+                    <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted font-medium">
+                        Manage members restricted from this
+                        group
+                    </p>
+                </div>
             </div>
-          {% else %}
-            <div class="text-center py-5">
-              <i class="fa-solid fa-user-shield fa-3x text-muted mb-3"></i>
-              <h5>No Users Banned Yet</h5>
-              <p class="text-muted">There are currently no banned users in this group.</p>
-            </div>
-          {% endif %}
+            <a href="{% url 'groups:group' group.slug %}"
+               class="w-full sm:w-auto bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold text-[14px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border">
+                <i class="fa-solid fa-arrow-left"></i>Back to Group
+            </a>
         </div>
-      </div>
-
-      <div class="text-center">
-        <a href="{{ group.get_absolute_url }}" class="btn btn-outline-primary">
-          <i class="fa-solid fa-arrow-left me-2"></i>Back to Group
-        </a>
-      </div>
+        <!-- Alert Messages -->
+        {% if messages %}
+            <div class="mb-4 flex flex-col gap-2">
+                {% for message in messages %}
+                    <div class="p-3 rounded-lg text-[14px] font-medium flex items-start gap-2 {% if message.tags == 'error' %}bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50{% else %}bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-900/50{% endif %}">
+                        <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %} mt-0.5"></i>
+                        <div>{{message}}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Main Content Box -->
+        <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+            {% if users %}
+                <div class="p-4 border-b border-fb-lightBorder dark:border-fb-border bg-fb-lightSurfaceHover/50 dark:bg-fb-surfaceHover/30">
+                    <p class="text-[14px] text-fb-lightText dark:text-fb-text mb-0 font-medium">
+                        <i class="fa-solid fa-circle-info text-blue-500 mr-1.5"></i>
+                        Unban users if they were banned by mistake from this group.
+                    </p>
+                </div>
+                <div class="flex flex-col">
+                    {% for user in users %}
+                        <div class="p-4 border-b border-fb-lightBorder dark:border-fb-border last:border-0 flex items-center justify-between gap-4 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition">
+                            <div class="flex items-center min-w-0">
+                                <a href="{% url 'users:detail' user.username %}"
+                                   class="flex-shrink-0 relative">
+                                    <img src="{{user.get_picture}}"
+                                         class="w-12 h-12 rounded-full object-cover border border-fb-lightBorder dark:border-fb-border hover:brightness-90 transition"
+                                         alt="{{user.username}}">
+                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white text-[10px]">
+                                        <i class="fa-solid fa-ban"></i>
+                                    </div>
+                                </a>
+                                <div class="ml-3 min-w-0">
+                                    <h6 class="font-bold text-[15px] text-fb-lightText dark:text-fb-text leading-tight mb-0.5 truncate">
+                                        <a href="{% url 'users:detail' user.username %}" class="hover:underline">{{user.get_profile_name|title}}</a>
+                                    </h6>
+                                    <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted truncate">@{{user.username}}</p>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <a href="{% url 'groups:ban_user' group.slug user.id %}"
+                                   class="bg-fb-lightSurfaceHover dark:bg-[#4e4f50] hover:bg-gray-200 dark:hover:bg-gray-600 transition px-4 py-2 rounded-md font-semibold text-[14px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text shadow-sm border border-fb-lightBorder dark:border-fb-border group">
+                                    <i class="fa-solid fa-user-check text-green-600 dark:text-green-500 group-hover:scale-110 transition"></i>
+                                    <span class="hidden sm:inline">Unban</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Pagination block -->
+                {% if is_paginated %}
+                    <div class="p-4 border-t border-fb-lightBorder dark:border-fb-border flex justify-center">
+                        <div class="flex flex-wrap gap-2">
+                            {% if page_obj.has_previous %}
+                                <a href="?page=1"
+                                   class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                                    <i class="fa-solid fa-angles-left"></i>
+                                </a>
+                                <a href="?page={{page_obj.previous_page_number}}"
+                                   class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                                    <i class="fa-solid fa-angle-left"></i> Prev
+                                </a>
+                            {% endif %}
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <span class="px-3 py-1.5 rounded-md bg-fb-primary text-white font-bold shadow-sm text-[14px]">{{num}}</span>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <a href="?page={{num}}"
+                                       class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                                    {{num}}</a>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <a href="?page={{page_obj.next_page_number}}"
+                                   class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                                    Next <i class="fa-solid fa-angle-right"></i>
+                                </a>
+                                <a href="?page={{page_obj.paginator.num_pages}}"
+                                   class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                                    <i class="fa-solid fa-angles-right"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="p-12 flex flex-col items-center justify-center text-center">
+                    <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-500 mb-4 shadow-inner">
+                        <i class="fa-solid fa-shield-halved text-3xl"></i>
+                    </div>
+                    <h5 class="text-xl font-bold text-fb-lightText dark:text-fb-text mb-2">No Users Banned Yet</h5>
+                    <p class="text-[14px] text-fb-lightMuted dark:text-fb-muted max-w-sm mb-0">
+                        There are currently no users restricted
+                        from accessing or interacting with this group.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
     </div>
-  </div>
-</div>
 {% endblock content %}

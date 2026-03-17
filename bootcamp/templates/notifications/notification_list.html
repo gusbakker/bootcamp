@@ -1,163 +1,153 @@
 {% extends "base.html" %}
 {% load static i18n thumbnail humanize %}
-
-{% block title %}{% trans 'Notifications' %}{% endblock %}
-
-{% block head %}
-<link href="{% static 'css/notifications-page.css' %}" rel="stylesheet">
-{% endblock head %}
-
+{% block title %}
+{% trans 'Notifications' %}
+{% endblock %}
 {% block content %}
-<div class="container notification-container">
-    <div class="notification-header">
-        <h1 class="notification-title">{% trans 'Notifications' %}</h1>
-
-        <div class="notification-actions">
+<div class="max-w-[700px] mx-auto pt-4 pb-12">
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm mb-4">
+        <div
+            class="p-5 border-b border-fb-lightBorder dark:border-fb-border flex justify-between items-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-t-xl">
+            <h1 class="text-2xl font-bold text-fb-lightText dark:text-fb-text">{% trans 'Notifications' %}</h1>
             {% if notification_list %}
-            <a class="btn btn-primary" href="{% url 'notifications:mark_all_read' %}">
-                <i class="fa-solid fa-check-double me-1"></i>
-                {% trans 'Mark all as read' %}
+            <a href="{% url 'notifications:mark_all_read' %}"
+                class="bg-fb-primary hover:bg-blue-600 text-white transition px-4 py-2 rounded-md font-semibold text-[14px] flex justify-center items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-check-double"></i>
+                <span class="hidden sm:inline">{% trans 'Mark all as read' %}</span>
             </a>
             {% endif %}
         </div>
-    </div>
-
-    <div class="notification-filters">
-        <div class="notification-filter active" data-filter="all">
-            <i class="fa-solid fa-bell"></i>{% trans 'All' %}
+        <!-- Filters -->
+        <div class="flex gap-2 p-4 overflow-x-auto no-scrollbar border-b border-fb-lightBorder dark:border-fb-border">
+            <div class="notification-filter active bg-fb-primary text-white cursor-pointer px-4 py-1.5 rounded-full text-[14px] font-semibold transition whitespace-nowrap"
+                data-filter="all">{% trans 'All' %}</div>
+            <div class="notification-filter px-4 py-2 rounded-full cursor-pointer font-semibold text-sm transition bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-center flex items-center justify-center whitespace-nowrap min-w-max"
+                data-filter="unread">
+                {% trans 'Unread' %}
+                <span
+                    class="badge text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 ml-1">{{unread_count|default:"0"}}</span>
+            </div>
+            <div class="notification-filter bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text cursor-pointer px-4 py-1.5 rounded-full text-[14px] font-semibold transition whitespace-nowrap"
+                data-filter="like">{% trans 'Likes' %}</div>
+            <div class="notification-filter bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text cursor-pointer px-4 py-1.5 rounded-full text-[14px] font-semibold transition whitespace-nowrap"
+                data-filter="comment">{% trans 'Comments' %}</div>
+            <div class="notification-filter bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text cursor-pointer px-4 py-1.5 rounded-full text-[14px] font-semibold transition whitespace-nowrap"
+                data-filter="follow">{% trans 'Follows' %}</div>
         </div>
-        <div class="notification-filter" data-filter="unread">
-            <i class="fa-solid fa-circle-dot"></i>{% trans 'Unread' %}
-            <span class="badge bg-primary rounded-pill ms-1">
-                {{ unread_count|default:"0" }}
-            </span>
-        </div>
-        <div class="notification-filter" data-filter="like">
-            <i class="fa-solid fa-heart"></i>{% trans 'Likes' %}
-        </div>
-        <div class="notification-filter" data-filter="comment">
-            <i class="fa-solid fa-comment"></i>{% trans 'Comments' %}
-        </div>
-        <div class="notification-filter" data-filter="follow">
-            <i class="fa-solid fa-user-plus"></i>{% trans 'Follows' %}
-        </div>
-    </div>
-
-    <div class="notification-list">
-        {% if notification_list %}
-        {% for notification in notification_list %}
-        <div class="notification-card {% if not notification.read %}unread{% endif %}"
-            data-type="{{ notification.verb }}" data-id="{{ notification.slug }}">
-            <div class="card-body">
-                <div class="notification-avatar">
-                    <a href="{% url 'users:detail' notification.actor.username %}">
-                        <img src="{{ notification.actor.get_picture }}" alt="{{ notification.actor.username }}">
-                    </a>
-                </div>
-                <div class="notification-content">
-                    {% if notification.verb == 'liked' %}
-                    <span class="notification-type-badge notification-type-badge-like">
-                        <i class="fa-solid fa-heart me-1"></i>{% trans 'Like' %}
-                    </span>
-                    {% elif notification.verb == 'commented' %}
-                    <span class="notification-type-badge notification-type-badge-comment">
-                        <i class="fa-solid fa-comment me-1"></i>{% trans 'Comment' %}
-                    </span>
-                    {% elif notification.verb == 'followed' %}
-                    <span class="notification-type-badge notification-type-badge-follow">
-                        <i class="fa-solid fa-user-plus me-1"></i>{% trans 'Follow' %}
-                    </span>
-                    {% elif notification.verb == 'messaged' %}
-                    <span class="notification-type-badge notification-type-badge-message">
-                        <i class="fa-solid fa-envelope me-1"></i>{% trans 'Message' %}
-                    </span>
-                    {% endif %}
-
-                    <div class="notification-text">
-                        <a href="{% url 'users:detail' notification.actor.username %}" class="notification-user">
-                            {{ notification.actor.get_profile_name|title }}
-                        </a>
-                        {{ notification.get_verb_display }}
-                        {% if notification.action_object %}
-                        {{ notification.action_object }}
+        <div class="p-2 space-y-1">
+            {% if notification_list %}
+            {% for notification in notification_list %}
+            <div class="notification-card group relative p-3 rounded-lg transition cursor-pointer {% if notification.unread %}bg-fb-lightSurfaceHover/60 dark:bg-fb-surfaceHover/60 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover is-unread{% else %}hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover{% endif %}"
+                data-type="{{notification.verb}}" data-id="{{notification.slug}}">
+                <a href="{% url 'users:detail' notification.actor.username %}" class="flex items-center gap-4">
+                    <div class="relative flex-shrink-0 self-start mt-1">
+                        <img src="{{notification.actor.get_picture}}" alt="{{notification.actor.username}}"
+                            class="w-[64px] h-[64px] rounded-full object-cover shadow-sm bg-fb-lightBorder dark:bg-fb-border">
+                        <div class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-[3px] border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white text-[14px] shadow-sm 
+                            {% if notification.verb == 'liked' %}bg-[#fa383e] 
+                            {% elif notification.verb == 'commented' or notification.verb == 'replied to' or notification.verb == 'also commented' %}bg-[#00a400] 
+                            {% elif notification.verb == 'followed you' or notification.verb == 'sent you a friend request' or notification.verb == 'accepted your friend request' %}bg-[#1877f2] 
+                            {% else %}bg-[#8c939d]{% endif %}">
+                            {% if notification.verb == 'liked' %}
+                            <i class="fa-solid fa-heart align-middle"></i>
+                            {% elif notification.verb == 'commented' or notification.verb == 'replied to' or notification.verb == 'also commented' %}
+                            <i class="fa-solid fa-comment align-middle"></i>
+                            {% elif notification.verb == 'followed you' or notification.verb == 'sent you a friend request' or notification.verb == 'accepted your friend request' %}
+                            <i class="fa-solid fa-user-plus align-middle text-[11px]"></i>
+                            {% elif notification.verb == 'messaged' %}
+                            <i class="fa-solid fa-envelope align-middle"></i>
+                            {% else %}
+                            <i class="fa-solid fa-bell align-middle"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0 pr-4">
+                        <p class="text-[16px] {% if notification.unread %}text-fb-lightText dark:text-fb-text font-semibold{% else %}text-fb-lightText dark:text-fb-text/90{% endif %} leading-snug mb-1">
+                            <span class="font-bold hover:underline">{{notification.actor.get_profile_name|title}}</span>
+                            <span class="{% if notification.unread %}font-semibold{% else %}font-normal{% endif %}">
+                                {{notification.get_verb_display}}
+                                {% if notification.action_object %}
+                                <span class="{% if notification.unread %}font-bold{% else %}font-semibold{% endif %} hover:underline">"{{notification.action_object}}"</span>
+                                {% endif %}
+                            </span>
+                        </p>
+                        <p class="text-[14px] {% if notification.unread %}text-fb-primary font-bold{% else %}text-fb-lightMuted dark:text-fb-muted font-semibold{% endif %}">
+                            {{notification.created|naturaltime}}
+                        </p>
+                    </div>
+                    <div class="relative w-10 h-10 flex-shrink-0 flex items-center justify-center self-center">
+                        {% if notification.unread %}
+                        <!-- Mark Read action that appears on hover, replacing the dot -->
+                        <button data-url="{% url 'notifications:mark_as_read' notification.slug %}"
+                            class="mark-read-btn absolute inset-0 rounded-full bg-fb-lightSurface dark:bg-fb-surface hover:bg-gray-200 dark:hover:bg-[#4e4f50] border border-fb-lightBorder dark:border-fb-border shadow-sm flex items-center justify-center text-fb-lightText dark:text-fb-text transition opacity-0 group-hover:opacity-100 z-10"
+                            title="{% trans 'Mark as read' %}">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                        <!-- Unread dot -->
+                        <div class="w-3.5 h-3.5 bg-fb-primary rounded-full group-hover:opacity-0 transition-opacity mx-auto"></div>
                         {% endif %}
                     </div>
-                    <div class="notification-time">
-                        {{ notification.time_since|naturaltime }}
-                    </div>
-                </div>
-
-                {% if not notification.read %}
-                <div class="notification-action">
-                    <a href="{% url 'notifications:mark_as_read' notification.slug %}"
-                        class="btn btn-sm btn-light mark-read-btn" title="{% trans 'Mark as read' %}">
-                        <i class="fa-solid fa-check"></i>
-                    </a>
-                </div>
-                {% endif %}
+                </a>
             </div>
-        </div>
-        {% endfor %}
-
-        {% if is_paginated %}
-        <nav aria-label="Notification pagination">
-            <ul class="pagination">
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo;</span>
-                </li>
-                {% endif %}
-
-                {% for i in paginator.page_range %}
-                {% if page_obj.number == i %}
-                <li class="page-item active">
-                    <span class="page-link">{{ i }}</span>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&raquo;</span>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-        {% else %}
-        <div class="empty-state">
-            <div class="empty-state-icon">
-                <i class="fa-solid fa-bell-slash"></i>
+            {% endfor %}
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="mt-6 mb-4 flex justify-center">
+                <nav aria-label="Notification pagination">
+                    <ul
+                        class="flex items-center gap-1 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-lg shadow-sm px-2 py-1">
+                        {% if page_obj.has_previous %}
+                        <li>
+                            <a class="px-3 py-1.5 rounded-md text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition"
+                                href="?page={{page_obj.previous_page_number}}" aria-label="Previous">
+                                <i class="fa-solid fa-chevron-left text-[12px]"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                        <li>
+                            <span class="px-3 py-1.5 rounded-md bg-fb-primary text-white font-semibold">{{i}}</span>
+                        </li>
+                        {% else %}
+                        <li>
+                            <a class="px-3 py-1.5 rounded-md text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition"
+                                href="?page={{i}}">{{i}}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                        <li>
+                            <a class="px-3 py-1.5 rounded-md text-fb-lightText dark:text-fb-text hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition"
+                                href="?page={{page_obj.next_page_number}}" aria-label="Next">
+                                <i class="fa-solid fa-chevron-right text-[12px]"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
-            <h3 class="empty-state-title">{% trans 'No notifications' %}</h3>
-            <p class="empty-state-description">
-                {% trans 'You have no notifications at the moment.' %}
-            </p>
-            <a href="{% url 'news:list' %}" class="btn btn-primary">
-                <i class="fa-solid fa-home me-1"></i>{% trans 'Back to Home' %}
-            </a>
+            {% endif %}
+            {% else %}
+            <div class="py-16 text-center text-fb-lightMuted dark:text-fb-muted">
+                <div
+                    class="w-20 h-20 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-bell-slash text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-fb-lightText dark:text-fb-text mb-2">{% trans 'No notifications' %}
+                </h3>
+                <p class="text-[15px] mb-6">{% trans 'You have no notifications at the moment.' %}</p>
+                <a href="{% url 'news:list' %}"
+                    class="inline-flex items-center gap-2 bg-fb-primary hover:bg-blue-600 transition px-5 py-2.5 rounded-lg font-semibold text-[15px] text-white shadow-sm">
+                    <i class="fa-solid fa-house"></i>{% trans 'Back to Home' %}
+                </a>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 </div>
 {% endblock content %}
-
 {% block modal %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -167,8 +157,12 @@
 
         filters.forEach(filter => {
             filter.addEventListener('click', function () {
-                filters.forEach(f => f.classList.remove('active'));
-                this.classList.add('active');
+                filters.forEach(f => {
+                    f.classList.remove('bg-fb-primary', 'text-white', 'active');
+                    f.classList.add('bg-fb-lightSurfaceHover', 'dark:bg-fb-surfaceHover', 'text-fb-lightText', 'dark:text-fb-text');
+                });
+                this.classList.remove('bg-fb-lightSurfaceHover', 'dark:bg-fb-surfaceHover', 'text-fb-lightText', 'dark:text-fb-text');
+                this.classList.add('bg-fb-primary', 'text-white', 'active');
 
                 const filterType = this.getAttribute('data-filter');
 
@@ -176,7 +170,7 @@
                     if (filterType === 'all') {
                         card.style.display = 'block';
                     } else if (filterType === 'unread') {
-                        card.style.display = card.classList.contains('unread') ? 'block' : 'none';
+                        card.style.display = card.classList.contains('is-unread') ? 'block' : 'none';
                     } else {
                         const verb = card.getAttribute('data-type') || '';
                         card.style.display = verb.startsWith(filterType) ? 'block' : 'none';
@@ -192,7 +186,12 @@
                 const url = this.getAttribute('href');
                 const card = this.closest('.notification-card');
 
-                card.classList.add('removing');
+                // Hide the action button and unread dot
+                const action = card.querySelector('.notification-action');
+                if (action) action.style.display = 'none';
+
+                const dot = card.querySelector('.bg-fb-primary.rounded-full');
+                if (dot) dot.style.display = 'none';
 
                 fetch(url, {
                     method: 'GET',
@@ -200,12 +199,26 @@
                 }).then(response => {
                     if (response.ok) {
                         setTimeout(() => {
-                            card.classList.remove('unread', 'removing');
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateX(0)';
-                            const action = card.querySelector('.notification-action');
-                            if (action) action.remove();
-                        }, 400);
+                            card.classList.remove('is-unread', 'bg-blue-50/60', 'dark:bg-blue-900/20');
+                            card.classList.add('hover:bg-fb-lightSurfaceHover', 'dark:hover:bg-fb-surfaceHover');
+
+                            const textEle = card.querySelector('p.text-fb-lightText');
+                            if (textEle) {
+                                textEle.classList.remove('text-fb-lightText', 'dark:text-fb-text', 'font-semibold');
+                                textEle.classList.add('text-fb-lightMuted', 'dark:text-fb-muted');
+                            }
+                            const timeEle = card.querySelector('p.text-fb-primary');
+                            if (timeEle) {
+                                timeEle.classList.remove('text-fb-primary');
+                                timeEle.classList.add('text-fb-lightMuted', 'dark:text-fb-muted');
+                            }
+
+                            // Re-evaluate filters if "unread" is selected
+                            const activeFilter = document.querySelector('.notification-filter.active').getAttribute('data-filter');
+                            if (activeFilter === 'unread') {
+                                card.style.display = 'none';
+                            }
+                        }, 200);
 
                         const badge = document.querySelector('.notification-filter[data-filter="unread"] .badge');
                         if (badge) {

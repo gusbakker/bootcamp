@@ -1,173 +1,313 @@
 {% extends 'base.html' %}
 {% load static i18n %}
 {% load crispy_forms_tags %}
-
-{% block title %}{% trans 'Write New Article' %}{% endblock %}
-
-{% block head %}
-<link href="{% static 'css/articles.css' %}" rel="stylesheet">
-{% endblock head %}
-
+{% block title %}
+{% trans 'Write New Article' %}
+{% endblock %}
 {% block content %}
-<div class="container editor-container">
-    <div class="editor-header">
-        <h1 class="editor-title">{% trans 'Write a New Article' %}</h1>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="editor-card">
-                <div class="card-header">
-                    <h2 class="card-title">{% trans 'Article Editor' %}</h2>
-                </div>
-                <div class="card-body">
-                    <form action="{% url 'articles:write_new' %}" enctype="multipart/form-data" id="article-form"
-                        method="post" role="form">
-                        {% csrf_token %}
-                        <input type="hidden" name="status" value="P">
-
-                        {{ form|crispy }}
-
-                        <div class="image-preview mt-3 mb-4" id="image-preview">
-                            <i class="fa-solid fa-image fa-2x"></i>
-                        </div>
-
-                        <div class="editor-actions">
-                            <button type="button" class="btn btn-outline-primary draft">{% trans 'Save Draft'%}</button>
-                            <button type="button" class="btn btn-primary publish">{% trans 'Publish' %}</button>
-                            <a href="{% url 'articles:list' %}" class="btn btn-outline-secondary">{% trans 'Cancel'%}</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<div class="max-w-[800px] mx-auto w-full pt-4 pb-12">
+    <!-- Header -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 flex items-center gap-3">
+        <div
+            class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary">
+            <i class="fa-solid fa-pen-nib text-xl"></i>
         </div>
-
-        <div class="col-lg-4">
-            <!-- Writing Tips -->
-            <div class="sidebar-card">
-                <div class="card-header">
-                    <i class="fa-solid fa-lightbulb me-2"></i>{% trans 'Writing Tips' %}
+        <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight">{% trans 'Write a New Article' %}</h1>
+    </div>
+    <!-- Editor Card -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4">
+        <div class="p-4 sm:p-6">
+            <form action="{% url 'articles:write_new' %}" enctype="multipart/form-data" id="article-form" method="post"
+                role="form" class="tailwind-crispy-form">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="P">
+                <div class="mb-5">{{form.title|as_crispy_field}}</div>
+                <div class="mb-5">{{form.content|as_crispy_field}}</div>
+                <div class="mb-5">{{form.tags|as_crispy_field}}</div>
+                <div class="mb-5">
+                    <label class="block font-semibold mb-2 text-[0.95rem] text-fb-lightText dark:text-fb-text">
+                        {% trans 'Article Image' %}
+                    </label>
+                    <input type="file" class="hidden" id="{{form.image.id_for_label}}" name="image" accept="image/*">
+                    <div class="w-full h-48 bg-fb-lightSurfaceHover dark:bg-[#3a3b3c] border-2 border-dashed border-fb-lightBorder dark:border-fb-border rounded-xl flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-fb-primary transition relative group"
+                        id="image-upload-area">
+                        <div
+                            class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-600/50 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-image text-gray-500 dark:text-gray-400 text-xl"></i>
+                        </div>
+                        <h5 class="font-bold text-fb-lightText dark:text-fb-text mb-1">{% trans 'Add a cover image' %}
+                        </h5>
+                        <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted px-4 text-center mb-3">
+                            {% trans 'Drag & drop an image here, or click to select a file' %}
+                        </p>
+                        <span
+                            class="bg-fb-lightSurface dark:bg-[#4e4f50] border border-fb-lightBorder dark:border-fb-border px-4 py-1.5 rounded-md font-semibold text-sm text-fb-lightText dark:text-fb-text shadow-sm">{% trans 'Choose File' %}</span>
+                    </div>
+                    <div class="hidden w-full h-48 rounded-xl overflow-hidden border border-fb-lightBorder dark:border-fb-border mt-2 relative"
+                        id="image-preview-container">
+                        <img src="" alt="Image Preview" id="preview-image" class="w-full h-full object-cover">
+                        <button type="button"
+                            class="absolute top-2 right-2 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full text-white flex items-center justify-center transition"
+                            id="remove-preview" title="{% trans 'Remove photo' %}">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="text-[13px] text-fb-lightMuted dark:text-fb-muted mt-2">
+                        {% trans 'Recommended: 1200 × 630 pixels. Max size: 2MB.' %}
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="tips-list">
-                        <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
-                        <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
-                        <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
-                        <li>{% trans 'Use examples to illustrate your points.' %}</li>
-                    </ul>
+                <!-- Actions -->
+                <div
+                    class="flex flex-wrap items-center gap-3 pt-4 border-t border-fb-lightBorder dark:border-fb-border justify-end mt-4">
+                    <a href="{% url 'articles:list' %}"
+                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+                        {% trans 'Cancel' %}
+                    </a>
+                    <button type="button"
+                        class="draft bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text">
+                        <i class="fa-solid fa-file-lines"></i> {% trans 'Save Draft' %}
+                    </button>
+                    <button type="button"
+                        class="publish bg-fb-primary hover:bg-blue-600 transition px-6 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-white shadow-sm">
+                        <i class="fa-solid fa-paper-plane"></i> {% trans 'Publish' %}
+                    </button>
                 </div>
-            </div>
-
-            <!-- Preview Link -->
-            <div class="text-center mb-4">
-                <button type="button" class="btn btn-outline-primary" id="preview-button">
-                    <i class="fa-solid fa-eye me-1"></i>{% trans 'Preview Article' %}
-                </button>
-            </div>
+            </form>
         </div>
     </div>
 </div>
 {% endblock content %}
-
+{% block right_sidebar_widgets %}
+<!-- Writing Tips -->
+<div
+    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm overflow-hidden mb-4 mr-4 mt-4">
+    <div class="flex items-center p-4 pb-2 border-b border-fb-lightBorder dark:border-fb-border">
+        <h5 class="font-bold text-fb-lightText dark:text-fb-text text-[15px] flex items-center gap-2">
+            <i class="fa-solid fa-lightbulb text-yellow-500"></i> {% trans 'Writing Tips' %}
+        </h5>
+    </div>
+    <div class="p-4">
+        <ul class="list-disc pl-5 text-[14px] text-fb-lightText dark:text-fb-text space-y-2 marker:text-fb-primary">
+            <li>{% trans 'Keep your paragraphs short and to the point.' %}</li>
+            <li>{% trans 'Use headings to structure your article and make it easier to read.' %}</li>
+            <li>{% trans 'Include relevant images to make your article more engaging.' %}</li>
+            <li>{% trans 'Use examples to illustrate your points.' %}</li>
+        </ul>
+    </div>
+</div>
+<!-- Preview Link -->
+<div class="mb-4 mr-4 text-center">
+    <button type="button" id="preview-button"
+        class="w-full justify-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2.5 rounded-md font-semibold text-[15px] flex items-center gap-2 text-fb-lightText dark:text-fb-text shadow-sm border border-fb-lightBorder dark:border-fb-border">
+        <i class="fa-solid fa-eye"></i> {% trans 'Preview Article' %}
+    </button>
+</div>
+{% endblock right_sidebar_widgets %}
 {% block modal %}
+<style>
+    /* Tailwind overrides for Django forms */
+    .tailwind-crispy-form .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .tailwind-crispy-form label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--fb-lightText, #050505);
+    }
+
+    html[data-theme='dark'] .tailwind-crispy-form label {
+        color: #e4e6eb;
+    }
+
+    .tailwind-crispy-form .form-control,
+    .tailwind-crispy-form .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        background-color: transparent !important;
+        border: 1px solid #ced0d4;
+        color: #050505 !important;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    html[data-theme='dark'] .tailwind-crispy-form .form-control,
+    html[data-theme='dark'] .tailwind-crispy-form .form-select {
+        border-color: #3e4042;
+        color: #e4e6eb !important;
+    }
+
+    .tailwind-crispy-form .form-control:focus,
+    .tailwind-crispy-form .form-select:focus {
+        outline: none;
+        border-color: #1877F2;
+        box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    }
+
+    .tailwind-crispy-form .asteriskField {
+        color: #e41e3f;
+        margin-left: 2px;
+    }
+
+    .tailwind-crispy-form .help-block {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 0.85rem;
+        color: #65676B;
+    }
+
+    html[data-theme='dark'] .tailwind-crispy-form .help-block {
+        color: #b0b3b8;
+    }
+</style>
 <script src="{% static 'js/articles.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Image preview
-        const imageInput = document.querySelector('input[type="file"]');
-        const imagePreview = document.getElementById('image-preview');
+        const imageInput = document.getElementById('{{form.image.id_for_label}}');
+        const uploadArea = document.getElementById('image-upload-area');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const removePreviewBtn = document.getElementById('remove-preview');
 
-        imageInput.addEventListener('change', function () {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        // Handle click on upload area
+        if (uploadArea && imageInput) {
+            uploadArea.addEventListener('click', function () {
+                imageInput.click();
+            });
+        }
+
+        // Handle file selection
+        if (imageInput) {
+            imageInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+
+                    // Check file size
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert("{% trans 'Image size should be less than 2 megabytes.' %}");
+                        this.value = '';
+                        return;
+                    }
+
+                    // Display preview
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.classList.remove('hidden');
+                        uploadArea.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
                 }
-                reader.readAsDataURL(file);
-            } else {
-                imagePreview.innerHTML = '<i class="fa-solid fa-image fa-2x"></i>';
+            });
+        }
+
+        // Handle preview removal
+        if (removePreviewBtn) {
+            removePreviewBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                imageInput.value = '';
+                previewImage.src = '';
+                previewContainer.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            });
+        }
+
+        // Handle drag and drop
+        if (uploadArea) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
-        });
 
-        // Preview button
-        const previewButton = document.getElementById('preview-button');
-        previewButton.addEventListener('click', function () {
-            const title = document.getElementById('{{ form.title.id_for_label }}').value;
-            const content = document.getElementById('{{ form.content.id_for_label }}').value;
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
 
-            if (!title || !content) {
-                alert('{% trans "Please add a title and content to preview your article." %}');
-                return;
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                uploadArea.classList.add('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
             }
 
-            // Create a preview in a new tab
-            const previewWindow = window.open('', '_blank');
-            previewWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>${title} - Preview</title>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-                    <body>
-                        <div class="preview-container">
-                            <div class="preview-header">
-                                <div class="preview-badge">Preview Mode</div>
-                                <h1 class="preview-title">${title}</h1>
-                            </div>
-                            <div class="preview-content">
-                                ${marked.parse(content)}
-                            </div>
-                            <div class="preview-notice">
-                                <p>This is a preview of your article. Changes won't be saved until you publish or save as draft.</p>
-                            </div>
-                        </div>
-                        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"><\/script>
-                    </body>
-                    </html>
-                `);
-            previewWindow.document.close();
-        });
+            function unhighlight() {
+                uploadArea.classList.remove('border-fb-primary', 'bg-blue-50', 'dark:bg-blue-900/10');
+            }
 
-        // Dark mode support for form elements
-        function updateThemeStyles() {
-            if (document.documentElement.getAttribute('data-theme') === 'light') {
-                document.querySelectorAll('.form-control, .form-select').forEach(el => {
-                    el.style.backgroundColor = '#ffffff';
-                    el.style.color = '#212529';
-                });
+            uploadArea.addEventListener('drop', handleDrop, false);
 
-                document.querySelectorAll('.markdown-help-item code').forEach(el => {
-                    el.style.backgroundColor = '#f0f0f0';
-                    el.style.color = '#212529';
-                });
-            } else {
-                document.querySelectorAll('.form-control, .form-select').forEach(el => {
-                    el.style.backgroundColor = '#1e1e1e';
-                    el.style.color = '#e0e0e0';
-                });
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
 
-                document.querySelectorAll('.markdown-help-item code').forEach(el => {
-                    el.style.backgroundColor = '#343a40';
-                    el.style.color = '#ffffff';
-                });
+                if (files && files.length) {
+                    imageInput.files = files;
+                    const event = new Event('change', { bubbles: true });
+                    imageInput.dispatchEvent(event);
+                }
             }
         }
 
-        // Run on page load
-        updateThemeStyles();
+        // Preview button
+        const previewButton = document.getElementById('preview-button');
+        if (previewButton) {
+            previewButton.addEventListener('click', function () {
+                const titleInput = document.getElementById('{{form.title.id_for_label}}');
+                const contentInput = document.getElementById('{{form.content.id_for_label}}');
 
-        // Listen for theme changes
-        document.addEventListener('themeChanged', updateThemeStyles);
+                if (!titleInput || !contentInput) return;
 
-        // Hook into the dark mode switch
-        const darkSwitch = document.getElementById('darkSwitch');
-        if (darkSwitch) {
-            darkSwitch.addEventListener('change', function () {
-                setTimeout(updateThemeStyles, 50);
+                const title = titleInput.value;
+                const content = contentInput.value;
+
+                if (!title || !content) {
+                    alert('{% trans "Please add a title and content to preview your article." %}');
+                    return;
+                }
+
+                // Create a preview in a new tab
+                const previewWindow = window.open('', '_blank');
+                previewWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>${title} - Preview</title>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <script src="https://cdn.tailwindcss.com"><\/script>
+                            <style>
+                                body { background-color: #f0f2f5; font-family: system-ui, -apple-system, sans-serif; }
+</style>
+                        </head>
+                        <body class="p-6">
+                            <div class="max-w-[680px] mx-auto bg-white rounded-xl shadow-sm p-6">
+                                <div class="mb-4">
+                                    <div class="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded mb-2">Preview Mode</div>
+                                    <h1 class="text-3xl font-bold text-gray-900 leading-tight">${title}</h1>
+                                </div>
+                                <div class="prose max-w-none text-gray-800">
+                                    ${marked.parse(content)}
+                                </div>
+                                <div class="mt-8 pt-4 border-t text-sm text-gray-500 text-center">
+                                    <p>This is a preview of your article. Changes won't be saved until you publish or save as draft.</p>
+                                </div>
+                            </div>
+                            <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"><\/script>
+                        </body>
+                        </html>
+                    `);
+                previewWindow.document.close();
             });
         }
     });

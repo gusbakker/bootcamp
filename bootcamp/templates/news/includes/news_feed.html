@@ -1,0 +1,74 @@
+{% load i18n %}
+<div class="space-y-4">
+    {% if not hide_create_post %}
+    <!-- Create Post Box -->
+    <div
+        class="bg-fb-lightSurface dark:bg-fb-surface rounded-xl p-4 shadow-sm border border-fb-lightBorder dark:border-fb-border flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'users:detail' request.user.username %}" class="flex-shrink-0">
+                <img src="{{user.get_picture}}" class="w-10 h-10 rounded-full hover:brightness-90 transition">
+            </a>
+            <button onclick="toggleModal('newsFormModal')"
+                class="flex-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightMuted dark:text-fb-muted text-left px-4 py-2.5 rounded-full transition font-medium">
+                {% if group %}
+                {% trans "Share something with" %} {{group.title}}...
+                {% else %}
+                {% trans "What's on your mind," %} {{request.user.first_name|default:request.user.username}}?
+                {% endif %}
+            </button>
+        </div>
+        <hr class="border-fb-lightBorder dark:border-fb-border mt-1 mb-1">
+        <div class="flex justify-between w-full px-2">
+            <!-- Simulated buttons -->
+            <button onclick="toggleModal('newsFormModal')"
+                class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
+                <i class="fa-solid fa-video text-red-500 text-xl"></i>
+                <span class="hidden sm:inline">{% trans 'Live video' %}</span>
+            </button>
+            <button onclick="toggleModal('newsFormModal')"
+                class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
+                <i class="fa-regular fa-images text-green-500 text-xl"></i>
+                <span class="hidden sm:inline">{% trans 'Photo/video' %}</span>
+            </button>
+            <button onclick="toggleModal('newsFormModal')"
+                class="flex-1 flex items-center justify-center gap-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover py-2 rounded-lg text-fb-lightMuted dark:text-fb-muted font-semibold transition">
+                <i class="fa-regular fa-face-smile text-yellow-500 text-xl"></i>
+                <span class="hidden sm:inline">{% trans 'Feeling/activity' %}</span>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Modals -->
+    {% include 'news/news_form_modal.html' with group=group %}
+    {% include 'news/news_thread_modal.html' %}
+    <!-- End Modals -->
+    <!-- Stream Update alert (for ajax push updates) -->
+    <div class="stream-update hidden">
+        <a href="{% if is_group_context %}{% url 'groups:group' group.slug %}{% else %}{% url 'news:list' %}{% endif %}"
+            class="block text-center bg-fb-primary hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition shadow-sm mb-4">
+            <i class="fa-solid fa-arrow-rotate-right me-2"></i>{% trans 'There are new posts' %}
+        </a>
+    </div>
+    <!-- News List -->
+    <div class="infinite-container flex flex-col space-y-4">
+        <ul class="stream list-none p-0 m-0 space-y-4 w-full">
+            {% for news in news_list %}
+            {% include 'news/news_single.html' with news=news %}
+            {% empty %}
+            <div class="col-span-full">
+                <div
+                    class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl p-8 text-center text-fb-lightMuted dark:text-fb-muted font-semibold shadow-sm">
+                    {% trans 'No activity found' %}
+                </div>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="load flex justify-center py-4">
+        {% if page_obj.has_next %}
+        <a class="infinite-more-link" href="?page={{page_obj.next_page_number}}">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-fb-primary"></div>
+        </a>
+        {% endif %}
+    </div>
+</div>

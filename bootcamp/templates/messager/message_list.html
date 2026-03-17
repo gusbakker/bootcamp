@@ -1,99 +1,209 @@
 {% extends "base.html" %}
 {% load static i18n %}
 {% load thumbnail %}
-
-{% block title %}{% trans 'Messages' %}{% endblock %}
-
+{% block title %}
+{% trans 'Messages' %}
+{% endblock %}
 {% block head %}
 <link href="{% static 'css/messager.css' %}?v=2" rel="stylesheet">
 {% endblock head %}
-
+{% block main_class %}
+w-full max-w-full px-0 xl:px-0 lg:px-0
+{% endblock main_class %}
+{% block right_sidebar %}
+{% endblock right_sidebar %}
 {% block content %}
-<div class="messenger-container">
+<div
+    class="flex h-[calc(100vh-56px)] -mt-4 bg-fb-lightSurface dark:bg-fb-surface border-x border-fb-lightBorder dark:border-fb-border overflow-hidden rounded-none sm:rounded-xl sm:h-[calc(100vh-80px)] sm:mt-0 sm:shadow-sm">
     <!-- Sidebar: Users List -->
-    <div class="messenger-sidebar">
-        <div class="messenger-sidebar-header">
-            <h2>{% trans 'Chats' %}</h2>
+    <div
+        class="w-full sm:w-[360px] flex-shrink-0 border-r border-fb-lightBorder dark:border-fb-border flex flex-col bg-fb-lightSurface dark:bg-fb-surface relative z-10 {% if active %}hidden sm:flex{% endif %}">
+        <!-- Header -->
+        <div
+            class="p-4 flex items-center justify-between border-b border-fb-lightBorder dark:border-fb-border sticky top-0 bg-fb-lightSurface/95 dark:bg-fb-surface/95 backdrop-blur-sm z-20">
+            <h2 class="text-2xl font-bold text-fb-lightText dark:text-fb-text">{% trans 'Chats' %}</h2>
+            <button
+                class="w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text hover:brightness-95 transition cursor-pointer">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
         </div>
-        <div class="list-group users-list list-unstyled m-0">
+        <!-- Search -->
+        <div class="px-4 py-2 border-b border-fb-lightBorder dark:border-fb-border">
+            <div class="relative">
+                <i
+                    class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-fb-lightMuted dark:text-fb-muted"></i>
+                <input type="text"
+                    class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text rounded-full py-2 pl-9 pr-4 focus:outline-none focus:ring-1 focus:ring-fb-primary/50 text-[15px] placeholder-fb-lightMuted dark:placeholder-fb-muted"
+                    placeholder="{% trans 'Search Messenger' %}">
+            </div>
+        </div>
+        <!-- Chat List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-2 space-y-1 users-list">
             {% for user, unread_messages in users_dict.items %}
             <a href="{% url 'messager:conversation_detail' user.username %}"
-                class="chat-user {% if active == user.username %}active{% endif %}">
-                <div class="d-flex align-items-center w-100">
-                    <img src="{{ user.get_picture }}" class="user-image" alt="{% trans 'User Image' %}">
-                    <div class="chat-user-info">
-                        <div class="chat-user-name">{{ user.get_profile_name|title }}</div>
-                        <div class="chat-user-preview">@{{ user.username }}</div>
+                class="chat-user flex items-center gap-3 p-2 rounded-xl transition cursor-pointer relative {% if active == user.username %}bg-blue-50/80 dark:bg-blue-900/20{% else %}hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover{% endif %}">
+
+                <div class="relative flex-shrink-0">
+                    <img src="{{user.get_picture}}"
+                        class="w-14 h-14 rounded-full object-cover border border-black/5 dark:border-white/5"
+                        alt="{% trans 'User Image' %}">
+                    <div
+                        class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface">
                     </div>
-                    {% if unread_messages %}
-                    <span id="new-message-{{ user.username }}" class="badge rounded-pill ms-auto">{{ unread_messages
-                        }}</span>
-                    {% endif %}
                 </div>
+
+                <div class="flex-1 min-w-0 pr-6">
+                    <div class="flex items-center justify-between mb-0.5">
+                        <h3 class="text-[15px] font-semibold text-fb-lightText dark:text-fb-text truncate">
+                            {{user.get_profile_name|title}}</h3>
+                        <!-- Can place mock timestamp here if desired -->
+                    </div>
+                    <p
+                        class="text-[13px] {% if unread_messages %}font-semibold text-fb-lightText dark:text-fb-text{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %} truncate">
+                        @{{user.username}}
+                    </p>
+                </div>
+
+                {% if unread_messages %}
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 bg-fb-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center badge"
+                    id="new-message-{{user.username}}">
+                    {{unread_messages}}
+                </div>
+                {% endif %}
             </a>
             {% endfor %}
         </div>
     </div>
-
     <!-- Main Chat Area -->
-    <div id="conversation" class="messenger-chat">
+    <div id="conversation"
+        class="flex-1 flex flex-col bg-fb-lightBg dark:bg-fb-bg relative w-full sm:w-auto overflow-hidden {% if not active %}hidden sm:flex{% endif %}">
         {% if active %}
         <!-- Active Chat Header -->
-        <div class="chat-header">
+        <div
+            class="h-16 px-4 bg-fb-lightSurface/95 dark:bg-fb-surface/95 border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm">
             {% for user, unread in users_dict.items %}
             {% if user.username == active %}
-            <a href="{% url 'users:detail' user.username %}" class="chat-header-user">
-                <img src="{{ user.get_picture }}" class="user-image" alt="{% trans 'User Image' %}">
-                <span class="chat-header-name">{{ user.get_profile_name|title }}</span>
-            </a>
+            <div class="flex items-center gap-3">
+                <!-- Back button for mobile -->
+                <a href="{% url 'messager:messages_list' %}"
+                    class="sm:hidden w-9 h-9 flex items-center justify-center rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition -ml-2">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </a>
+                <a href="{% url 'users:detail' user.username %}" class="relative">
+                    <img src="{{user.get_picture}}" class="w-10 h-10 rounded-full object-cover shadow-sm"
+                        alt="{% trans 'User Image' %}">
+                    <div
+                        class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface">
+                    </div>
+                </a>
+                <div class="flex flex-col">
+                    <a href="{% url 'users:detail' user.username %}"
+                        class="text-[15px] font-bold text-fb-lightText dark:text-fb-text hover:underline leading-tight">
+                        {{user.get_profile_name|title}}
+                    </a>
+                    <span class="text-[12px] text-fb-lightMuted dark:text-fb-muted leading-tight">Active now</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button
+                    class="w-10 h-10 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-phone text-lg"></i>
+                </button>
+                <button
+                    class="w-10 h-10 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-video text-lg"></i>
+                </button>
+                <button
+                    class="w-10 h-10 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-circle-info text-lg"></i>
+                </button>
+            </div>
             {% endif %}
             {% endfor %}
         </div>
-
-        <!-- Messages -->
-        <div class="messages-list">
+        <!-- Messages List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 messages-list flex flex-col">
             {% if message_list %}
             {% for message in message_list %}
             {% include 'messager/single_message.html' with message=message active=active current_user=request.user %}
             {% endfor %}
             {% else %}
-            <div class="empty-conversation">
-                <h4>{% trans 'This is the beginning of a great new conversation.' %}</h4>
-                <p>{% trans "Let's get started now!" %}</p>
+            <div class="flex-1 flex flex-col items-center justify-center text-center px-4 mt-10">
+                {% for user, unread in users_dict.items %}
+                {% if user.username == active %}
+                <img src="{{user.get_picture}}"
+                    class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-white dark:border-fb-surface shadow-md">
+                <h4 class="text-xl font-bold text-fb-lightText dark:text-fb-text">{{user.get_profile_name|title}}</h4>
+                <p class="text-[15px] text-fb-lightMuted dark:text-fb-muted max-w-sm mx-auto mt-2">
+                    {% trans "You're connected on Connect. Let's get started now!" %}
+                </p>
+                {% endif %}
+                {% endfor %}
             </div>
             {% endif %}
         </div>
-
-        <!-- Input Box -->
-        <div class="chat-box">
-            <form role="form" method="post" action="#" id="send" class="m-0">
+        <!-- Chat Input Box -->
+        <div
+            class="p-3 bg-fb-lightSurface/95 dark:bg-fb-surface/95 border-t border-fb-lightBorder/50 dark:border-fb-border/50 sticky bottom-0 z-20 backdrop-blur-md pb-6 sm:pb-3">
+            <form role="form" method="post" action="#" id="send" class="m-0 flex items-end gap-2">
                 {% csrf_token %}
-                <input type="hidden" name="to" value="{{ active }}">
-                <div class="chat-box-form">
-                    <input class="form-control" type="text" name="message" placeholder="{% trans 'Aa' %}"
-                        maxlength="1000" autocomplete="off" required>
-                    <button type="submit" class="btn-send" title="{% trans 'Send' %}">
-                        <i class="fa-solid fa-paper-plane"></i>
+                <input type="hidden" name="to" value="{{active}}">
+
+                <div class="flex items-center gap-1 pb-1">
+                    <button type="button"
+                        class="w-8 h-8 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center border-none bg-transparent cursor-pointer ml-1">
+                        <i class="fa-solid fa-circle-plus text-xl"></i>
+                    </button>
+                    <button type="button"
+                        class="w-8 h-8 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center border-none bg-transparent cursor-pointer">
+                        <i class="fa-regular fa-image text-xl"></i>
+                    </button>
+                    <button type="button"
+                        class="w-8 h-8 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center border-none bg-transparent cursor-pointer mr-1 hidden sm:flex">
+                        <i class="fa-solid fa-note-sticky text-xl"></i>
                     </button>
                 </div>
+
+                <div
+                    class="flex-1 relative break-words bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-[20px] min-h-[40px] flex items-end px-3 py-2 border border-black/5 dark:border-white/5 focus-within:ring-1 focus-within:ring-fb-primary/50">
+                    <input type="text"
+                        class="form-control w-full bg-transparent border-none outline-none text-fb-lightText dark:text-fb-text text-[15px] placeholder-fb-lightMuted dark:placeholder-fb-muted break-words pr-8 min-h-[24px]"
+                        name="message" placeholder="{% trans 'Aa' %}" maxlength="1000" autocomplete="off" required>
+                    <button type="button"
+                        class="absolute right-3 bottom-2 text-fb-lightMuted dark:text-fb-muted hover:text-fb-primary transition">
+                        <i class="fa-solid fa-face-smile text-[18px]"></i>
+                    </button>
+                </div>
+
+                <button type="submit"
+                    class="w-10 h-10 rounded-full text-fb-primary hover:bg-blue-50 dark:hover:bg-blue-900/40 transition flex items-center justify-center bg-transparent border-none cursor-pointer flex-shrink-0"
+                    title="{% trans 'Send' %}">
+                    <i class="fa-solid fa-paper-plane text-xl"></i>
+                </button>
             </form>
         </div>
         {% else %}
-        <div class="messages-list" style="justify-content: center;">
-            <div class="empty-conversation">
-                <i class="fa-regular fa-comment-dots" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
-                <h4>{% trans 'Select a chat' %}</h4>
-                <p>{% trans 'Choose a conversation from the sidebar to start messaging.' %}</p>
+        <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
+            <div
+                class="w-24 h-24 mb-6 rounded-full bg-blue-50 dark:bg-blue-900/20 text-fb-primary flex items-center justify-center">
+                <i class="fa-regular fa-paper-plane text-4xl"></i>
             </div>
+            <h4 class="text-2xl font-bold text-fb-lightText dark:text-fb-text mb-2">{% trans 'Your Messages' %}</h4>
+            <p class="text-[15px] text-fb-lightMuted dark:text-fb-muted max-w-sm">
+                {% trans 'Choose a conversation from the sidebar to start messaging, or start a new chat.' %}
+            </p>
+            <button
+                class="mt-6 px-6 py-2 rounded-full bg-fb-primary hover:bg-blue-600 text-white font-semibold transition shadow-sm">
+                {% trans 'New Message' %}
+            </button>
         </div>
         {% endif %}
     </div>
 </div>
 {% endblock content %}
-
 {% block modal %}
 <script type="text/javascript">
-    var activeUser = "{{ active }}";
+    var activeUser = "{{active}}";
     // Auto-scroll to bottom of chat
     window.onload = function () {
         var msgs = $('.messages-list');

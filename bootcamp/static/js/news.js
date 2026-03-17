@@ -37,14 +37,21 @@ $(function () {
         }
     });
 
-    // Focus on the modal input by default.
-    $('#newsFormModal').on('shown.bs.modal', function () {
-        $('#newsInput').trigger('focus')
-    });
-
-    $('#newsThreadModal').on('shown.bs.modal', function () {
-        $('#replyInput').trigger('focus')
-    });
+    // Focus on the modal input by default using MutationObserver since Bootstrap events are gone
+    const observeModalFocus = (modalId, inputId) => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class' && !modal.classList.contains('hidden')) {
+                        setTimeout(() => document.getElementById(inputId).focus(), 100);
+                    }
+                });
+            }).observe(modal, { attributes: true });
+        }
+    };
+    observeModalFocus('newsFormModal', 'newsInput');
+    observeModalFocus('newsThreadModal', 'replyInput');
 
     // Counts textarea characters to provide data to user.
     $("#newsInput").keyup(function () {
@@ -80,7 +87,12 @@ $(function () {
             success: function (data) {
                 $("ul.stream").prepend(data);
                 $("#newsInput").val("");
-                $("#newsFormModal").modal("hide");
+                // Hide modal gracefully
+                const modal = document.getElementById("newsFormModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    modal.classList.add("hidden");
+                    document.body.style.overflow = "auto";
+                }
                 hide_stream_update();
             },
             error: function (data) {
@@ -159,7 +171,11 @@ $(function () {
             cache: false,
             success: function (data) {
                 $("#replyInput").val("");
-                $("#newsThreadModal").modal("hide");
+                const modal = document.getElementById("newsThreadModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    modal.classList.add("hidden");
+                    document.body.style.overflow = "auto";
+                }
             },
             error: function (data) {
                 alert(data.responseText);
@@ -167,7 +183,8 @@ $(function () {
         });
     });
 
-    $("ul.stream").on("click", ".like", function () {
+    $("ul.stream").on("click", ".like", function (e) {
+        e.preventDefault();
         // Ajax call on action on like button.
         var li = $(this).closest("li");
         var news = $(li).attr("news-id");
@@ -193,19 +210,21 @@ $(function () {
                 if (heartIcon.length > 0) {
                     // Post like button toggle
                     if (heartIcon.hasClass("fa-solid")) {
-                        heartIcon.removeClass("fa-solid text-primary").addClass("fa-regular");
-                        likeBtn.find("span").removeClass("text-primary");
+                        heartIcon.removeClass("fa-solid text-fb-primary").addClass("fa-regular");
+                        likeBtn.find("span").removeClass("text-fb-primary");
                     } else {
-                        heartIcon.removeClass("fa-regular").addClass("fa-solid text-primary");
-                        likeBtn.find("span").addClass("text-primary");
+                        heartIcon.removeClass("fa-regular").addClass("fa-solid text-fb-primary");
+                        likeBtn.find("span").addClass("text-fb-primary");
                     }
                 } else {
                     // Comment like button toggle
                     var likeText = likeBtn.find("span").not(".like-count");
-                    if (likeText.hasClass("text-primary")) {
-                        likeText.removeClass("text-primary").addClass("text-muted");
+                    if (likeText.hasClass("text-fb-primary")) {
+                        likeText.removeClass("text-fb-primary");
+                        likeText.addClass("text-fb-lightMuted dark:text-fb-muted");
                     } else {
-                        likeText.removeClass("text-muted").addClass("text-primary");
+                        likeText.removeClass("text-fb-lightMuted dark:text-fb-muted");
+                        likeText.addClass("text-fb-primary");
                     }
                 }
             }
@@ -217,8 +236,16 @@ $(function () {
         // Ajax call to request a given News object detail and thread, and to
         // show it in a modal.
         var post = $(this).closest(".news-body");
-        var news = $(post).closest("li").attr("news-id");
-        $("#newsThreadModal").modal("show");
+        if (post.length === 0) post = $(this).closest(".news-card");
+        var news = $(this).closest("li").attr("news-id");
+
+        // Show modal gracefully
+        const modal = document.getElementById("newsThreadModal");
+        if (modal && modal.classList.contains("hidden")) {
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+
         $.ajax({
             url: '/news/get-thread/',
             data: { 'news': news },

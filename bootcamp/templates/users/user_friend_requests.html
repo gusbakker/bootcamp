@@ -1,20 +1,19 @@
 {% load static i18n %}
 {% load humanize %}
-
 {% block head %}
     <link href="{% static 'css/user_profile.css' %}?v=1" rel="stylesheet">
 {% endblock head %}
-
 {% block content %}
-
     {% for user in users %}
         <div class="card mb-3">
             <div class="card-body">
                 <div class="d-flex">
                     <div class="flex-shrink-0 me-3">
                         <a href="{% url 'users:detail' user.username %}">
-                            <img src="{{ user.get_picture }}" class="user-image rounded-circle"
-                                 width="60" height="60"
+                            <img src="{{user.get_picture}}"
+                                 class="user-image rounded-circle"
+                                 width="60"
+                                 height="60"
                                  alt="{% trans 'User Image' %}">
                         </a>
                     </div>
@@ -23,15 +22,16 @@
                             <h5 class="mb-1">
                                 <a href="{% url 'users:detail' user.username %}"
                                    class="text-decoration-none"
-                                   title="{{ user.username }}">{{ user.username }}</a>
+                                   title="{{user.username}}">{{user.username}}</a>
                             </h5>
                             <a href="{% url 'users:accept_message_request' user.id %}"
                                class="btn btn-outline-primary btn-sm"
                                id="accept_message_request"
                                title="Confirm to start a conversation with this user">Confirm</a>
                         </div>
-                        <p class="text-muted mb-0">Member since 
-                            <span title="{{ user.member_since|date:'D d M Y' }} | {{ user.member_since|time:'H:i:s' }}">{{ user.member_since|naturaltime }}</span>
+                        <p class="text-muted mb-0">
+                            Member since
+                            <span title="{{user.member_since|date:'D d M Y'}} | {{user.member_since|time:'H:i:s'}}">{{user.member_since|naturaltime}}</span>
                         </p>
                     </div>
                 </div>
@@ -45,8 +45,4 @@
             </div>
         </div>
     {% endfor %}
-
 {% endblock content %}
-
-
-

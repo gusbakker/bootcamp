@@ -1,86 +1,95 @@
 {% load i18n %}
 {% load humanize static %}
-
 {% for user in users %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="d-flex">
-                <div class="flex-shrink-0 me-3">
-                    <a href="{% url 'users:detail' user.username %}">
-                        <img src="{{ user.get_picture }}" class="user-image rounded-circle"
-                             width="60" height="60"
-                             alt="{% trans 'User Image' %}">
+    <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder/50 dark:border-fb-border/50 rounded-xl shadow-sm overflow-hidden mb-4 transition hover:shadow-md ring-1 ring-black/5 dark:ring-white/5">
+        <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <a href="{% url 'users:detail' user.username %}"
+                   class="flex-shrink-0 transition hover:scale-105 active:scale-95">
+                    <img src="{{user.get_picture}}"
+                         class="w-[72px] h-[72px] rounded-full object-cover border-2 border-transparent shadow-[0_0_0_1px_rgba(0,0,0,0.08)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08)]"
+                         alt="{% trans 'User Image' %}">
+                </a>
+                <div>
+                    <h4 class="font-bold text-fb-lightText dark:text-fb-text text-[18px] leading-tight mb-1 mt-0.5">
+                        <a href="{% url 'users:detail' user.username %}" class="hover:underline">{{user.get_profile_name|default:user.username}}</a>
+                    </h4>
+                    <p class="text-[14px] text-fb-lightMuted dark:text-fb-muted mb-0">
+                        {% trans 'Member since' %} {{user.member_since|naturaltime}}
+                    </p>
+                </div>
+            </div>
+            {% if request.user != user %}
+                <div class="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
+                    {% if request.user in user.followers.all %}
+                        <a href="{% url 'users:follow_user' user.id %}"
+                           class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-lg font-semibold text-[15px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text shadow-sm"
+                           id="follow_user"><i class="fa-solid fa-user-check opacity-80"></i> {% trans 'Unfollow' %}</a>
+                    {% else %}
+                        <a href="{% url 'users:follow_user' user.id %}"
+                           class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-lg font-semibold text-[15px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text shadow-sm"
+                           id="follow_user"><i class="fa-solid fa-plus opacity-80"></i> {% trans 'Follow' %}</a>
+                    {% endif %}
+                    {% if not request.user in user.contact_list.all %}
+                        {% if request.user in user.pending_list.all %}
+                            <a href="{% url 'users:send_message_request' user.id %}"
+                               class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-lg font-semibold text-[15px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text shadow-sm"
+                               id="send_message_request"
+                               title="{% trans 'Request sent to this user' %}"><i class="fa-solid fa-clock opacity-80"></i> {% trans 'Request Sent' %}</a>
+                        {% else %}
+                            <a href="{% url 'users:send_message_request' user.id %}"
+                               class="bg-[#e7f3ff] dark:bg-[#263aa1]/40 hover:bg-[#d8eadd] dark:hover:bg-[#263aa1]/60 text-fb-primary dark:text-[#a8c6fb] transition px-4 py-2 rounded-lg font-semibold text-[15px] flex items-center justify-center gap-1.5 shadow-sm"
+                               id="send_message_request"
+                               title="{% trans 'Send request to this user to start conversation' %}"><i class="fa-solid fa-user-plus opacity-90"></i> {% trans 'Connect' %}</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'messager:conversation_detail' user.username %}"
+                           class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-lg font-semibold text-[15px] flex items-center justify-center gap-1.5 text-fb-lightText dark:text-fb-text shadow-sm"
+                           title="{% trans 'Send message to this user' %}"><i class="fa-brands fa-facebook-messenger opacity-80"></i> {% trans 'Message' %}</a>
+                        <!-- Block User Trigger -->
+                        <button type="button"
+                                onclick="toggleModal('blockUserModal-{{user.id}}')"
+                                class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition px-3 py-2 rounded-lg font-semibold text-[15px] flex items-center justify-center text-fb-lightMuted dark:text-fb-muted shadow-sm ml-1"
+                                title="{% trans 'Block User' %}">
+                            <i class="fa-solid fa-ban opacity-80"></i>
+                        </button>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if request.user != user and request.user in user.contact_list.all %}
+        <!-- Block User Modal (Tailwind custom modal matching base.html behavior) -->
+        <div id="blockUserModal-{{user.id}}"
+             class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center px-4 transition-opacity">
+            <div class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-md rounded-xl shadow-2xl border border-fb-lightBorder dark:border-fb-border flex flex-col relative"
+                 onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between p-4 border-b border-fb-lightBorder dark:border-fb-border">
+                    <h3 class="text-xl font-bold text-fb-lightText dark:text-fb-text"
+                        id="blockUserModalLabel-{{user.id}}">{% trans 'Are you sure?' %}</h3>
+                    <button type="button"
+                            onclick="toggleModal('blockUserModal-{{user.id}}')"
+                            class="w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 dark:hover:bg-[#4e4f50] flex items-center justify-center text-fb-lightMuted dark:text-fb-muted transition">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-4 text-fb-lightText dark:text-fb-text text-[15px]">
+                    <p>{% trans 'Once you block the user, you cannot message them again until they accept your request.' %}</p>
+                </div>
+                <div class="p-4 border-t border-fb-lightBorder dark:border-fb-border flex justify-end gap-2">
+                    <button type="button"
+                            onclick="toggleModal('blockUserModal-{{user.id}}')"
+                            class="px-4 py-2 font-semibold text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition border border-transparent">
+                        {% trans 'Cancel' %}
+                    </button>
+                    <a href="{% url 'users:block_spammer' user.id %}"
+                       class="px-4 py-2 font-semibold bg-red-600 hover:bg-red-700 text-white rounded-md transition shadow-sm flex items-center gap-2"
+                       id="block_spammer"
+                       title="{% trans 'Block this user' %}">
+                        <i class="fa-solid fa-ban"></i> {% trans 'Block' %}
                     </a>
                 </div>
-                <div class="flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <h4 class="mb-1">
-                            <a href="{% url 'users:detail' user.username %}" class="text-decoration-none">{{ user.username }}</a>
-                        </h4>
-                        {% if request.user != user %}
-                            <div class="btn-group">
-                                {% if request.user in user.followers.all %}
-                                    <a href="{% url 'users:follow_user' user.id %}"
-                                       class="btn btn-primary btn-sm"
-                                       id="follow_user">Unfollow</a>
-                                {% else %}
-                                    <a href="{% url 'users:follow_user' user.id %}"
-                                       class="btn btn-outline-primary btn-sm"
-                                       id="follow_user">Follow</a>
-                                {% endif %}
-                                
-                                {% if not request.user in user.contact_list.all %}
-                                    {% if request.user in user.pending_list.all %}
-                                        <a href="{% url 'users:send_message_request' user.id %}"
-                                           class="btn btn-primary btn-sm"
-                                           id="send_message_request"
-                                           title="Request sent to this user">Request Sent</a>
-                                    {% else %}
-                                        <a href="{% url 'users:send_message_request' user.id %}"
-                                           class="btn btn-outline-primary btn-sm"
-                                           id="send_message_request"
-                                           title="Send request to this user to start conversation">Send Request</a>
-                                    {% endif %}
-                                {% else %}
-                                    <a href="{% url 'messager:conversation_detail' user.username %}"
-                                       class="btn btn-outline-primary btn-sm"
-                                       title="Send message to this user">Message</a>
-                                    <!-- Block User Trigger -->
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#blockUserModal-{{ user.id }}">Block</button>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-                    </div>
-                    <p class="text-muted mb-0">Member since <span>{{ user.member_since|naturaltime }}</span></p>
-                </div>
             </div>
         </div>
-    </div>
-    
-    {% if request.user != user and request.user in user.contact_list.all %}
-    <!-- Block User Modal -->
-    <div class="modal fade" id="blockUserModal-{{ user.id }}" tabindex="-1" aria-labelledby="blockUserModalLabel-{{ user.id }}" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="blockUserModalLabel-{{ user.id }}">Are you sure?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Once you block the user, you cannot message them again until they accept your request.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <a href="{% url 'users:block_spammer' user.id %}"
-                       class="btn btn-danger btn-sm" id="block_spammer"
-                       title="Block this user">Block</a>
-                </div>
-            </div>
-        </div>
-    </div>
     {% endif %}
 {% endfor %}
-
-
-

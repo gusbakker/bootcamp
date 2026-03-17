@@ -1,42 +1,102 @@
 {% extends "base.html" %}
-
-{% block title %}<title>Your Groups</title>{% endblock %}
-
+{% load i18n humanize %}
+{% block title %}
+    {% trans 'Your Groups' %}
+{% endblock %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">Your Groups</h1>
-        <a href="{% url 'groups:new_group' %}" class="btn btn-primary">
-          <i class="fa-solid fa-plus me-2"></i>Create Group
-        </a>
-      </div>
-
-      {% if user_groups %}
-        {% include "groups/includes/partial_group.html" with groups=user_groups %}
-      {% else %}
-        <div class="card p-5 text-center border-0 shadow-sm">
-          <i class="fa-solid fa-users-slash fa-3x text-muted mb-3"></i>
-          <h5 class="mb-3">No Groups Found</h5>
-          <p class="text-muted mb-4">You haven't created any groups yet.</p>
-          <div>
-            <a href="{% url 'groups:new_group' %}" class="btn btn-primary">
-              <i class="fa-solid fa-plus me-2"></i>Create Your First Group
+    <div class="max-w-[1000px] mx-auto w-full pt-4 pb-12">
+        <!-- Breadcrumb -->
+        <nav class="flex text-[14px] text-fb-lightMuted dark:text-fb-muted mb-4 px-2"
+             aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 sm:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{% url 'groups:list' %}"
+                       class="inline-flex items-center hover:text-fb-primary hover:underline transition">
+                        <i class="fa-solid fa-house mr-2 text-xs"></i>
+                        {% trans 'Groups' %}
+                    </a>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-chevron-right text-[10px] mx-2 opacity-50"></i>
+                        <span class="text-fb-lightText dark:text-fb-text font-semibold">{% trans 'Your Administered Groups' %}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <div class="flex flex-col sm:flex-row justify-between items-center bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-4 mb-4 gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-fb-primary shadow-sm">
+                    <i class="fa-solid fa-user-shield text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-fb-lightText dark:text-fb-text leading-tight mb-0.5">{% trans 'Your Groups' %}</h1>
+                    <p class="text-[13px] text-fb-lightMuted dark:text-fb-muted font-medium">
+                        {% trans 'Groups you created and manage' %}
+                    </p>
+                </div>
+            </div>
+            <a href="{% url 'groups:new_group' %}"
+               class="w-full sm:w-auto bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold text-[14px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border">
+                <i class="fa-solid fa-plus"></i>{% trans 'Create Group' %}
             </a>
-            <a href="{% url 'groups:list' %}" class="btn btn-outline-primary ms-2">
-              <i class="fa-solid fa-compass me-2"></i>Discover Groups
-            </a>
-          </div>
         </div>
-      {% endif %}
+        {% if user_groups %}
+            <div class="mb-8">{% include "groups/includes/partial_group.html" with groups=user_groups %}</div>
+            <!-- Pagination controls if multiple pages -->
+            {% if is_paginated %}
+                <div class="flex flex-wrap justify-center gap-2 mt-6 p-4 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1"
+                           class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </a>
+                        <a href="?page={{page_obj.previous_page_number}}"
+                           class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                            <i class="fa-solid fa-angle-left"></i> {% trans 'Prev' %}
+                        </a>
+                    {% endif %}
+                    {% for num in paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-3 py-1.5 rounded-md bg-fb-primary text-white font-bold shadow-sm text-[14px]">{{num}}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{num}}"
+                               class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                            {{num}}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{page_obj.next_page_number}}"
+                           class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                            {% trans 'Next' %} <i class="fa-solid fa-angle-right"></i>
+                        </a>
+                        <a href="?page={{paginator.num_pages}}"
+                           class="px-3 py-1.5 rounded-md bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:bg-gray-200 dark:hover:bg-[#4e4f50] text-fb-lightText dark:text-fb-text transition font-medium text-[14px]">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-sm p-10 flex flex-col items-center justify-center text-center">
+                <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-500 mb-4 shadow-inner">
+                    <i class="fa-solid fa-users-slash text-3xl"></i>
+                </div>
+                <h5 class="text-xl font-bold text-fb-lightText dark:text-fb-text mb-2">{% trans 'No Groups Found' %}</h5>
+                <p class="text-[14px] text-fb-lightMuted dark:text-fb-muted mb-6 max-w-md">
+                    {% trans 'You haven\'t created any groups yet.' %}
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <a href="{% url 'groups:new_group' %}"
+                       class="bg-fb-primary hover:bg-blue-600 text-white transition px-5 py-2 rounded-md font-semibold text-[14px] flex items-center justify-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-plus"></i>{% trans 'Create Your First Group' %}
+                    </a>
+                    <a href="{% url 'groups:list' %}"
+                       class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-5 py-2 rounded-md font-semibold text-[14px] flex items-center justify-center gap-2 text-fb-lightText dark:text-fb-text border border-fb-lightBorder dark:border-fb-border">
+                        <i class="fa-solid fa-compass"></i>{% trans 'Discover Groups' %}
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     </div>
-  </div>
-</div>
-
-<script type="text/javascript">
-document.addEventListener('DOMContentLoaded', function() {
-  // Subscribe groups - see partial_group.html for this functionality
-});
-</script>
 {% endblock %}

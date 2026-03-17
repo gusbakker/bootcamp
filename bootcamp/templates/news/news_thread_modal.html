@@ -1,136 +1,96 @@
 {% load i18n static %}
 {% load thumbnail %}
-
-<div class="modal fade" id="newsThreadModal" tabindex="-1" aria-labelledby="newsThreadModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark">
-      <div class="modal-header border-bottom border-dark">
-        <h5 class="modal-title fw-bold text-light" id="newsThreadModalLabel">{% trans "Comments" %}</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <!-- Original Post -->
-      <div class="modal-body pb-0">
-        <ul class="stream p-0 m-0" id="newsContent"></ul>
-      </div>
-
-      <!-- Comments Area -->
-      <div class="modal-body pt-0 px-4">
-        <ul class="stream p-0 m-0" id="threadContent"></ul>
-      </div>
-
-      <!-- Reply Form -->
-      <div class="modal-footer border-top border-dark px-4 py-3">
-        <form id="replyNewsForm" role="form" method="post" action="#" onsubmit="return false" class="w-100 m-0">
-          {% csrf_token %}
-          <input type="hidden" name="parent" value="">
-          <div class="d-flex align-items-center rounded-pill comment-input-wrapper px-2 py-1">
-            <textarea id="replyInput" name="reply"
-              class="form-control bg-transparent text-light border-0 shadow-none m-0 py-2"
-              style="resize: none; overflow: hidden;" rows="1" maxlength="280"
-              placeholder="{% trans 'Write a comment...' %}"></textarea>
-            <button type="button" id="replyNews"
-              class="btn text-primary bg-transparent border-0 p-2 fs-5 d-flex align-items-center justify-content-center me-1">
-              <i class="fa-solid fa-paper-plane m-0"></i>
+<div id="newsThreadModal"
+     class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center px-4">
+    <div class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-[600px] max-h-[90vh] rounded-xl shadow-2xl border border-fb-lightBorder dark:border-fb-border flex flex-col modal-enter relative"
+         onclick="event.stopPropagation()">
+        <!-- Header -->
+        <div class="flex items-center justify-center p-4 border-b border-fb-lightBorder dark:border-fb-border relative">
+            <h2 class="text-xl font-bold text-fb-lightText dark:text-fb-text"
+                id="newsThreadModalLabel">{% trans "Comments" %}</h2>
+            <button type="button"
+                    onclick="toggleModal('newsThreadModal')"
+                    class="absolute right-4 w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-90 dark:hover:bg-[#4e4f50] flex items-center justify-center text-fb-lightMuted dark:text-fb-muted transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <!-- Original Post / Parent -->
+        <div class="px-4 pt-4 pb-0 bg-fb-lightSurface dark:bg-fb-surface flex-shrink-0">
+            <ul class="stream list-none p-0 m-0" id="newsContent">
+            </ul>
+        </div>
+        <!-- Comments Area (Scrollable) -->
+        <div class="px-4 py-2 overflow-y-auto flex-grow h-full bg-fb-lightSurface dark:bg-fb-surface">
+            <ul class="stream list-none p-0 m-0 space-y-3" id="threadContent">
+            </ul>
+        </div>
+        <!-- Reply Form -->
+        <div class="px-4 py-3 border-t border-fb-lightBorder dark:border-fb-border bg-fb-lightSurface dark:bg-fb-surface rounded-b-xl flex-shrink-0">
+            <form id="replyNewsForm"
+                  role="form"
+                  method="post"
+                  action="#"
+                  onsubmit="return false"
+                  class="w-full m-0 flex gap-2">
+                {% csrf_token %}
+                <input type="hidden" name="parent" value="">
+                <img src="{{user.get_picture}}"
+                     class="w-9 h-9 rounded-full object-cover">
+                <div class="flex-grow flex items-center bg-fb-lightBg dark:bg-fb-bg rounded-2xl px-3 py-1 border border-transparent focus-within:border-fb-primary transition">
+                    <textarea id="replyInput"
+                              name="reply"
+                              class="w-full bg-transparent border-none outline-none resize-none text-[15px] pt-1.5 placeholder-fb-lightMuted dark:placeholder-fb-muted text-fb-lightText dark:text-fb-text h-9 no-scrollbar"
+                              maxlength="280"
+                              placeholder="{% trans 'Write a comment...' %}"></textarea>
+                    <button type="button"
+                            id="replyNews"
+                            class="w-7 h-7 flex-shrink-0 rounded-full flex items-center justify-center text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+            <div class="flex justify-end mt-1 px-12">
+                <span id="replyCounter"
+                      class="text-xs text-fb-lightMuted dark:text-fb-muted">280</span>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     // Character counter for reply
     const replyInput = document.getElementById('replyInput');
     const replyCounter = document.getElementById('replyCounter');
+    const replyBtn = document.getElementById('replyNews');
+    const replyForm = document.getElementById('replyNewsForm');
 
-    replyInput.addEventListener('keyup', function () {
+    replyInput.addEventListener('input', function () {
       const charCount = this.value.length;
       replyCounter.textContent = 280 - charCount;
 
       if (charCount > 240) {
-        replyCounter.classList.add('text-danger');
+        replyCounter.classList.add('text-red-500');
       } else {
-        replyCounter.classList.remove('text-danger');
+        replyCounter.classList.remove('text-red-500');
+      }
+
+      // Auto-expand textarea incrementally
+      this.style.height = '36px'; // base height
+      let newHeight = this.scrollHeight;
+      if (newHeight > 100) newHeight = 100; // max height
+      if (this.value.trim().length > 0) {
+        this.style.height = newHeight + 'px';
       }
     });
 
-    // Auto-expand textarea
-    replyInput.addEventListener('input', function () {
-      this.style.height = 'auto';
-      this.style.height = (this.scrollHeight) + 'px';
-    });
-
-    // Light/Dark mode adaptation
-    function updateModalTheme() {
-      const isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
-      const modal = document.querySelector('#newsThreadModal .modal-content');
-      const inputs = document.querySelectorAll('#newsThreadModal .form-control');
-      const modalTitle = document.querySelector('#newsThreadModal .modal-title');
-      const modalSubtitle = document.querySelector('#newsThreadModal h6.text-light');
-      const borders = document.querySelectorAll('#newsThreadModal .border-dark');
-      const closeBtn = document.querySelector('#newsThreadModal .btn-close');
-
-      if (isLightMode) {
-        modal.classList.remove('bg-dark');
-        modal.classList.add('bg-white');
-
-        inputs.forEach(input => {
-          input.classList.remove('bg-dark', 'text-light', 'border-dark');
-          input.classList.add('bg-white', 'text-dark', 'border-light');
-        });
-
-        modalTitle.classList.remove('text-light');
-        modalTitle.classList.add('text-dark');
-
-        if (modalSubtitle) {
-          modalSubtitle.classList.remove('text-light');
-          modalSubtitle.classList.add('text-dark');
+    // Enter key to submit comment (if not shift)
+    replyInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (this.value.trim().length > 0) {
+          $('#replyNews').click();
         }
-
-        borders.forEach(border => {
-          border.classList.remove('border-dark');
-          border.classList.add('border-light');
-        });
-
-        closeBtn.classList.remove('btn-close-white');
-      } else {
-        modal.classList.add('bg-dark');
-        modal.classList.remove('bg-white');
-
-        inputs.forEach(input => {
-          input.classList.add('bg-dark', 'text-light', 'border-dark');
-          input.classList.remove('bg-white', 'text-dark', 'border-light');
-        });
-
-        modalTitle.classList.add('text-light');
-        modalTitle.classList.remove('text-dark');
-
-        if (modalSubtitle) {
-          modalSubtitle.classList.add('text-light');
-          modalSubtitle.classList.remove('text-dark');
-        }
-
-        borders.forEach(border => {
-          border.classList.add('border-dark');
-          border.classList.remove('border-light');
-        });
-
-        closeBtn.classList.add('btn-close-white');
       }
-    }
-
-    // Run on initial load and modal show
-    $('#newsThreadModal').on('shown.bs.modal', updateModalTheme);
-
-    // Listen for theme changes
-    const darkSwitch = document.getElementById('darkSwitch');
-    if (darkSwitch) {
-      darkSwitch.addEventListener('change', function () {
-        setTimeout(updateModalTheme, 50);
-      });
-    }
+    });
   });
 </script>
