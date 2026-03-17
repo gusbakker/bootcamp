@@ -38,59 +38,57 @@
         <div class="p-2 space-y-1">
             {% if notification_list %}
             {% for notification in notification_list %}
-            <div class="notification-card group relative p-3 rounded-lg transition {% if notification.unread %}bg-blue-50/60 dark:bg-blue-900/20 is-unread{% else %}hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover{% endif %}"
+            <div class="notification-card group relative p-3 rounded-lg transition cursor-pointer {% if notification.unread %}bg-fb-lightSurfaceHover/60 dark:bg-fb-surfaceHover/60 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover is-unread{% else %}hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover{% endif %}"
                 data-type="{{notification.verb}}" data-id="{{notification.slug}}">
-                <div class="flex items-center gap-4">
-                    <div class="relative flex-shrink-0">
-                        <a href="{% url 'users:detail' notification.actor.username %}">
-                            <img src="{{notification.actor.get_picture}}" alt="{{notification.actor.username}}"
-                                class="w-[64px] h-[64px] rounded-full object-cover shadow-sm">
-                        </a>
-                        <div
-                            class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white text-[13px] shadow-sm {% if notification.verb == 'liked' %}bg-red-500 {% elif notification.verb == 'commented' or notification.verb == 'replied to' or notification.verb == 'also commented' %}bg-green-500 {% elif notification.verb == 'followed you' or notification.verb == 'sent you a friend request' %}bg-blue-500 {% else %}bg-gray-500{% endif %}">
+                <a href="{% url 'users:detail' notification.actor.username %}" class="flex items-center gap-4">
+                    <div class="relative flex-shrink-0 self-start mt-1">
+                        <img src="{{notification.actor.get_picture}}" alt="{{notification.actor.username}}"
+                            class="w-[64px] h-[64px] rounded-full object-cover shadow-sm bg-fb-lightBorder dark:bg-fb-border">
+                        <div class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-[3px] border-fb-lightSurface dark:border-fb-surface flex items-center justify-center text-white text-[14px] shadow-sm 
+                            {% if notification.verb == 'liked' %}bg-[#fa383e] 
+                            {% elif notification.verb == 'commented' or notification.verb == 'replied to' or notification.verb == 'also commented' %}bg-[#00a400] 
+                            {% elif notification.verb == 'followed you' or notification.verb == 'sent you a friend request' or notification.verb == 'accepted your friend request' %}bg-[#1877f2] 
+                            {% else %}bg-[#8c939d]{% endif %}">
                             {% if notification.verb == 'liked' %}
-                            <i class="fa-solid fa-heart"></i>
+                            <i class="fa-solid fa-heart align-middle"></i>
                             {% elif notification.verb == 'commented' or notification.verb == 'replied to' or notification.verb == 'also commented' %}
-                            <i class="fa-solid fa-comment"></i>
-                            {% elif notification.verb == 'followed you' or notification.verb == 'sent you a friend request' %}
-                            <i class="fa-solid fa-user-plus"></i>
+                            <i class="fa-solid fa-comment align-middle"></i>
+                            {% elif notification.verb == 'followed you' or notification.verb == 'sent you a friend request' or notification.verb == 'accepted your friend request' %}
+                            <i class="fa-solid fa-user-plus align-middle text-[11px]"></i>
+                            {% elif notification.verb == 'messaged' %}
+                            <i class="fa-solid fa-envelope align-middle"></i>
                             {% else %}
-                            <i class="fa-solid fa-bell"></i>
+                            <i class="fa-solid fa-bell align-middle"></i>
                             {% endif %}
                         </div>
                     </div>
                     <div class="flex-1 min-w-0 pr-4">
-                        <p
-                            class="text-[15px] {% if notification.unread %}text-fb-lightText dark:text-fb-text font-semibold{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %} leading-snug mb-1">
-                            <a href="{% url 'users:detail' notification.actor.username %}"
-                                class="font-bold text-fb-lightText dark:text-fb-text hover:underline">{{notification.actor.get_profile_name|title}}</a>
-                            <span class="font-normal">
+                        <p class="text-[16px] {% if notification.unread %}text-fb-lightText dark:text-fb-text font-semibold{% else %}text-fb-lightText dark:text-fb-text/90{% endif %} leading-snug mb-1">
+                            <span class="font-bold hover:underline">{{notification.actor.get_profile_name|title}}</span>
+                            <span class="{% if notification.unread %}font-semibold{% else %}font-normal{% endif %}">
                                 {{notification.get_verb_display}}
                                 {% if notification.action_object %}
-                                <span class="font-semibold text-fb-lightText dark:text-fb-text">"{{notification.action_object}}"</span>
+                                <span class="{% if notification.unread %}font-bold{% else %}font-semibold{% endif %} hover:underline">"{{notification.action_object}}"</span>
                                 {% endif %}
                             </span>
                         </p>
-                        <p
-                            class="text-[13px] font-semibold {% if notification.unread %}text-fb-primary{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %}">
+                        <p class="text-[14px] {% if notification.unread %}text-fb-primary font-bold{% else %}text-fb-lightMuted dark:text-fb-muted font-semibold{% endif %}">
                             {{notification.created|naturaltime}}
                         </p>
                     </div>
-                    <div class="relative w-10 h-10 flex-shrink-0 flex items-center justify-center">
+                    <div class="relative w-10 h-10 flex-shrink-0 flex items-center justify-center self-center">
                         {% if notification.unread %}
                         <!-- Mark Read action that appears on hover, replacing the dot -->
-                        <a href="{% url 'notifications:mark_as_read' notification.slug %}"
+                        <button data-url="{% url 'notifications:mark_as_read' notification.slug %}"
                             class="mark-read-btn absolute inset-0 rounded-full bg-fb-lightSurface dark:bg-fb-surface hover:bg-gray-200 dark:hover:bg-[#4e4f50] border border-fb-lightBorder dark:border-fb-border shadow-sm flex items-center justify-center text-fb-lightText dark:text-fb-text transition opacity-0 group-hover:opacity-100 z-10"
                             title="{% trans 'Mark as read' %}">
                             <i class="fa-solid fa-check"></i>
-                        </a>
+                        </button>
                         <!-- Unread dot -->
-                        <div
-                            class="w-3 h-3 bg-fb-primary rounded-full group-hover:opacity-0 transition-opacity mx-auto">
-                        </div>
+                        <div class="w-3.5 h-3.5 bg-fb-primary rounded-full group-hover:opacity-0 transition-opacity mx-auto"></div>
                         {% endif %}
                     </div>
-                </div>
+                </a>
             </div>
             {% endfor %}
             <!-- Pagination -->
