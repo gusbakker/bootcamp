@@ -327,7 +327,7 @@
             }
 
             // Close modals on outside click
-            ['newsFormModal', 'newsThreadModal'].forEach(id => {
+            ['newsFormModal', 'newsThreadModal', 'newsDeleteModal'].forEach(id => {
                 const modal = document.getElementById(id);
                 if (modal && e.target === modal) toggleModal(id);
             });

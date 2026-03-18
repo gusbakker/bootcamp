@@ -101,41 +101,43 @@ $(function () {
         });
     });
 
-    // Super enhanced debugging for delete functionality
+    // Intercept delete click to show modal
     $("ul.stream").on("click", ".remove-news", function (e) {
         e.preventDefault();
 
         // Find the parent li
         var li = $(this).closest("li.infinite-item");
 
-        // Debug output for the li
-        console.log("Parent li element:", li);
-        console.log("Parent li HTML:", li.prop('outerHTML'));
-
         // Try multiple methods to get the news ID
         var news_id = li.attr("news-id");
         var data_news_id = li.data("news-id");
         var news_uuid_attr = li.attr("data-news-uuid");
 
-        console.log("All possible IDs - attr news-id:", news_id);
-        console.log("All possible IDs - data news-id:", data_news_id);
-        console.log("All possible IDs - attr data-news-uuid:", news_uuid_attr);
-
         // Use the first available ID
         var news = news_id || data_news_id || news_uuid_attr;
 
         if (!news) {
-            console.error("Could not find news ID. Please check the HTML structure.");
             alert("Error: Could not identify the post to delete.");
             return;
         }
 
-        console.log("Using news ID for deletion:", news);
+        // Store the ID in the modal and explicitly clear older pending markers
+        $("#deletePostId").val(news);
+        $("li.pending-delete").removeClass("pending-delete");
+        li.addClass("pending-delete"); // Marking it so the confirm button knows which DOM element to remove
 
-        // Ask for confirmation
-        //        if (!confirm("Are you sure you want to delete this post?")) {
-        //            return;
-        //        }
+        // Show modal gracefully
+        const modal = document.getElementById("newsDeleteModal");
+        if (modal) {
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+    });
+
+    // Handle actual deletion after confirmation
+    $("#confirmDeletePostBtn").click(function () {
+        var news = $("#deletePostId").val();
+        var li = $("li.pending-delete");
 
         $.ajax({
             url: '/news/remove/',
@@ -145,18 +147,18 @@ $(function () {
             type: 'post',
             cache: false,
             success: function (data) {
-                console.log("Delete successful:", data);
+                // Hide modal gracefully
+                const modal = document.getElementById("newsDeleteModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    modal.classList.add("hidden");
+                    document.body.style.overflow = "auto";
+                }
+
                 $(li).fadeOut(400, function () {
                     $(li).remove();
                 });
             },
             error: function (xhr, status, error) {
-                console.error("Delete failed:", status, error);
-                console.error("Response text:", xhr.responseText);
-                console.error("Status code:", xhr.status);
-                console.error("Ready state:", xhr.readyState);
-                console.error("Complete XHR object:", xhr);
-
                 alert("Error deleting post. Please try again or contact support.");
             }
         });
