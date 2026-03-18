@@ -121,7 +121,7 @@ $(function () {
                     $("#notificationsBody").html("<div class='py-8 flex justify-center'><div class='animate-spin rounded-full h-8 w-8 border-b-2 border-fb-primary'></div></div>");
                 },
                 success: function (data) {
-                    $("#countnotif").text("");
+                    $("#countnotif").text("").addClass("hidden");
                     $("#notificationsBody").html(data);
                 }
             });
