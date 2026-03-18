@@ -105,6 +105,16 @@ $(function () {
     $("ul.stream").on("click", ".remove-news", function (e) {
         e.preventDefault();
 
+        // Update modal text based on whether it's a post or a comment
+        var dataType = $(this).attr("data-type") || "post";
+        if (dataType === "comment") {
+            $("#deleteModalTitle").text("Delete Comment");
+            $("#deleteModalBody").text("Are you sure you want to delete this comment? This action cannot be undone.");
+        } else {
+            $("#deleteModalTitle").text("Delete Post");
+            $("#deleteModalBody").text("Are you sure you want to delete this post? This action cannot be undone.");
+        }
+
         // Find the parent li
         var li = $(this).closest("li.infinite-item");
 

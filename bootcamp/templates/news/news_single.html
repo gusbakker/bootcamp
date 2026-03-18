@@ -37,7 +37,8 @@
                     {% if news.user == request.user %}
                         <a href="#"
                            class="remove-news flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition text-red-500"
-                           data-news-id="{{news.uuid_id}}">
+                           data-news-id="{{news.uuid_id}}"
+                           data-type="post">
                             <i class="fa fa-trash-o text-xl w-6 text-center"></i>
                             <span class="font-semibold">{% trans 'Delete Post' %}</span>
                         </a>
