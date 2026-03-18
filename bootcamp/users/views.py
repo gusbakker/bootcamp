@@ -132,22 +132,27 @@ def upload_picture(request):
 @login_required
 def save_uploaded_picture(request):
     try:
-        x = int(request.POST.get('x'))
-        y = int(request.POST.get('y'))
-        w = int(request.POST.get('w'))
-        h = int(request.POST.get('h'))
+        x = int(request.POST.get('x') or 0)
+        y = int(request.POST.get('y') or 0)
+        w = int(request.POST.get('w') or 200)
+        h = int(request.POST.get('h') or 200)
         tmp_filename = django_settings.MEDIA_ROOT + '/profile_pics/' + \
                        request.user.username + '_tmp.jpg'
         filename = django_settings.MEDIA_ROOT + '/profile_pics/' + \
                    request.user.username + '.jpg'
         im = Image.open(tmp_filename)
         cropped_im = im.crop((x, y, w + x, h + y))
-        cropped_im.thumbnail((200, 200), Image.ANTIALIAS)
+        cropped_im.thumbnail((200, 200), Image.Resampling.LANCZOS)
         cropped_im.save(filename)
-        os.remove(tmp_filename)
+        
+        request.user.image = f'profile_pics/{request.user.username}.jpg'
+        request.user.save()
+        
+        if os.path.exists(tmp_filename):
+            os.remove(tmp_filename)
 
-    except Exception:
-        pass
+    except Exception as e:
+        logging.error(f"Error saving uploaded picture: {e}", exc_info=True)
 
     return redirect('/~update/')
 

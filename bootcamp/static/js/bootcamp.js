@@ -34,9 +34,9 @@ $(function () {
                     if (unreadNum > 9) {
                         unreadNum = '9+'
                     }
-                    $("#countnotif").text(unreadNum);
+                    $("#countnotif").text(unreadNum).removeClass("hidden");
                 } else {
-                    $("#countnotif").text("");
+                    $("#countnotif").text("").addClass("hidden");
                 }
             },
         });
@@ -52,9 +52,9 @@ $(function () {
                     if (unreadNum > 9) {
                         unreadNum = '9+'
                     }
-                    $("#countmsg").text(unreadNum);
+                    $("#countmsg").text(unreadNum).removeClass("hidden");
                 } else {
-                    $("#countmsg").text("");
+                    $("#countmsg").text("").addClass("hidden");
                 }
             },
         });

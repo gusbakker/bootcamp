@@ -106,7 +106,7 @@ class Message(models.Model):
         )
         channel_layer = get_channel_layer()
         payload = {
-            "type": "receive",
+            "type": "receive_message",
             "key": "message",
             "message_id": str(new_message.uuid_id),
             "sender": str(sender),

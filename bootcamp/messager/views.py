@@ -73,7 +73,7 @@ def send_message(request):
 
     if sender != recipient:
         msg = Message.send_message(sender, recipient, message)
-        return render(request, "messager/single_message.html", {"message": msg})
+        return render(request, "messager/single_message.html", {"message": msg, "current_user": request.user})
 
     return HttpResponse()
 
@@ -90,7 +90,7 @@ def receive_message(request):
     except Message.DoesNotExist as e:
         raise e
 
-    return render(request, "messager/single_message.html", {"message": message})
+    return render(request, "messager/single_message.html", {"message": message, "current_user": request.user})
 
 
 @login_required

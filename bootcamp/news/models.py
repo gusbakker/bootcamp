@@ -68,7 +68,7 @@ class News(models.Model):
         if not self.reply:
             channel_layer = get_channel_layer()
             payload = {
-                "type": "receive",
+                "type": "send_notification",
                 "key": "additional_news",
                 "actor_name": self.user.username,
             }

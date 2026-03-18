@@ -421,7 +421,7 @@ def notification_broadcast(actor, key, **kwargs):
     id_value = kwargs.pop("id_value", None)
     recipient = kwargs.pop("recipient", None)
     payload = {
-        "type": "receive",
+        "type": "send_notification",
         "key": key,
         "actor_name": actor.username,
         "id_value": id_value,

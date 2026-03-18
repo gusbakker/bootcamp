@@ -25,7 +25,7 @@ $(function () {
             data: {'message_id': message_id},
             cache: false,
             success: function (data) {
-                $(".send-message").before(data);
+                $(".messages-list").append(data);
                 scrollConversationScreen();
             }
         });
@@ -76,7 +76,7 @@ $(function () {
             cache: false,
             type: 'POST',
             success: function (data) {
-                $(".send-message").before(data);
+                $(".messages-list").append(data);
                 $("input[name='message']").val('');
                 scrollConversationScreen();
             }
