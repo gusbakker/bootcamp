@@ -326,6 +326,14 @@
                 profileMenu.classList.add('hidden');
             }
 
+            // Close dynamic postOptions and shareOptions dropdowns
+            document.querySelectorAll('[id^="postOptions-"], [id^="shareOptions-"], [id="privacyDropdown"]').forEach(dropdown => {
+                const id = dropdown.id;
+                if (!e.target.closest(`#${id}`) && !e.target.closest(`button[onclick*="toggleDropdown('${id}')"]`) && !e.target.closest(`a[onclick*="toggleDropdown('${id}')"]`)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
             // Close modals on outside click
             ['newsFormModal', 'newsThreadModal', 'newsDeleteModal'].forEach(id => {
                 const modal = document.getElementById(id);
@@ -360,6 +368,20 @@
                 });
             }, 4000);
         });
+
+        function copyToClipboard(inputId, btnRef) {
+            var copyText = document.getElementById(inputId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                const icon = btnRef.querySelector('i');
+                if (icon) {
+                    const oldClass = icon.className;
+                    icon.className = "fa-solid fa-check text-green-500 text-xl";
+                    setTimeout(() => { icon.className = oldClass; }, 2000);
+                }
+            });
+        }
                 </script>
             {% endblock javascript %}
             {% block modal %}

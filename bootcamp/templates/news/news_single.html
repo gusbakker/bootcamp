@@ -21,7 +21,7 @@
                         </a>
                     </div>
                     <div class="flex items-center text-xs text-fb-lightMuted dark:text-fb-muted">
-                        <span class="timestamp hover:underline cursor-pointer">{{news.timestamp|naturaltime}}</span>
+                        <span class="timestamp hover:underline cursor-pointer">{{news.created|naturaltime}}</span>
                         <span class="mx-1">&middot;</span>
                         <i class="fa-solid fa-earth-americas text-[10px]" title="Public"></i>
                     </div>
@@ -130,11 +130,27 @@
             <i class="fa-regular fa-comment text-xl"></i>
             <span>{% trans 'Comment' %}</span>
         </a>
-        <a href="#"
-           class="share flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted font-semibold transition cursor-pointer text-decoration-none">
-            <i class="fa-solid fa-share text-xl"></i>
-            <span>{% trans 'Share' %}</span>
-        </a>
+        <div class="relative flex-1">
+            <button onclick="toggleDropdown('shareOptions-{{news.uuid_id}}')"
+               class="share w-full flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted font-semibold transition cursor-pointer text-decoration-none">
+                <i class="fa-solid fa-share text-xl"></i>
+                <span>{% trans 'Share' %}</span>
+            </button>
+            <div id="shareOptions-{{news.uuid_id}}"
+                 class="hidden absolute right-0 bottom-full mb-2 w-72 bg-fb-lightSurface dark:bg-fb-surface rounded-lg shadow-xl border border-fb-lightBorder dark:border-fb-border p-3 z-30">
+                <h4 class="font-bold text-fb-lightText dark:text-fb-text text-sm mb-2">{% trans 'Copy Link' %}</h4>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="shareInput-{{news.uuid_id}}" 
+                           value="{{request.scheme}}://{{request.get_host}}{% url 'news:news' news.uuid_id %}" 
+                           class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text text-xs p-2 rounded border border-fb-lightBorder dark:border-fb-border focus:outline-none" readonly>
+                    <button onclick="copyToClipboard('shareInput-{{news.uuid_id}}', this)" 
+                            class="w-8 h-8 rounded shrink-0 bg-fb-primary text-white flex items-center justify-center hover:bg-blue-600 transition"
+                            title="{% trans 'Copy to clipboard' %}">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </li>
