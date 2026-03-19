@@ -69,16 +69,26 @@ $(function () {
         $('.messages-list').scrollTop($('.messages-list')[0].scrollHeight);
     }
 
-    $("#send").submit(function () {
+    $("#send").submit(function (e) {
+        e.preventDefault();
+        
+        var form = this;
+        var formData = new FormData(form);
+        
         $.ajax({
             url: '/messages/send-message/',
-            data: $("#send").serialize(),
+            data: formData,
             cache: false,
+            processData: false,
+            contentType: false,
             type: 'POST',
             success: function (data) {
-                $(".messages-list").append(data);
-                $("input[name='message']").val('');
-                scrollConversationScreen();
+                if(data.trim() !== '') {
+                    $(".messages-list").append(data);
+                    $("input[name='message']").val('');
+                    $("#message-image-input").val(''); // clear file input
+                    scrollConversationScreen();
+                }
             }
         });
         return false;
@@ -139,4 +149,214 @@ $(function () {
                 break;
         }
     });
+
+    // Emoji Picker Logic
+    const emojiButton = document.getElementById('emoji-button');
+    const emojiPickerContainer = document.getElementById('emoji-picker-container');
+    const messageInput = document.getElementById('message-input');
+
+    if (emojiButton && emojiPickerContainer && messageInput) {
+        emojiButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            emojiPickerContainer.classList.toggle('hidden');
+        });
+
+        document.querySelector('emoji-picker').addEventListener('emoji-click', event => {
+            messageInput.value += event.detail.unicode;
+            messageInput.focus();
+            emojiPickerContainer.classList.add('hidden');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!emojiButton.contains(event.target) && !emojiPickerContainer.contains(event.target)) {
+                emojiPickerContainer.classList.add('hidden');
+            }
+        });
+    }
+
+    // Image Preview Modal Logic
+    const imageInput = document.getElementById('message-image-input');
+    if (imageInput) {
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreviewImg').attr('src', e.target.result);
+                    $('#imagePreviewCaption').val($('#message-input').val());
+                    toggleModal('imagePreviewModal');
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+
+    window.sendImagePreview = function() {
+        var form = document.getElementById('send');
+        var formData = new FormData(form);
+        formData.set('message', $('#imagePreviewCaption').val());
+        
+        $.ajax({
+            url: '/messages/send-message/',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function (data) {
+                if(data.trim() !== '') {
+                    $(".messages-list").append(data);
+                    $("input[name='message']").val('');
+                    $("#message-image-input").val(''); // clear file input
+                    toggleModal('imagePreviewModal');
+                    scrollConversationScreen();
+                }
+            }
+        });
+    };
+
+    let messageToDelete = null;
+
+    window.confirmDeleteMessage = function(messageId) {
+        messageToDelete = messageId;
+        toggleModal('deleteMessageModal');
+    };
+
+    const confirmDeleteBtn = document.getElementById('confirmDeleteMsgBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (!messageToDelete) return;
+            var messageId = messageToDelete;
+            $.ajax({
+                url: '/messages/delete/' + messageId + '/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(response) {
+                    if (response.status === 'deleted') {
+                        let bubble = $('#message-bubble-' + messageId);
+                        bubble.empty();
+                        bubble.removeClass();
+                        bubble.addClass('relative px-3.5 py-2 text-[15px] break-words shadow-sm leading-[1.35] bg-transparent border border-fb-lightBorder/50 dark:border-fb-border/50 text-fb-lightMuted dark:text-fb-muted italic rounded-2xl');
+                        bubble.html('<i class="text-[13px]">Message deleted</i>');
+                        
+                        let reactBadge = $('#reaction-badge-' + messageId);
+                        if(reactBadge.length) reactBadge.remove();
+                        
+                        let actionsMenu = $('#message-container-' + messageId).siblings('.opacity-0');
+                        if (actionsMenu.length) actionsMenu.remove();
+
+                        toggleModal('deleteMessageModal');
+                        messageToDelete = null;
+                    }
+                }
+            });
+        });
+    }
+
+    window.reactToMessage = function(messageId, reaction) {
+        $.ajax({
+            url: '/messages/react/' + messageId + '/',
+            type: 'POST',
+            data: {
+                'reaction': reaction,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                let badge = $('#reaction-badge-' + messageId);
+                if (response.reaction) {
+                    badge.text(response.reaction);
+                    badge.removeClass('hidden');
+                } else {
+                    badge.addClass('hidden');
+                }
+                
+                let dropdown = document.getElementById('msgOptions-' + messageId);
+                if(dropdown && !dropdown.classList.contains('hidden')) {
+                    toggleDropdown('msgOptions-' + messageId);
+                }
+            }
+        });
+    };
+
+    // Mute Conversation Logic
+    window.muteConversation = function(username) {
+        $.ajax({
+            url: '/messages/mute/' + username + '/',
+            type: 'POST',
+            data: {
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    let icon = $('#mute-icon-' + username);
+                    let text = $('#mute-text-' + username);
+                    if (response.muted) {
+                        icon.removeClass('fa-bell').addClass('fa-bell-slash');
+                        text.text('Unmute Notifications');
+                    } else {
+                        icon.removeClass('fa-bell-slash').addClass('fa-bell');
+                        text.text('Mute Notifications');
+                    }
+                    toggleDropdown('userMsgOptions-' + username);
+                }
+            }
+        });
+    };
+
+    // Delete Conversation Logic
+    let conversationToDelete = null;
+
+    window.confirmDeleteConversation = function(username) {
+        conversationToDelete = username;
+        toggleModal('deleteConversationModal');
+        toggleDropdown('userMsgOptions-' + username);
+    };
+
+    const confirmDeleteConvBtn = document.getElementById('confirmDeleteConversationBtn');
+    if (confirmDeleteConvBtn) {
+        confirmDeleteConvBtn.addEventListener('click', function() {
+            if (!conversationToDelete) return;
+            var username = conversationToDelete;
+            $.ajax({
+                url: '/messages/delete-conversation/' + username + '/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        toggleModal('deleteConversationModal');
+                        conversationToDelete = null;
+                        if (activeUser === username) {
+                            window.location.href = '/messages/';
+                        } else {
+                            window.location.reload();
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    // Search Users Logic
+    const searchInput = document.getElementById('messenger-search');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const term = this.value.toLowerCase();
+            const users = document.querySelectorAll('.users-list > div');
+            
+            users.forEach(userDiv => {
+                const nameText = userDiv.querySelector('h3') ? userDiv.querySelector('h3').textContent.toLowerCase() : '';
+                const usernameText = userDiv.querySelector('p') ? userDiv.querySelector('p').textContent.toLowerCase() : '';
+                
+                if (nameText.includes(term) || usernameText.includes(term)) {
+                    userDiv.style.display = 'flex';
+                } else {
+                    userDiv.style.display = 'none';
+                }
+            });
+        });
+    }
+
 });

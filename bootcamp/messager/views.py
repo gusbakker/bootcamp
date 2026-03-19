@@ -67,12 +67,13 @@ def send_message(request):
     sender = request.user
     recipient_username = request.POST.get("to")
     recipient = get_user_model().objects.get(username=recipient_username)
-    message = request.POST.get("message")
-    if len(message.strip()) == 0:
+    message = request.POST.get("message", "")
+    image = request.FILES.get("image")
+    if len(message.strip()) == 0 and not image:
         return HttpResponse()
 
     if sender != recipient:
-        msg = Message.send_message(sender, recipient, message)
+        msg = Message.send_message(sender, recipient, message, image=image)
         return render(request, "messager/single_message.html", {"message": msg, "current_user": request.user})
 
     return HttpResponse()
@@ -109,3 +110,69 @@ def mark_read_messages(request):
     sender = get_user_model().objects.get(username=sender_str)
     Message.objects.mark_conversation_as_read(sender, request.user)
     return JsonResponse({"mark_messages_state": "success"})
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def delete_message(request, message_id):
+    try:
+        message = Message.objects.get(pk=message_id)
+        if message.sender == request.user:
+            message.delete()
+            return JsonResponse({"status": "deleted"})
+        return JsonResponse({"status": "unauthorized"}, status=403)
+    except Message.DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def react_message(request, message_id):
+    try:
+        reaction = request.POST.get("reaction")
+        message = Message.objects.get(pk=message_id)
+        # Anyone in the conversation can react
+        if request.user in [message.sender, message.recipient]:
+            # Toggle off if the reaction is already set to the same emoji
+            if message.reaction == reaction:
+                message.reaction = ""
+            else:
+                message.reaction = reaction
+            message.save()
+            return JsonResponse({"status": "reacted", "reaction": message.reaction})
+        return JsonResponse({"status": "unauthorized"}, status=403)
+    except Message.DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def mute_conversation(request, username):
+    try:
+        target_user = get_user_model().objects.get(username=username)
+        if target_user in request.user.muted_users.all():
+            request.user.muted_users.remove(target_user)
+            muted = False
+        else:
+            request.user.muted_users.add(target_user)
+            muted = True
+        return JsonResponse({"status": "success", "muted": muted})
+    except get_user_model().DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def delete_conversation(request, username):
+    try:
+        target_user = get_user_model().objects.get(username=username)
+        # Two deletes to avoid TypeError on union() queryset
+        Message.objects.filter(sender=request.user, recipient=target_user).delete()
+        Message.objects.filter(sender=target_user, recipient=request.user).delete()
+        return JsonResponse({"status": "success"})
+    except get_user_model().DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)

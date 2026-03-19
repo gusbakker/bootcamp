@@ -76,17 +76,30 @@ def get_suggestions(request):
     data_retrieved = users
     data_retrieved.extend(articles)
     results = []
+    
+    from django.urls import reverse
+    
     for data in data_retrieved:
         data_json = {}
         if isinstance(data, get_user_model()):
+            data_json["type"] = "user"
             data_json["id"] = data.id
-            data_json["label"] = data.username
-            data_json["value"] = data.username
+            data_json["name"] = data.get_profile_name()
+            data_json["subtitle"] = f"@{data.username}"
+            data_json["image"] = data.get_picture()
+            data_json["url"] = data.get_absolute_url()
 
         if isinstance(data, Article):
+            data_json["type"] = "article"
             data_json["id"] = data.id
-            data_json["label"] = data.title
-            data_json["value"] = data.title
+            data_json["name"] = data.title
+            data_json["subtitle"] = f"By {data.user.get_profile_name()}"
+            if data.image:
+                data_json["image"] = data.image.url
+            else:
+                from django.templatetags.static import static
+                data_json["image"] = static('img/favicon.png')
+            data_json["url"] = reverse("articles:article", kwargs={"slug": data.slug})
 
         results.append(data_json)
 

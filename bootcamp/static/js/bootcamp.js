@@ -184,4 +184,78 @@ $(function () {
         }
         ;
     });
+
+    // Global Live Search Logic
+    const globalSearchInput = document.getElementById('global-search-input');
+    const globalSearchDropdown = document.getElementById('global-search-dropdown');
+    const globalSearchResults = document.getElementById('global-search-results');
+    const globalSearchLoading = document.getElementById('global-search-loading');
+    let searchTimeout = null;
+
+    if (globalSearchInput) {
+        globalSearchInput.addEventListener('input', function() {
+            const term = this.value.trim();
+            if (term.length > 0) {
+                globalSearchDropdown.classList.remove('hidden');
+                globalSearchDropdown.classList.add('flex');
+                globalSearchResults.innerHTML = '';
+                globalSearchLoading.classList.remove('hidden');
+
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    $.ajax({
+                        url: '/search/suggestions/?term=' + encodeURIComponent(term),
+                        cache: false,
+                        success: function (data) {
+                            globalSearchLoading.classList.add('hidden');
+                            globalSearchResults.innerHTML = '';
+                            
+                            if (data.length > 0) {
+                                data.forEach(item => {
+                                    const iconHtml = item.type === 'user' ? '<i class="fa-solid fa-user text-xs"></i>' : '<i class="fa-solid fa-newspaper text-xs"></i>';
+                                    
+                                    const html = `
+                                        <a href="${item.url}" class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
+                                            <div class="relative flex-shrink-0">
+                                                <img src="${item.image}" class="w-10 h-10 ${item.type === 'user' ? 'rounded-full' : 'rounded-lg'} object-cover border border-fb-lightBorder dark:border-fb-border">
+                                            </div>
+                                            <div class="flex flex-col min-w-0">
+                                                <span class="font-bold text-[15px] text-fb-lightText dark:text-fb-text truncate">${item.name}</span>
+                                                <div class="flex items-center gap-1 text-[13px] text-fb-lightMuted dark:text-fb-muted truncate">
+                                                    ${iconHtml} <span>${item.subtitle}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    `;
+                                    globalSearchResults.insertAdjacentHTML('beforeend', html);
+                                });
+                            } else {
+                                globalSearchResults.innerHTML = `<div class="p-4 text-center text-fb-lightMuted dark:text-fb-muted text-[15px]">No results found for "${term}"</div>`;
+                            }
+                        }
+                    });
+                }, 300); // 300ms debounce
+            } else {
+                globalSearchDropdown.classList.add('hidden');
+                globalSearchDropdown.classList.remove('flex');
+            }
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (globalSearchDropdown && !globalSearchInput.contains(e.target) && !globalSearchDropdown.contains(e.target)) {
+                globalSearchDropdown.classList.add('hidden');
+                globalSearchDropdown.classList.remove('flex');
+            }
+        });
+        
+        // Re-open on focus if it has text
+        globalSearchInput.addEventListener('focus', function() {
+            if (this.value.trim().length > 0) {
+                globalSearchDropdown.classList.remove('hidden');
+                globalSearchDropdown.classList.add('flex');
+            }
+        });
+    }
+
 });
