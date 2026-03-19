@@ -1,9 +1,9 @@
 {% load i18n %}
-<div class="space-y-4">
+<div>
     {% if not hide_create_post %}
     <!-- Create Post Box -->
     <div
-        class="bg-fb-lightSurface dark:bg-fb-surface rounded-xl p-4 shadow-sm border border-fb-lightBorder dark:border-fb-border flex flex-col gap-3">
+        class="bg-fb-lightSurface dark:bg-fb-surface rounded-xl p-4 shadow-sm border border-fb-lightBorder dark:border-fb-border flex flex-col gap-3 mb-4">
         <div class="flex items-center gap-3">
             <a href="{% url 'users:detail' request.user.username %}" class="flex-shrink-0">
                 <img src="{{user.get_picture}}" class="w-10 h-10 rounded-full hover:brightness-90 transition">

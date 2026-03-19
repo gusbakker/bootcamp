@@ -151,7 +151,7 @@
                         <div class="relative">
                             <button onclick="toggleDropdown('profileMenu')"
                                     class="w-10 h-10 rounded-full overflow-hidden border border-fb-lightBorder dark:border-fb-border ml-1 focus:outline-none">
-                                <img src="{{user.get_picture}}"
+                                <img src="{{request.user.get_picture}}"
                                      alt="Profile"
                                      class="w-full h-full object-cover">
                             </button>
@@ -159,7 +159,7 @@
                                  class="hidden absolute right-0 mt-2 w-80 bg-fb-lightSurface dark:bg-fb-surface rounded-lg shadow-xl border border-fb-lightBorder dark:border-fb-border p-3 z-50">
                                 <a href="{% url 'users:detail' request.user.username %}"
                                    class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg cursor-pointer transition shadow-sm border border-fb-lightBorder dark:border-fb-border mb-2">
-                                    <img src="{{user.get_picture}}" class="w-12 h-12 rounded-full">
+                                    <img src="{{request.user.get_picture}}" class="w-12 h-12 rounded-full">
                                     <div>
                                         <h3 class="font-semibold text-fb-lightText dark:text-fb-text">
                                             {{request.user.get_full_name|default:request.user.username}}
@@ -207,7 +207,7 @@
                             <li>
                                 <a href="{% url 'users:detail' request.user.username %}"
                                    class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
-                                    <img src="{{user.get_picture}}" class="w-8 h-8 rounded-full">
+                                    <img src="{{request.user.get_picture}}" class="w-8 h-8 rounded-full">
                                     <span class="font-medium">{{request.user.get_full_name|default:request.user.username}}</span>
                                 </a>
                             </li>

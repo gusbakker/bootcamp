@@ -163,12 +163,25 @@ max-w-[1000px] xl:max-w-[1100px]
                     id="send_msg">
                     <i class="fa-brands fa-facebook-messenger"></i>{% trans 'Message' %}
                 </a>
-                {% if request.user in object.contact_list.all %}
-                <button type="button" onclick="toggleModal('blockUserModal')"
-                    class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold flex items-center text-fb-lightText dark:text-fb-text">
-                    <i class="fa-solid fa-ban"></i>
-                </button>
-                {% endif %}
+                <div class="relative inline-block mt-1 sm:mt-0">
+                    <a href="#" onclick="event.preventDefault(); toggleDropdown('postOptions-profile-{{object.id}}')"
+                        class="bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 dark:hover:bg-[#4e4f50] transition px-4 py-2 rounded-md font-semibold flex items-center justify-center text-fb-lightText dark:text-fb-text h-[40px]">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </a>
+                    <!-- Options Dropdown -->
+                    <div id="postOptions-profile-{{object.id}}" class="hidden absolute right-0 mt-2 w-48 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-lg shadow-xl z-50 py-2 text-[15px]">
+                        {% if request.user in object.contact_list.all %}
+                        <button type="button" onclick="toggleDropdown('postOptions-profile-{{object.id}}'); toggleModal('blockUserModal')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition text-left font-semibold border-b border-fb-lightBorder dark:border-fb-border border-opacity-50">
+                            <div class="w-6 text-center text-red-500"><i class="fa-solid fa-ban"></i></div>
+                            <span class="text-fb-lightText dark:text-fb-text">{% trans 'Block User' %}</span>
+                        </button>
+                        {% endif %}
+                        <button type="button" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition text-left text-fb-lightText dark:text-fb-text font-semibold">
+                            <div class="w-6 text-center text-red-500"><i class="fa-solid fa-flag"></i></div>
+                            <span>{% trans 'Report User' %}</span>
+                        </button>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </div>

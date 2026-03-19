@@ -75,6 +75,9 @@ class UserListView(LoginRequiredMixin, ListView):
     slug_url_kwarg = "username"
     ordering = ['-member_since']
 
+    def get_queryset(self):
+        return super().get_queryset().exclude(username=self.request.user.username)
+
 @login_required
 def picture(request):
     uploaded_picture = False
