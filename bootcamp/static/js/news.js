@@ -273,4 +273,60 @@ $(function () {
         });
         return false;
     });
+
+    // Likers Dropdown Logic
+    window.showLikers = function(newsId) {
+        const dropdown = $(`#likers-dropdown-${newsId}`);
+        const list = $(`#likers-list-${newsId}`);
+
+        if (!dropdown.hasClass('hidden')) {
+            dropdown.addClass('hidden');
+            return;
+        }
+
+        // Hide all other likers dropdowns first
+        $('.news-likers-list').parent().addClass('hidden');
+
+        $.ajax({
+            url: '/news/get-likers/',
+            data: { 'news': newsId },
+            type: 'GET',
+            cache: false,
+            beforeSend: function() {
+                list.html('<div class="p-4 flex justify-center"><div class="animate-spin rounded-full h-5 w-5 border-b-2 border-fb-primary"></div></div>');
+                dropdown.removeClass('hidden');
+            },
+            success: function(data) {
+                list.empty();
+                if (data.length > 0) {
+                    data.forEach(user => {
+                        const html = `
+                            <a href="${user.url}" class="flex items-center gap-2 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-decoration-none">
+                                <img src="${user.image}" class="w-8 h-8 rounded-full object-cover">
+                                <div class="flex flex-col min-w-0">
+                                    <span class="font-bold text-xs text-fb-lightText dark:text-fb-text truncate">${user.name}</span>
+                                    <span class="text-[10px] text-fb-lightMuted dark:text-fb-muted truncate">@${user.username}</span>
+                                </div>
+                            </a>
+                        `;
+                        list.append(html);
+                    });
+                } else {
+                    list.html('<div class="p-4 text-center text-xs text-fb-lightMuted dark:text-fb-muted">No likes yet</div>');
+                }
+            }
+        });
+    };
+
+    // Close likers dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('[id^="likers-dropdown-"]').length && !$(e.target).closest('div[onclick^="showLikers"]').length) {
+            $('[id^="likers-dropdown-"]').addClass('hidden');
+        }
+    });
+
+    // Handle comment click from summary text
+    $("ul.stream").on("click", ".comment-trigger", function() {
+        $(this).closest("li").find(".comment").trigger("click");
+    });
 });

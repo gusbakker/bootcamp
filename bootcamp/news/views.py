@@ -183,3 +183,19 @@ def update_interactions(request):
     news = News.objects.get(pk=data_point)
     data = {"likes": news.count_likers(), "comments": news.count_thread()}
     return JsonResponse(data)
+@login_required
+@ajax_required
+@require_http_methods(["GET"])
+def get_likers(request):
+    news_id = request.GET.get("news")
+    news = get_object_or_404(News, pk=news_id)
+    likers = news.get_likers()
+    results = []
+    for user in likers:
+        results.append({
+            "username": user.username,
+            "name": user.get_profile_name(),
+            "image": user.get_picture(),
+            "url": reverse_lazy("users:detail", kwargs={"username": user.username})
+        })
+    return JsonResponse(results, safe=False)
