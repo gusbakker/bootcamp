@@ -76,6 +76,14 @@ class Message(models.Model):
     message = models.TextField(max_length=1000, blank=True)
     image = models.ImageField(upload_to="message_images/", blank=True, null=True)
     reaction = models.CharField(max_length=255, blank=True)
+    reply_to = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='replies',
+        verbose_name=_("Reply To"),
+    )
     unread = models.BooleanField(default=True, db_index=True)
     objects = MessageQuerySet.as_manager()
 
@@ -94,7 +102,7 @@ class Message(models.Model):
             self.save()
 
     @staticmethod
-    def send_message(sender, recipient, message, image=None):
+    def send_message(sender, recipient, message, image=None, reply_to=None):
         """Method to create a new message in a conversation.
         :requires:
 
@@ -103,9 +111,11 @@ class Message(models.Model):
         :param message: Text piece shorter than 1000 characters containing the
                         actual message.
         :param image: Optional image to attach to the message.
+        :param reply_to: Optional Message instance to reply to.
         """
         new_message = Message.objects.create(
-            sender=sender, recipient=recipient, message=message, image=image
+            sender=sender, recipient=recipient, message=message, image=image,
+            reply_to=reply_to
         )
         # Only notify the recipient if they haven't muted the sender
         if not recipient.muted_users.filter(id=sender.id).exists():

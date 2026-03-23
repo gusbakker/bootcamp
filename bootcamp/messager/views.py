@@ -24,6 +24,13 @@ class MessagesListView(LoginRequiredMixin, ListView):
         """Pre-compute grouping flags for each message so the template can
         render grouped bubbles, avatars, and timestamps correctly."""
         msgs = list(messages)
+        # Prefetch reply_to to avoid N+1 when rendering reply previews
+        reply_ids = [m.reply_to_id for m in msgs if m.reply_to_id]
+        if reply_ids:
+            replies = {m.uuid_id: m for m in Message.objects.filter(uuid_id__in=reply_ids).select_related('sender')}
+            for m in msgs:
+                if m.reply_to_id and m.reply_to_id in replies:
+                    m.reply_to = replies[m.reply_to_id]
         annotated = []
         for i, msg in enumerate(msgs):
             prev_sender = msgs[i - 1].sender_id if i > 0 else None
@@ -87,11 +94,18 @@ def send_message(request):
     recipient = get_user_model().objects.get(username=recipient_username)
     message = request.POST.get("message", "")
     image = request.FILES.get("image")
+    reply_to_id = request.POST.get("reply_to")
+    reply_to_msg = None
+    if reply_to_id:
+        try:
+            reply_to_msg = Message.objects.get(pk=reply_to_id)
+        except Message.DoesNotExist:
+            pass
     if len(message.strip()) == 0 and not image:
         return HttpResponse()
 
     if sender != recipient:
-        msg = Message.send_message(sender, recipient, message, image=image)
+        msg = Message.send_message(sender, recipient, message, image=image, reply_to=reply_to_msg)
         return render(request, "messager/single_message.html", {
             "message": msg,
             "current_user": request.user,

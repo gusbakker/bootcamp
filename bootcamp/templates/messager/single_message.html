@@ -19,6 +19,26 @@
         {# Row: bubble + action icons #}
         <div class="flex items-center gap-1 {% if message.sender == current_user %}flex-row-reverse{% endif %}">
             <div id="message-container-{{message.uuid_id}}" class="relative">
+                {# Reply preview: quoted message above the bubble #}
+                {% if message.reply_to %}
+                <div class="reply-preview px-3 py-1.5 mb-0.5 rounded-xl text-[12px] leading-[1.3] max-w-full truncate cursor-pointer
+                            {% if message.sender == current_user %}
+                                bg-blue-700/40 text-blue-100
+                            {% else %}
+                                bg-black/5 dark:bg-white/10 text-fb-lightMuted dark:text-fb-muted
+                            {% endif %}"
+                     onclick="scrollToMessage('{{message.reply_to.uuid_id}}')">
+                    <span class="font-semibold">{{message.reply_to.sender.get_profile_name|title}}</span>
+                    <span class="opacity-80">
+                        {% if message.reply_to.image and not message.reply_to.message %}
+                            📷 {% trans 'Photo' %}
+                        {% else %}
+                            {{ message.reply_to.message|truncatechars:60 }}
+                        {% endif %}
+                    </span>
+                </div>
+                {% endif %}
+
                 <div id="message-bubble-{{message.uuid_id}}" data-tooltip="{{message.created|date:'N d, Y \a\t G:i'}}" class="msg-bubble-tooltip relative px-3.5 py-2 text-[15px] break-words leading-[1.35]
                             {% if message.sender == current_user %}
                                 bg-fb-primary text-white
@@ -36,7 +56,10 @@
                                 {% endif %}
                             {% endif %}">
                     {% if message.image %}
-                        <img src="{{message.image.url}}" loading="lazy" class="w-full max-w-[250px] rounded-lg {% if message.message %}mb-2{% endif %} object-cover bg-black/5 dark:bg-white/5" alt="Attached Image">
+                        <img src="{{message.image.url}}" loading="lazy"
+                            class="w-full max-w-[250px] rounded-lg {% if message.message %}mb-2{% endif %} object-cover bg-black/5 dark:bg-white/5 cursor-pointer"
+                            alt="Attached Image"
+                            onclick="openLightbox('{{message.image.url}}')">
                     {% endif %}
                     {% if message.message %}
                         {{message.message|linebreaksbr}}
@@ -51,6 +74,13 @@
 
             {# Actions Menu — show on hover, aligned to bubble only #}
             <div class="msg-actions flex items-center gap-0.5 flex-shrink-0 z-20 relative {% if message.message == 'Message deleted' %}hidden{% endif %}">
+
+                {# Reply Button #}
+                <div class="relative">
+                    <button onclick="replyToMessage('{{message.uuid_id}}', '{{message.sender.get_profile_name|title}}', '{{ message.message|truncatechars:50|escapejs }}')" class="w-7 h-7 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center transition cursor-pointer" title="{% trans 'Reply' %}">
+                        <i class="fa-solid fa-reply text-[13px]"></i>
+                    </button>
+                </div>
 
                 {# React Button & Dropdown #}
                 <div class="relative">
@@ -72,7 +102,7 @@
                     <button onclick="toggleDropdown('msgMoreOptions-{{message.uuid_id}}')" class="w-7 h-7 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center transition cursor-pointer" title="{% trans 'More' %}">
                         <i class="fa-solid fa-ellipsis-vertical text-[13px]"></i>
                     </button>
-                    <div id="msgMoreOptions-{{message.uuid_id}}" class="hidden absolute top-8 right-0 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-md py-2 w-40 flex flex-col items-stretch z-30">
+                    <div id="msgMoreOptions-{{message.uuid_id}}" class="hidden absolute bottom-8 right-0 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-md py-2 w-40 flex flex-col items-stretch z-30">
                         <button onclick="confirmDeleteMessage('{{message.uuid_id}}')" class="text-left px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-red-500 font-semibold transition cursor-pointer text-sm">
                             <i class="fa-solid fa-trash-can mr-2"></i>{% trans 'Remove' %}
                         </button>

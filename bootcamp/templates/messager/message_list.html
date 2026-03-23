@@ -193,10 +193,23 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         </div>
         <!-- Chat Input Box -->
         <div
-            class="p-3 bg-fb-lightSurface dark:bg-fb-surface border-t border-fb-lightBorder/50 dark:border-fb-border/50 sticky bottom-0 z-20 pb-6 sm:pb-3">
+            class="bg-fb-lightSurface dark:bg-fb-surface border-t border-fb-lightBorder/50 dark:border-fb-border/50 sticky bottom-0 z-20 pb-6 sm:pb-3">
+            <!-- Reply Preview Bar -->
+            <div id="reply-bar" class="hidden px-4 py-2 bg-fb-lightSurfaceHover/50 dark:bg-fb-surfaceHover/50 border-b border-fb-lightBorder/30 dark:border-fb-border/30 flex items-center gap-3">
+                <div class="flex-1 min-w-0">
+                    <div class="text-[12px] font-semibold text-fb-primary">{% trans 'Replying to' %} <span id="reply-bar-name"></span></div>
+                    <div id="reply-bar-text" class="text-[13px] text-fb-lightMuted dark:text-fb-muted truncate"></div>
+                </div>
+                <button type="button" onclick="cancelReply()" class="w-6 h-6 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center cursor-pointer flex-shrink-0">
+                    <i class="fa-solid fa-times text-sm"></i>
+                </button>
+            </div>
+
+            <div class="p-3">
             <form role="form" method="post" action="#" id="send" class="m-0 flex items-center gap-2">
                 {% csrf_token %}
                 <input type="hidden" name="to" value="{{active}}">
+                <input type="hidden" name="reply_to" id="reply-to-input" value="">
 
                 <div class="flex items-center gap-1">
                     <button type="button"
@@ -233,6 +246,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
                     <i class="fa-solid fa-paper-plane text-xl"></i>
                 </button>
             </form>
+            </div>
         </div>
         {% else %}
         <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
@@ -321,6 +335,18 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
             </div>
         </div>
     </div>
+</div>
+<!-- Image Lightbox -->
+<div id="imageLightbox" class="hidden fixed inset-0 z-[200] bg-black/90 flex items-center justify-center" onclick="closeLightbox(event)">
+    <div class="absolute top-4 right-4 flex items-center gap-3 z-10">
+        <a id="lightbox-download" href="#" download class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="{% trans 'Download' %}">
+            <i class="fa-solid fa-download text-lg"></i>
+        </a>
+        <button onclick="closeLightbox()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="{% trans 'Close' %}">
+            <i class="fa-solid fa-times text-xl"></i>
+        </button>
+    </div>
+    <img id="lightbox-img" src="" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg" alt="Preview" onclick="event.stopPropagation()">
 </div>
 
 <script type="module" src="https://unpkg.com/emoji-picker-element@1"></script>

@@ -138,6 +138,8 @@ $(function () {
                     ta.value = '';
                     ta.style.height = 'auto';
                     $("#message-image-input").val('');
+                    // Clear reply state
+                    cancelReply();
                     scrollConversationScreen();
                 }
             }
@@ -425,5 +427,75 @@ $(function () {
             });
         });
     }
+
+    // ========== REPLY FUNCTIONS ==========
+    window.replyToMessage = function(messageId, senderName, messageText) {
+        var bar = document.getElementById('reply-bar');
+        var nameEl = document.getElementById('reply-bar-name');
+        var textEl = document.getElementById('reply-bar-text');
+        var input = document.getElementById('reply-to-input');
+        if (bar && nameEl && textEl && input) {
+            nameEl.textContent = senderName;
+            textEl.textContent = messageText || '📷 Photo';
+            input.value = messageId;
+            bar.classList.remove('hidden');
+            document.getElementById('message-input').focus();
+        }
+    };
+
+    window.cancelReply = function() {
+        var bar = document.getElementById('reply-bar');
+        var input = document.getElementById('reply-to-input');
+        if (bar) bar.classList.add('hidden');
+        if (input) input.value = '';
+    };
+
+    window.scrollToMessage = function(messageId) {
+        var el = document.getElementById('message-' + messageId);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Flash highlight
+            el.style.transition = 'background-color 0.3s ease';
+            el.style.backgroundColor = 'rgba(24,119,242,0.15)';
+            setTimeout(function() {
+                el.style.backgroundColor = '';
+            }, 1500);
+        }
+    };
+
+    // ========== IMAGE LIGHTBOX ==========
+    window.openLightbox = function(url) {
+        var modal = document.getElementById('imageLightbox');
+        var img = document.getElementById('lightbox-img');
+        var dl = document.getElementById('lightbox-download');
+        if (modal && img) {
+            img.src = url;
+            dl.href = url;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    window.closeLightbox = function(e) {
+        // If called from the overlay onclick, only close if clicking background
+        if (e && e.target && e.target.id !== 'imageLightbox') return;
+        var modal = document.getElementById('imageLightbox');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.getElementById('lightbox-img').src = '';
+            document.body.style.overflow = 'hidden'; // keep body hidden for messenger
+        }
+    };
+
+    // Close lightbox on Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var modal = document.getElementById('imageLightbox');
+            if (modal && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                document.getElementById('lightbox-img').src = '';
+            }
+        }
+    });
 
 });
