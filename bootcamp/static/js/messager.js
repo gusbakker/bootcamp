@@ -329,9 +329,9 @@ $(function () {
                     badge.addClass('hidden');
                 }
                 
-                let dropdown = document.getElementById('msgOptions-' + messageId);
+                let dropdown = document.getElementById('msgReactOptions-' + messageId);
                 if(dropdown && !dropdown.classList.contains('hidden')) {
-                    toggleDropdown('msgOptions-' + messageId);
+                    toggleDropdown('msgReactOptions-' + messageId);
                 }
             }
         });

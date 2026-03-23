@@ -15,77 +15,79 @@
     </div>
     {% endif %}
 
-    <div class="flex items-center gap-2 max-w-[70%] sm:max-w-[75%] {% if message.sender == current_user %}flex-row-reverse{% endif %}">
-        <div id="message-container-{{message.uuid_id}}" class="flex flex-col {% if message.sender == current_user %}items-end{% else %}items-start{% endif %} relative">
-            <div id="message-bubble-{{message.uuid_id}}" class="relative px-3.5 py-2 text-[15px] break-words leading-[1.35]
-                        {% if message.sender == current_user %}
-                            bg-fb-primary text-white
-                            {% if is_first_in_group and is_last_in_group %}rounded-2xl rounded-br-sm
-                            {% elif is_first_in_group %}rounded-2xl rounded-br-md
-                            {% elif is_last_in_group %}rounded-2xl rounded-tr-md rounded-br-sm
-                            {% else %}rounded-2xl rounded-r-md
-                            {% endif %}
-                        {% else %}
-                            bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text border border-fb-lightBorder/30 dark:border-fb-border/30
-                            {% if is_first_in_group and is_last_in_group %}rounded-2xl rounded-bl-sm
-                            {% elif is_first_in_group %}rounded-2xl rounded-bl-md
-                            {% elif is_last_in_group %}rounded-2xl rounded-tl-md rounded-bl-sm
-                            {% else %}rounded-2xl rounded-l-md
-                            {% endif %}
-                        {% endif %}">
-                {% if message.image %}
-                    <img src="{{message.image.url}}" loading="lazy" class="w-full max-w-[250px] rounded-lg {% if message.message %}mb-2{% endif %} object-cover bg-black/5 dark:bg-white/5" alt="Attached Image">
-                {% endif %}
-                {% if message.message %}
-                    {{message.message|linebreaksbr}}
-                {% endif %}
+    <div class="flex flex-col max-w-[70%] sm:max-w-[75%] {% if message.sender == current_user %}items-end{% else %}items-start{% endif %}">
+        {# Row: bubble + action icons #}
+        <div class="flex items-center gap-1 {% if message.sender == current_user %}flex-row-reverse{% endif %}">
+            <div id="message-container-{{message.uuid_id}}" class="relative {% if message.reaction %}pb-4{% endif %}">
+                <div id="message-bubble-{{message.uuid_id}}" data-tooltip="{{message.created|date:'N d, Y \a\t G:i'}}" class="msg-bubble-tooltip relative px-3.5 py-2 text-[15px] break-words leading-[1.35]
+                            {% if message.sender == current_user %}
+                                bg-fb-primary text-white
+                                {% if is_first_in_group and is_last_in_group %}rounded-2xl rounded-br-sm
+                                {% elif is_first_in_group %}rounded-2xl rounded-br-md
+                                {% elif is_last_in_group %}rounded-2xl rounded-tr-md rounded-br-sm
+                                {% else %}rounded-2xl rounded-r-md
+                                {% endif %}
+                            {% else %}
+                                bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text border border-fb-lightBorder/30 dark:border-fb-border/30
+                                {% if is_first_in_group and is_last_in_group %}rounded-2xl rounded-bl-sm
+                                {% elif is_first_in_group %}rounded-2xl rounded-bl-md
+                                {% elif is_last_in_group %}rounded-2xl rounded-tl-md rounded-bl-sm
+                                {% else %}rounded-2xl rounded-l-md
+                                {% endif %}
+                            {% endif %}">
+                    {% if message.image %}
+                        <img src="{{message.image.url}}" loading="lazy" class="w-full max-w-[250px] rounded-lg {% if message.message %}mb-2{% endif %} object-cover bg-black/5 dark:bg-white/5" alt="Attached Image">
+                    {% endif %}
+                    {% if message.message %}
+                        {{message.message|linebreaksbr}}
+                    {% endif %}
 
-                {# Reaction Badge #}
-                <div id="reaction-badge-{{message.uuid_id}}" class="absolute -bottom-3 -right-2 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder/50 dark:border-fb-border/50 rounded-full px-1.5 py-0.5 shadow-sm text-[14px] z-10 cursor-pointer hover:opacity-80 {% if not message.reaction %}hidden{% endif %}" onclick="reactToMessage('{{message.uuid_id}}', '{{message.reaction}}')">
-                    {{message.reaction}}
+                    {# Reaction Badge #}
+                    <div id="reaction-badge-{{message.uuid_id}}" class="absolute -bottom-3 -right-2 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder/50 dark:border-fb-border/50 rounded-full px-1.5 py-0.5 shadow-sm text-[14px] z-10 cursor-pointer hover:opacity-80 {% if not message.reaction %}hidden{% endif %}" onclick="reactToMessage('{{message.uuid_id}}', '{{message.reaction}}')">
+                        {{message.reaction}}
+                    </div>
                 </div>
             </div>
 
-            {# Timestamp: always visible, only on last message of group #}
-            {% if is_last_in_group %}
-            <span class="text-[11px] text-fb-lightMuted dark:text-fb-muted mt-1 px-1">
-                {{message.created|date:'G:i'}}
-            </span>
-            {% endif %}
+            {# Actions Menu — show on hover, aligned to bubble only #}
+            <div class="msg-actions flex items-center gap-0.5 flex-shrink-0 z-20 relative {% if message.message == 'Message deleted' %}hidden{% endif %}">
 
-        </div>
-
-        {# Actions Menu — show on hover #}
-        <div class="msg-actions flex items-center gap-1 flex-shrink-0 z-20 relative {% if message.message == 'Message deleted' %}hidden{% endif %}">
-
-            {# React Button & Dropdown #}
-            <div class="relative {% if message.sender == current_user %}order-2{% else %}order-1{% endif %}">
-                <button onclick="toggleDropdown('msgReactOptions-{{message.uuid_id}}')" class="w-7 h-7 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center transition cursor-pointer" title="{% trans 'React' %}">
-                    <i class="fa-solid fa-face-smile text-[13px]"></i>
-                </button>
-                <div id="msgReactOptions-{{message.uuid_id}}" class="hidden absolute bottom-8 {% if message.sender == current_user %}right-0{% else %}left-0{% endif %} bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-full shadow-md py-1 px-2.5 flex items-center gap-2 text-xl w-max z-30">
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '👍')" class="hover:opacity-80 cursor-pointer">👍</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '❤️')" class="hover:opacity-80 cursor-pointer">❤️</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '😂')" class="hover:opacity-80 cursor-pointer">😂</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '😮')" class="hover:opacity-80 cursor-pointer">😮</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '😢')" class="hover:opacity-80 cursor-pointer">😢</button>
-                </div>
-            </div>
-
-            {# More Options (Delete) #}
-            {% if message.sender == current_user %}
-            <div class="relative order-3">
-                <button onclick="toggleDropdown('msgMoreOptions-{{message.uuid_id}}')" class="w-7 h-7 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center transition cursor-pointer" title="{% trans 'More' %}">
-                    <i class="fa-solid fa-ellipsis-vertical text-[13px]"></i>
-                </button>
-                <div id="msgMoreOptions-{{message.uuid_id}}" class="hidden absolute top-8 right-0 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-md py-2 w-40 flex flex-col items-stretch z-30">
-                    <button onclick="confirmDeleteMessage('{{message.uuid_id}}')" class="text-left px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-red-500 font-semibold transition cursor-pointer text-sm">
-                        <i class="fa-solid fa-trash-can mr-2"></i>{% trans 'Remove' %}
+                {# React Button & Dropdown #}
+                <div class="relative">
+                    <button onclick="toggleDropdown('msgReactOptions-{{message.uuid_id}}')" class="w-7 h-7 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center transition cursor-pointer" title="{% trans 'React' %}">
+                        <i class="fa-solid fa-face-smile text-[13px]"></i>
                     </button>
+                    <div id="msgReactOptions-{{message.uuid_id}}" class="hidden absolute bottom-8 {% if message.sender == current_user %}right-0{% else %}left-0{% endif %} bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-full shadow-md py-1 px-2.5 flex items-center gap-2 text-xl w-max z-30">
+                        <button onclick="reactToMessage('{{message.uuid_id}}', '👍')" class="hover:opacity-80 cursor-pointer">👍</button>
+                        <button onclick="reactToMessage('{{message.uuid_id}}', '❤️')" class="hover:opacity-80 cursor-pointer">❤️</button>
+                        <button onclick="reactToMessage('{{message.uuid_id}}', '😂')" class="hover:opacity-80 cursor-pointer">😂</button>
+                        <button onclick="reactToMessage('{{message.uuid_id}}', '😮')" class="hover:opacity-80 cursor-pointer">😮</button>
+                        <button onclick="reactToMessage('{{message.uuid_id}}', '😢')" class="hover:opacity-80 cursor-pointer">😢</button>
+                    </div>
                 </div>
-            </div>
-            {% endif %}
 
+                {# More Options (Delete) #}
+                {% if message.sender == current_user %}
+                <div class="relative">
+                    <button onclick="toggleDropdown('msgMoreOptions-{{message.uuid_id}}')" class="w-7 h-7 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center transition cursor-pointer" title="{% trans 'More' %}">
+                        <i class="fa-solid fa-ellipsis-vertical text-[13px]"></i>
+                    </button>
+                    <div id="msgMoreOptions-{{message.uuid_id}}" class="hidden absolute top-8 right-0 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-md py-2 w-40 flex flex-col items-stretch z-30">
+                        <button onclick="confirmDeleteMessage('{{message.uuid_id}}')" class="text-left px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-red-500 font-semibold transition cursor-pointer text-sm">
+                            <i class="fa-solid fa-trash-can mr-2"></i>{% trans 'Remove' %}
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
         </div>
+
+        {# Timestamp: always visible, only on last message of group — outside the bubble row #}
+        {% if is_last_in_group %}
+        <span class="text-[11px] text-fb-lightMuted dark:text-fb-muted mt-1 px-1">
+            {{message.created|date:'G:i'}}
+        </span>
+        {% endif %}
     </div>
 </div>

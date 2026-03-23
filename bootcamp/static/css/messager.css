@@ -253,6 +253,40 @@
     pointer-events: auto;
 }
 
+/* ---- Bubble hover tooltip (date/time) ---- */
+.msg-bubble-tooltip {
+    position: relative;
+}
+.msg-bubble-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1;
+    color: #B0B3B8;
+    background: rgba(0,0,0,0.75);
+    padding: 5px 10px;
+    border-radius: 8px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    z-index: 25;
+}
+/* Default: tooltip to the right (for received messages) */
+.msg-bubble-tooltip::after {
+    left: calc(100% + 32px);
+}
+/* Sent messages (parent has flex-row-reverse): tooltip to the left */
+.flex-row-reverse > * > .msg-bubble-tooltip::after {
+    left: auto;
+    right: calc(100% + 32px);
+}
+.msg-bubble-tooltip:hover::after {
+    opacity: 1;
+}
+
 .empty-conversation {
     margin: auto;
     text-align: center;
