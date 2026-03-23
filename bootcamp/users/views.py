@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import time
 from io import BytesIO, StringIO
 
 from PIL import Image
@@ -135,22 +136,40 @@ def upload_picture(request):
 @login_required
 def save_uploaded_picture(request):
     try:
-        x = int(request.POST.get('x') or 0)
-        y = int(request.POST.get('y') or 0)
-        w = int(request.POST.get('w') or 200)
-        h = int(request.POST.get('h') or 200)
-        tmp_filename = django_settings.MEDIA_ROOT + '/profile_pics/' + \
-                       request.user.username + '_tmp.jpg'
-        filename = django_settings.MEDIA_ROOT + '/profile_pics/' + \
-                   request.user.username + '.jpg'
+        x = int(float(request.POST.get('x') or 0))
+        y = int(float(request.POST.get('y') or 0))
+        w = int(float(request.POST.get('w') or 200))
+        h = int(float(request.POST.get('h') or 200))
+        profile_pictures = django_settings.MEDIA_ROOT + '/profile_pics/'
+        tmp_filename = profile_pictures + request.user.username + '_tmp.jpg'
+        # Use a timestamped filename so the URL changes, busting browser cache
+        version = int(time.time())
+        new_basename = f'{request.user.username}_{version}.jpg'
+        filename = profile_pictures + new_basename
         im = Image.open(tmp_filename)
         cropped_im = im.crop((x, y, w + x, h + y))
         cropped_im.thumbnail((200, 200), Image.Resampling.LANCZOS)
         cropped_im.save(filename)
-        
-        request.user.image = f'profile_pics/{request.user.username}.jpg'
+
+        # Remove old profile pics for this user (excluding tmp and the new file)
+        import glob
+        for old_file in glob.glob(profile_pictures + request.user.username + '_*.jpg'):
+            if old_file != filename and not old_file.endswith('_tmp.jpg'):
+                try:
+                    os.remove(old_file)
+                except OSError:
+                    pass
+        # Also remove legacy non-versioned file if it exists
+        legacy = profile_pictures + request.user.username + '.jpg'
+        if os.path.exists(legacy):
+            try:
+                os.remove(legacy)
+            except OSError:
+                pass
+
+        request.user.image = f'profile_pics/{new_basename}'
         request.user.save()
-        
+
         if os.path.exists(tmp_filename):
             os.remove(tmp_filename)
 

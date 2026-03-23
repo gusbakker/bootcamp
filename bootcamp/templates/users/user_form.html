@@ -25,7 +25,7 @@
                 <div class="relative group cursor-pointer rounded-full"
                      id="avatar-upload-trigger"
                      title="{% trans 'Change profile picture' %}">
-                    <img src="{{user.get_picture}}"
+                    <img src="{{user.get_picture}}?_={% now 'U' %}"
                          class="w-[150px] h-[150px] rounded-full border-4 border-fb-lightSurface dark:border-fb-surface object-cover shadow-sm bg-white dark:bg-gray-800 group-hover:opacity-80 transition"
                          alt="{% trans 'User Image' %}"
                          id="current-avatar">
