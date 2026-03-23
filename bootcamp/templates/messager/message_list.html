@@ -149,9 +149,32 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         </div>
         <!-- Messages List -->
         <div class="flex-1 overflow-y-auto no-scrollbar p-4 messages-list flex flex-col">
-            {% if message_list %}
-            {% for message in message_list %}
-            {% include 'messager/single_message.html' with message=message active=active current_user=request.user %}
+            {% if grouped_messages %}
+            {% for message in grouped_messages %}
+
+            {# Date separator: appears when the date changes between messages #}
+            {% ifchanged message.created|date:'Y-m-d' %}
+            <div class="flex items-center justify-center my-4">
+                <span class="text-[12px] text-fb-lightMuted dark:text-fb-muted bg-fb-lightBg dark:bg-fb-bg px-3 py-1 rounded-full font-medium">
+                    {% now "Y-m-d" as today %}
+                    {% if message.created|date:'Y-m-d' == today %}
+                        {% trans 'Today' %}
+                    {% else %}
+                        {{message.created|date:'N d, Y'}}
+                    {% endif %}
+                </span>
+            </div>
+            {% endifchanged %}
+
+            {% include 'messager/single_message.html' with message=message active=active current_user=request.user show_avatar=message.show_avatar is_first_in_group=message.is_first_in_group is_last_in_group=message.is_last_in_group %}
+
+            {# Seen indicator: only after the very last message, if sent by me and read #}
+            {% if forloop.last and message.sender == request.user and not message.unread %}
+            <div class="flex justify-end mt-0.5 pr-1">
+                <span class="text-[11px] text-fb-lightMuted dark:text-fb-muted">{% trans 'Seen' %}</span>
+            </div>
+            {% endif %}
+
             {% endfor %}
             {% else %}
             <div class="flex-1 flex flex-col items-center justify-center text-center px-4 mt-10">

@@ -20,6 +20,22 @@ class MessagesListView(LoginRequiredMixin, ListView):
     paginate_by = 50
     template_name = "messager/message_list.html"
 
+    def _annotate_grouping(self, messages):
+        """Pre-compute grouping flags for each message so the template can
+        render grouped bubbles, avatars, and timestamps correctly."""
+        msgs = list(messages)
+        annotated = []
+        for i, msg in enumerate(msgs):
+            prev_sender = msgs[i - 1].sender_id if i > 0 else None
+            next_sender = msgs[i + 1].sender_id if i < len(msgs) - 1 else None
+            same_as_prev = msg.sender_id == prev_sender
+            same_as_next = msg.sender_id == next_sender
+            msg.is_first_in_group = not same_as_prev
+            msg.is_last_in_group = not same_as_next
+            msg.show_avatar = msg.is_last_in_group
+            annotated.append(msg)
+        return annotated
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         contact_list = self.request.user.contact_list.all().order_by("username")
@@ -32,6 +48,8 @@ class MessagesListView(LoginRequiredMixin, ListView):
             self.request.user
         )
         context["active"] = last_conversation.username
+        # Annotated messages with grouping info
+        context["grouped_messages"] = self._annotate_grouping(context["object_list"])
         return context
 
     def get_queryset(self):
@@ -74,7 +92,13 @@ def send_message(request):
 
     if sender != recipient:
         msg = Message.send_message(sender, recipient, message, image=image)
-        return render(request, "messager/single_message.html", {"message": msg, "current_user": request.user})
+        return render(request, "messager/single_message.html", {
+            "message": msg,
+            "current_user": request.user,
+            "show_avatar": True,
+            "is_first_in_group": True,
+            "is_last_in_group": True,
+        })
 
     return HttpResponse()
 
@@ -91,7 +115,13 @@ def receive_message(request):
     except Message.DoesNotExist as e:
         raise e
 
-    return render(request, "messager/single_message.html", {"message": message, "current_user": request.user})
+    return render(request, "messager/single_message.html", {
+        "message": message,
+        "current_user": request.user,
+        "show_avatar": True,
+        "is_first_in_group": True,
+        "is_last_in_group": True,
+    })
 
 
 @login_required

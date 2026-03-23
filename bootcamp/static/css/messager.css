@@ -234,8 +234,6 @@
     /* Promote to own GPU layer so content above/below doesn't repaint on scroll */
     will-change: transform;
     contain: layout;
-    /* Ensure rows have a little breathing room */
-    gap: 0.5rem;
 }
 
 /* ---- Per-message row: isolate layout + paint ---- */
