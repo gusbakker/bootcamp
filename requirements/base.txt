@@ -17,24 +17,24 @@ cryptography>=3.3.2  #  A good, compatible version
 
 # Django
 # ------------------------------------------------------------------------------
-django  # pyup: < 2.1  # https://www.djangoproject.com/
-django-allauth  # https://github.com/pennersr/django-allauth
+django>=5.0,<5.2  # https://www.djangoproject.com/
+django-allauth>=0.58.0  # https://github.com/pennersr/django-allauth
 django-contrib-comments  # https://github.com/django/django-contrib-comments
-django-crispy-forms  # https://github.com/django-crispy-forms/django-crispy-forms
+django-crispy-forms>=2.1  # https://github.com/django-crispy-forms/django-crispy-forms
 django-environ  # https://github.com/joke2k/django-environ
 django-markdownx  # https://github.com/neutronX/django-markdownx
-django-redis  # https://github.com/niwinz/django-redis
-django-taggit  # https://github.com/alex/django-taggit
-sorl-thumbnail  # https://github.com/jazzband/sorl-thumbnail
+django-redis>=5.4.0  # https://github.com/niwinz/django-redis
+django-taggit>=5.0.0  # https://github.com/alex/django-taggit
+sorl-thumbnail>=12.10.0  # https://github.com/jazzband/sorl-thumbnail
 
 # Channels
 # ------------------------------------------------------------------------------
-channels  # https://github.com/django/channels
-channels-redis  # https://github.com/django/channels_redis
+channels>=4.1.0  # https://github.com/django/channels
+channels-redis>=4.1.0  # https://github.com/django/channels_redis
 
 # GraphQL API
 # ------------------------------------------------------------------------------
-graphene-django  # https://github.com/graphql-python/graphene-django
+graphene-django>=3.2.0  # https://github.com/graphql-python/graphene-django
 
 # Open Graph Protocol
 # ------------------------------------------------------------------------------
