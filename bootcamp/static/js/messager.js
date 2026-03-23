@@ -65,8 +65,56 @@ $(function () {
         /* Set focus on the input box from the form, and rolls to show the
         the most recent message.
         */
-        $("input[name='message']").focus();
+        var ta = document.getElementById('message-input');
+        if (ta) ta.focus();
         $('.messages-list').scrollTop($('.messages-list')[0].scrollHeight);
+    }
+
+    // --- Auto-grow textarea ---
+    function autoResizeTextarea(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    }
+
+    const msgInput = document.getElementById('message-input');
+    if (msgInput) {
+        msgInput.addEventListener('input', function() {
+            autoResizeTextarea(this);
+        });
+
+        // Enter = send, Shift+Enter = newline
+        msgInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                $('#send').trigger('submit');
+            }
+        });
+
+        // Paste: strip HTML but preserve newlines
+        msgInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            var text = '';
+            if (e.clipboardData) {
+                // Prefer plain text; convert HTML line breaks if only HTML available
+                text = e.clipboardData.getData('text/plain');
+                if (!text) {
+                    var html = e.clipboardData.getData('text/html');
+                    text = html
+                        .replace(/<br\s*\/?>/gi, '\n')
+                        .replace(/<\/p>/gi, '\n')
+                        .replace(/<[^>]+>/g, '')
+                        .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ');
+                }
+            }
+            // Insert at cursor position
+            var start = this.selectionStart;
+            var end   = this.selectionEnd;
+            var before = this.value.substring(0, start);
+            var after  = this.value.substring(end);
+            this.value = before + text + after;
+            this.selectionStart = this.selectionEnd = start + text.length;
+            autoResizeTextarea(this);
+        });
     }
 
     $("#send").submit(function (e) {
@@ -85,8 +133,11 @@ $(function () {
             success: function (data) {
                 if(data.trim() !== '') {
                     $(".messages-list").append(data);
-                    $("input[name='message']").val('');
-                    $("#message-image-input").val(''); // clear file input
+                    // Reset textarea and shrink back to one row
+                    var ta = document.getElementById('message-input');
+                    ta.value = '';
+                    ta.style.height = 'auto';
+                    $("#message-image-input").val('');
                     scrollConversationScreen();
                 }
             }
@@ -162,8 +213,13 @@ $(function () {
         });
 
         document.querySelector('emoji-picker').addEventListener('emoji-click', event => {
-            messageInput.value += event.detail.unicode;
-            messageInput.focus();
+            var ta = document.getElementById('message-input');
+            var start = ta.selectionStart;
+            var end   = ta.selectionEnd;
+            ta.value = ta.value.substring(0, start) + event.detail.unicode + ta.value.substring(end);
+            ta.selectionStart = ta.selectionEnd = start + event.detail.unicode.length;
+            ta.focus();
+            autoResizeTextarea(ta);
             emojiPickerContainer.classList.add('hidden');
         });
 
@@ -205,8 +261,10 @@ $(function () {
             success: function (data) {
                 if(data.trim() !== '') {
                     $(".messages-list").append(data);
-                    $("input[name='message']").val('');
-                    $("#message-image-input").val(''); // clear file input
+                    var ta = document.getElementById('message-input');
+                    ta.value = '';
+                    ta.style.height = 'auto';
+                    $("#message-image-input").val('');
                     toggleModal('imagePreviewModal');
                     scrollConversationScreen();
                 }

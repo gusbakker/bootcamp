@@ -24,7 +24,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         class="w-full sm:w-[360px] flex-shrink-0 border-r border-fb-lightBorder dark:border-fb-border flex flex-col bg-fb-lightSurface dark:bg-fb-surface relative z-10 {% if active %}hidden sm:flex{% endif %}">
         <!-- Header -->
         <div
-            class="p-4 flex items-center justify-between border-b border-fb-lightBorder dark:border-fb-border sticky top-0 bg-fb-lightSurface/95 dark:bg-fb-surface/95 backdrop-blur-sm z-20">
+            class="p-4 flex items-center justify-between border-b border-fb-lightBorder dark:border-fb-border sticky top-0 bg-fb-lightSurface dark:bg-fb-surface z-20">
             <h2 class="text-2xl font-bold text-fb-lightText dark:text-fb-text">{% trans 'Chats' %}</h2>
             <button
                 class="w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text hover:brightness-95 transition cursor-pointer">
@@ -106,7 +106,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         {% if active %}
         <!-- Active Chat Header -->
         <div
-            class="h-16 px-4 bg-fb-lightSurface dark:bg-fb-surface border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+            class="h-16 px-4 bg-fb-lightSurface dark:bg-fb-surface border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex items-center justify-between sticky top-0 z-20">
             {% for user, unread in users_dict.items %}
             {% if user.username == active %}
             <div class="flex items-center gap-3">
@@ -194,12 +194,12 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
                 </div>
 
                 <div
-                    class="flex-1 relative break-words bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-[20px] h-[40px] flex items-center px-3 border border-black/5 dark:border-white/5 focus-within:ring-1 focus-within:ring-fb-primary/50">
-                    <input type="text"
-                        class="form-control w-full bg-transparent border-none outline-none text-fb-lightText dark:text-fb-text text-[15px] placeholder-fb-lightMuted dark:placeholder-fb-muted break-words pr-8 m-0"
-                        name="message" placeholder="{% trans 'Aa' %}" maxlength="1000" autocomplete="off" id="message-input">
+                    class="flex-1 relative break-words bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-[20px] min-h-[40px] flex items-end px-3 py-2 border border-black/5 dark:border-white/5 focus-within:ring-1 focus-within:ring-fb-primary/50">
+                    <textarea
+                        class="w-full bg-transparent border-none outline-none text-fb-lightText dark:text-fb-text text-[15px] placeholder-fb-lightMuted dark:placeholder-fb-muted resize-none overflow-hidden leading-[1.4] pr-8 m-0 max-h-[160px] overflow-y-auto"
+                        name="message" placeholder="{% trans 'Aa' %}" maxlength="5000" autocomplete="off" id="message-input" rows="1"></textarea>
                     <button type="button" id="emoji-button"
-                        class="absolute right-3 text-fb-lightMuted dark:text-fb-muted hover:text-fb-primary transition flex items-center justify-center">
+                        class="flex-shrink-0 mb-0.5 ml-1 text-fb-lightMuted dark:text-fb-muted hover:text-fb-primary transition flex items-center justify-center">
                         <i class="fa-solid fa-face-smile text-[18px]"></i>
                     </button>
                 </div>

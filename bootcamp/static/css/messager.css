@@ -238,9 +238,21 @@
     gap: 0.5rem;
 }
 
-/* Fast opacity-only fade for message action buttons */
+/* ---- Per-message row: isolate layout + paint ---- */
+.msg-row {
+    contain: layout style;     /* isolate layout + style without clipping overflow */
+    position: relative;
+}
+
+/* Hide action buttons by default, show on row hover (pure CSS, no Tailwind group) */
 .msg-actions {
-    transition: opacity 120ms linear;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 100ms linear;
+}
+.msg-row:hover .msg-actions {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .empty-conversation {
