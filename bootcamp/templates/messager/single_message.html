@@ -1,6 +1,6 @@
 {% load static i18n humanize %}
 {% load thumbnail %}
-<div class="flex w-full {% if message.sender == current_user %}justify-end{% else %}justify-start{% endif %} msg-row {% if is_last_in_group %}mb-3{% else %}mb-0.5{% endif %} last:mb-0" id="message-{{message.uuid_id}}" data-message-id="{{message.uuid_id}}">
+<div class="flex w-full {% if message.sender == current_user %}justify-end{% else %}justify-start{% endif %} msg-row {% if is_last_in_group %}{% if message.reaction %}mb-5{% else %}mb-3{% endif %}{% else %}{% if message.reaction %}mb-4{% else %}mb-0.5{% endif %}{% endif %} last:mb-0" id="message-{{message.uuid_id}}" data-message-id="{{message.uuid_id}}">
 
     {# Avatar: only show on received messages, and only on the last message of a group #}
     {% if message.sender != current_user %}
@@ -18,7 +18,7 @@
     <div class="flex flex-col max-w-[70%] sm:max-w-[75%] {% if message.sender == current_user %}items-end{% else %}items-start{% endif %}">
         {# Row: bubble + action icons #}
         <div class="flex items-center gap-1 {% if message.sender == current_user %}flex-row-reverse{% endif %}">
-            <div id="message-container-{{message.uuid_id}}" class="relative {% if message.reaction %}pb-4{% endif %}">
+            <div id="message-container-{{message.uuid_id}}" class="relative">
                 <div id="message-bubble-{{message.uuid_id}}" data-tooltip="{{message.created|date:'N d, Y \a\t G:i'}}" class="msg-bubble-tooltip relative px-3.5 py-2 text-[15px] break-words leading-[1.35]
                             {% if message.sender == current_user %}
                                 bg-fb-primary text-white

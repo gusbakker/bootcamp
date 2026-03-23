@@ -322,11 +322,20 @@ $(function () {
             },
             success: function(response) {
                 let badge = $('#reaction-badge-' + messageId);
+                let container = $('#message-container-' + messageId);
+                let row = container.closest('.msg-row');
+                let isLastInGroup = row.hasClass('mb-3') || row.hasClass('mb-5');
                 if (response.reaction) {
                     badge.text(response.reaction);
                     badge.removeClass('hidden');
+                    // Add reaction clearance to row, remove old margin
+                    if (isLastInGroup) { row.removeClass('mb-3').addClass('mb-5'); }
+                    else { row.removeClass('mb-0.5').addClass('mb-4'); }
                 } else {
                     badge.addClass('hidden');
+                    // Restore normal margin
+                    if (isLastInGroup) { row.removeClass('mb-5').addClass('mb-3'); }
+                    else { row.removeClass('mb-4').addClass('mb-0.5'); }
                 }
                 
                 let dropdown = document.getElementById('msgReactOptions-' + messageId);
