@@ -243,7 +243,7 @@ $(function () {
                         let reactBadge = $('#reaction-badge-' + messageId);
                         if(reactBadge.length) reactBadge.remove();
                         
-                        let actionsMenu = $('#message-container-' + messageId).siblings('.opacity-0');
+                        let actionsMenu = $('#message-container-' + messageId).siblings('.msg-actions');
                         if (actionsMenu.length) actionsMenu.remove();
 
                         toggleModal('deleteMessageModal');

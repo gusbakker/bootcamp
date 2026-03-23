@@ -231,6 +231,16 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    /* Promote to own GPU layer so content above/below doesn't repaint on scroll */
+    will-change: transform;
+    contain: layout;
+    /* Ensure rows have a little breathing room */
+    gap: 0.5rem;
+}
+
+/* Fast opacity-only fade for message action buttons */
+.msg-actions {
+    transition: opacity 120ms linear;
 }
 
 .empty-conversation {
@@ -279,7 +289,7 @@
     padding: 0.6rem 1rem;
     border-radius: 1.2rem;
     font-size: 0.95rem;
-    line-height: MEDIA_QUERY_PLACEHOLDER 1.4;
+    line-height: 1.4;
     position: relative;
     word-wrap: break-word;
     color: var(--bs-body-color, #E4E6EB);

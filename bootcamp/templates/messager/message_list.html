@@ -5,7 +5,11 @@
 {% trans 'Messages' %}
 {% endblock %}
 {% block head %}
-<link href="{% static 'css/messager.css' %}?v=2" rel="stylesheet">
+<link href="{% static 'css/messager.css' %}?v=3" rel="stylesheet">
+<style>
+    /* Messenger page: viewport-filling layout — hide the outer page scrollbar */
+    body { overflow: hidden !important; }
+</style>
 {% endblock head %}
 {% block main_class %}
 w-full max-w-full px-0 xl:px-0 lg:px-0
@@ -102,7 +106,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         {% if active %}
         <!-- Active Chat Header -->
         <div
-            class="h-16 px-4 bg-fb-lightSurface/95 dark:bg-fb-surface/95 border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm">
+            class="h-16 px-4 bg-fb-lightSurface dark:bg-fb-surface border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex items-center justify-between sticky top-0 z-20 shadow-sm">
             {% for user, unread in users_dict.items %}
             {% if user.username == active %}
             <div class="flex items-center gap-3">
@@ -144,7 +148,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
             {% endfor %}
         </div>
         <!-- Messages List -->
-        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 messages-list flex flex-col">
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 messages-list flex flex-col">
             {% if message_list %}
             {% for message in message_list %}
             {% include 'messager/single_message.html' with message=message active=active current_user=request.user %}
@@ -166,7 +170,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         </div>
         <!-- Chat Input Box -->
         <div
-            class="p-3 bg-fb-lightSurface/95 dark:bg-fb-surface/95 border-t border-fb-lightBorder/50 dark:border-fb-border/50 sticky bottom-0 z-20 backdrop-blur-md pb-6 sm:pb-3">
+            class="p-3 bg-fb-lightSurface dark:bg-fb-surface border-t border-fb-lightBorder/50 dark:border-fb-border/50 sticky bottom-0 z-20 pb-6 sm:pb-3">
             <form role="form" method="post" action="#" id="send" class="m-0 flex items-center gap-2">
                 {% csrf_token %}
                 <input type="hidden" name="to" value="{{active}}">
@@ -299,6 +303,19 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
 <script type="module" src="https://unpkg.com/emoji-picker-element@1"></script>
 <script type="text/javascript">
     var activeUser = "{{active}}";
+
+    // Keep the body overflow hidden even after toggleModal restores it
+    // (toggleModal in base.html sets overflow:'auto' on close — override for messenger)
+    var _basToggleModal = window.toggleModal;
+    window.toggleModal = function(id) {
+        _basToggleModal(id);
+        // After the base handler runs, always restore hidden on the messenger page
+        var modal = document.getElementById(id);
+        if (modal && modal.classList.contains('hidden')) {
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
     // Auto-scroll to bottom of chat
     window.onload = function () {
         var msgs = $('.messages-list');

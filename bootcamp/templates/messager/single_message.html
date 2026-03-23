@@ -27,7 +27,7 @@
                 {% endif %}
 
                 <!-- Reaction Badge -->
-                <div id="reaction-badge-{{message.uuid_id}}" class="absolute -bottom-3 -right-2 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder/50 dark:border-fb-border/50 rounded-full px-1.5 py-0.5 shadow-sm text-[14px] z-10 cursor-pointer transform hover:scale-110 transition {% if not message.reaction %}hidden{% endif %}" onclick="reactToMessage('{{message.uuid_id}}', '{{message.reaction}}')">
+                <div id="reaction-badge-{{message.uuid_id}}" class="absolute -bottom-3 -right-2 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder/50 dark:border-fb-border/50 rounded-full px-1.5 py-0.5 shadow-sm text-[14px] z-10 cursor-pointer hover:opacity-80 {% if not message.reaction %}hidden{% endif %}" onclick="reactToMessage('{{message.uuid_id}}', '{{message.reaction}}')">
                     {{message.reaction}}
                 </div>
             </div>
@@ -35,7 +35,7 @@
         </div>
 
         <!-- Actions Menu -->
-        <div class="opacity-0 group-hover/message:opacity-100 transition-opacity flex items-center gap-2 flex-shrink-0 z-20 relative {% if message.message == 'Message deleted' %}hidden{% endif %}">
+        <div class="opacity-0 group-hover/message:opacity-100 flex items-center gap-2 flex-shrink-0 z-20 relative msg-actions {% if message.message == 'Message deleted' %}hidden{% endif %}">
             
             <!-- Hover Timestamp -->
             <span class="text-[11px] text-fb-lightMuted dark:text-fb-muted whitespace-nowrap pointer-events-none {% if message.sender == current_user %}order-first{% else %}order-last{% endif %}">
@@ -48,11 +48,11 @@
                     <i class="fa-solid fa-face-smile text-[14px]"></i>
                 </button>
                 <div id="msgReactOptions-{{message.uuid_id}}" class="hidden absolute bottom-10 {% if message.sender == current_user %}right-0{% else %}left-0{% endif %} bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-full shadow-xl py-1.5 px-3 flex items-center gap-3 text-2xl w-max">
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '👍')" class="hover:scale-125 hover:-translate-y-1 transition transform cursor-pointer">👍</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '❤️')" class="hover:scale-125 hover:-translate-y-1 transition transform cursor-pointer">❤️</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '😂')" class="hover:scale-125 hover:-translate-y-1 transition transform cursor-pointer">😂</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '😮')" class="hover:scale-125 hover:-translate-y-1 transition transform cursor-pointer">😮</button>
-                    <button onclick="reactToMessage('{{message.uuid_id}}', '😢')" class="hover:scale-125 hover:-translate-y-1 transition transform cursor-pointer">😢</button>
+                    <button onclick="reactToMessage('{{message.uuid_id}}', '👍')" class="hover:opacity-80 cursor-pointer">👍</button>
+                    <button onclick="reactToMessage('{{message.uuid_id}}', '❤️')" class="hover:opacity-80 cursor-pointer">❤️</button>
+                    <button onclick="reactToMessage('{{message.uuid_id}}', '😂')" class="hover:opacity-80 cursor-pointer">😂</button>
+                    <button onclick="reactToMessage('{{message.uuid_id}}', '😮')" class="hover:opacity-80 cursor-pointer">😮</button>
+                    <button onclick="reactToMessage('{{message.uuid_id}}', '😢')" class="hover:opacity-80 cursor-pointer">😢</button>
                 </div>
             </div>
 
