@@ -74,6 +74,16 @@ class Message(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     message = models.TextField(max_length=1000, blank=True)
+    image = models.ImageField(upload_to="message_images/", blank=True, null=True)
+    reaction = models.CharField(max_length=255, blank=True)
+    reply_to = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='replies',
+        verbose_name=_("Reply To"),
+    )
     unread = models.BooleanField(default=True, db_index=True)
     objects = MessageQuerySet.as_manager()
 
@@ -92,7 +102,7 @@ class Message(models.Model):
             self.save()
 
     @staticmethod
-    def send_message(sender, recipient, message):
+    def send_message(sender, recipient, message, image=None, reply_to=None):
         """Method to create a new message in a conversation.
         :requires:
 
@@ -100,25 +110,30 @@ class Message(models.Model):
         :param recipient: User instance of the user to recieve the message.
         :param message: Text piece shorter than 1000 characters containing the
                         actual message.
+        :param image: Optional image to attach to the message.
+        :param reply_to: Optional Message instance to reply to.
         """
         new_message = Message.objects.create(
-            sender=sender, recipient=recipient, message=message
+            sender=sender, recipient=recipient, message=message, image=image,
+            reply_to=reply_to
         )
-        channel_layer = get_channel_layer()
-        payload = {
-            "type": "receive",
-            "key": "message",
-            "message_id": str(new_message.uuid_id),
-            "sender": str(sender),
-            "recipient": str(recipient),
-        }
-        transaction.on_commit(
-            lambda: async_to_sync(channel_layer.group_send)(recipient.username, payload)
-        )
-        notification_broadcast(
-            sender,
-            "message",
-            id_value=str(new_message.uuid_id),
-            recipient=recipient.username,
-        )
+        # Only notify the recipient if they haven't muted the sender
+        if not recipient.muted_users.filter(id=sender.id).exists():
+            channel_layer = get_channel_layer()
+            payload = {
+                "type": "receive_message",
+                "key": "message",
+                "message_id": str(new_message.uuid_id),
+                "sender": str(sender),
+                "recipient": str(recipient),
+            }
+            transaction.on_commit(
+                lambda: async_to_sync(channel_layer.group_send)(recipient.username, payload)
+            )
+            notification_broadcast(
+                sender,
+                "message",
+                id_value=str(new_message.uuid_id),
+                recipient=recipient.username,
+            )
         return new_message

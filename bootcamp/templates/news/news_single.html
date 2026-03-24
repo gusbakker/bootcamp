@@ -21,7 +21,7 @@
                         </a>
                     </div>
                     <div class="flex items-center text-xs text-fb-lightMuted dark:text-fb-muted">
-                        <span class="timestamp hover:underline cursor-pointer">{{news.timestamp|naturaltime}}</span>
+                        <span class="timestamp hover:underline cursor-pointer">{{news.created|naturaltime}}</span>
                         <span class="mx-1">&middot;</span>
                         <i class="fa-solid fa-earth-americas text-[10px]" title="Public"></i>
                     </div>
@@ -37,7 +37,8 @@
                     {% if news.user == request.user %}
                         <a href="#"
                            class="remove-news flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-md transition text-red-500"
-                           data-news-id="{{news.uuid_id}}">
+                           data-news-id="{{news.uuid_id}}"
+                           data-type="post">
                             <i class="fa fa-trash-o text-xl w-6 text-center"></i>
                             <span class="font-semibold">{% trans 'Delete Post' %}</span>
                         </a>
@@ -96,16 +97,28 @@
         {% endthumbnail %}
         <!-- Interactive summary -->
         <div class="px-4 py-2 flex items-center justify-between text-fb-lightMuted dark:text-fb-muted text-[15px] border-b border-fb-lightBorder dark:border-fb-border border-opacity-50">
-            <div class="flex items-center gap-2 cursor-pointer hover:underline">
-                <div class="flex items-center">
-                    <div class="w-5 h-5 rounded-full bg-fb-primary flex items-center justify-center border-2 border-fb-lightSurface dark:border-fb-surface z-10">
-                        <i class="fa-solid fa-thumbs-up text-white text-[10px]"></i>
+            <div class="flex items-center gap-2 relative">
+                <div class="flex items-center cursor-pointer hover:underline" onclick="showLikers('{{news.uuid_id}}')">
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded-full bg-fb-primary flex items-center justify-center border-2 border-fb-lightSurface dark:border-fb-surface z-10">
+                            <i class="fa-solid fa-thumbs-up text-white text-[10px]"></i>
+                        </div>
+                    </div>
+                    <span class="like-count ms-1">{{news.count_likers}}</span>
+                </div>
+
+                <!-- Likers Dropdown -->
+                <div id="likers-dropdown-{{news.uuid_id}}" class="hidden absolute bottom-full left-0 mb-2 w-64 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder/50 dark:border-fb-border/50 rounded-xl shadow-xl z-50 overflow-hidden flex-col">
+                    <div class="p-2 border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex justify-between items-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover">
+                        <span class="text-xs font-bold px-2 text-fb-lightText dark:text-fb-text">{% trans 'Likes' %}</span>
+                    </div>
+                    <div class="p-1 overflow-y-auto max-h-48 news-likers-list" id="likers-list-{{news.uuid_id}}">
+                        <!-- Populated via AJAX -->
                     </div>
                 </div>
-                <span class="like-count hover:underline">{{news.count_likers}}</span>
             </div>
             <div class="flex gap-3">
-                <span class="hover:underline cursor-pointer"><span class="comment-count">{{news.count_thread}}</span>
+                <span class="hover:underline cursor-pointer comment-trigger" data-news-id="{{news.uuid_id}}"><span class="comment-count">{{news.count_thread}}</span>
             {% trans 'comments' %}</span>
         </div>
     </div>
@@ -129,11 +142,27 @@
             <i class="fa-regular fa-comment text-xl"></i>
             <span>{% trans 'Comment' %}</span>
         </a>
-        <a href="#"
-           class="share flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted font-semibold transition cursor-pointer text-decoration-none">
-            <i class="fa-solid fa-share text-xl"></i>
-            <span>{% trans 'Share' %}</span>
-        </a>
+        <div class="relative flex-1">
+            <button onclick="toggleDropdown('shareOptions-{{news.uuid_id}}')"
+               class="share w-full flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted font-semibold transition cursor-pointer text-decoration-none">
+                <i class="fa-solid fa-share text-xl"></i>
+                <span>{% trans 'Share' %}</span>
+            </button>
+            <div id="shareOptions-{{news.uuid_id}}"
+                 class="hidden absolute right-0 bottom-full mb-2 w-72 bg-fb-lightSurface dark:bg-fb-surface rounded-lg shadow-xl border border-fb-lightBorder dark:border-fb-border p-3 z-30">
+                <h4 class="font-bold text-fb-lightText dark:text-fb-text text-sm mb-2">{% trans 'Copy Link' %}</h4>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="shareInput-{{news.uuid_id}}" 
+                           value="{{request.scheme}}://{{request.get_host}}{% url 'news:news' news.uuid_id %}" 
+                           class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text text-xs p-2 rounded border border-fb-lightBorder dark:border-fb-border focus:outline-none" readonly>
+                    <button onclick="copyToClipboard('shareInput-{{news.uuid_id}}', this)" 
+                            class="w-8 h-8 rounded shrink-0 bg-fb-primary text-white flex items-center justify-center hover:bg-blue-600 transition"
+                            title="{% trans 'Copy to clipboard' %}">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </li>

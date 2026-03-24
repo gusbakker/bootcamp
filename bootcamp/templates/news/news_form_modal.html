@@ -32,10 +32,46 @@
                             {{request.user.get_full_name|default:request.user.username}}
                         </h4>
                         <!-- Simulated audience selector -->
-                        <button type="button"
-                                class="flex items-center gap-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text px-2 py-0.5 rounded-md text-xs font-semibold mt-1">
-                            <i class="fa-solid fa-user-group text-[10px]"></i> {% trans 'Friends' %} <i class="fa-solid fa-caret-down ml-1"></i>
-                        </button>
+                        <div class="relative inline-block mt-1">
+                            <button type="button" onclick="toggleDropdown('privacyDropdown')"
+                                    class="flex items-center gap-1 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text px-2 py-0.5 rounded-md text-xs font-semibold hover:bg-gray-200 dark:hover:bg-[#4e4f50] transition">
+                                <i id="privacyIcon" class="fa-solid fa-user-group text-[10px]"></i> 
+                                <span id="privacyText">{% trans 'Friends' %}</span> 
+                                <i class="fa-solid fa-caret-down ml-1"></i>
+                            </button>
+                            <!-- Privacy Dropdown -->
+                            <div id="privacyDropdown" class="hidden absolute left-0 top-full mt-1 w-64 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-lg shadow-xl z-50 py-2">
+                                <div class="px-3 pb-2 border-b border-fb-lightBorder dark:border-fb-border mb-2">
+                                    <h4 class="font-bold text-fb-lightText dark:text-fb-text text-sm">Select audience</h4>
+                                </div>
+                                <button type="button" onclick="selectPrivacy('Public', 'fa-earth-americas')" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition text-left text-fb-lightText dark:text-fb-text">
+                                    <div class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text">
+                                        <i class="fa-solid fa-earth-americas text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-[15px]">Public</p>
+                                        <p class="text-xs text-fb-lightMuted dark:text-fb-muted">Anyone on or off Connect</p>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectPrivacy('Friends', 'fa-user-group')" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition text-left text-fb-lightText dark:text-fb-text">
+                                    <div class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text">
+                                        <i class="fa-solid fa-user-group text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-[15px]">Friends</p>
+                                        <p class="text-xs text-fb-lightMuted dark:text-fb-muted">Your friends on Connect</p>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectPrivacy('Only me', 'fa-lock')" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition text-left text-fb-lightText dark:text-fb-text">
+                                    <div class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text">
+                                        <i class="fa-solid fa-lock text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-[15px]">Only me</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <textarea id="newsInput"
@@ -213,4 +249,10 @@
       modalObserver.observe(modalTarget, { attributes: true });
     }
   });
+
+  function selectPrivacy(text, iconClass) {
+      document.getElementById('privacyText').textContent = text;
+      document.getElementById('privacyIcon').className = 'fa-solid ' + iconClass + ' text-[10px]';
+      document.getElementById('privacyDropdown').classList.add('hidden');
+  }
 </script>

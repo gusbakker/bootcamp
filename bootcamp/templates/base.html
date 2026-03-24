@@ -82,12 +82,27 @@
                         {% if not hide_search %}
                             <form action="{% url 'search:results' %}"
                                   method="GET"
-                                  class="hidden md:flex items-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-full px-3 py-2 w-64 h-10">
+                                  class="hidden md:flex items-center bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-full px-3 py-2 w-64 h-10 relative">
                                 <i class="fa-solid fa-search text-fb-lightMuted dark:text-fb-muted"></i>
                                 <input type="text"
+                                       id="global-search-input"
                                        name="query"
+                                       autocomplete="off"
                                        placeholder="{% trans 'Search Anything' %}"
                                        class="bg-transparent border-none outline-none text-fb-lightText dark:text-fb-text ml-2 w-full placeholder-fb-lightMuted dark:placeholder-fb-muted">
+                                
+                                <!-- Search Dropdown -->
+                                <div id="global-search-dropdown" class="hidden absolute top-12 left-0 w-80 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder/50 dark:border-fb-border/50 rounded-xl shadow-xl z-50 overflow-hidden flex-col max-h-[70vh]">
+                                    <div class="p-2 overflow-y-auto" id="global-search-results">
+                                        <!-- Populated via Javascript -->
+                                    </div>
+                                    <div id="global-search-loading" class="hidden p-4 flex justify-center items-center">
+                                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-fb-primary"></div>
+                                    </div>
+                                    <button type="submit" class="w-full text-center py-3 bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover hover:brightness-95 transition text-fb-primary font-semibold text-[15px] border-t border-fb-lightBorder/50 dark:border-fb-border/50">
+                                        {% trans 'Search All Results' %}
+                                    </button>
+                                </div>
                             </form>
                         {% endif %}
                     </div>
@@ -151,7 +166,7 @@
                         <div class="relative">
                             <button onclick="toggleDropdown('profileMenu')"
                                     class="w-10 h-10 rounded-full overflow-hidden border border-fb-lightBorder dark:border-fb-border ml-1 focus:outline-none">
-                                <img src="{{user.get_picture}}"
+                                <img src="{{request.user.get_picture}}"
                                      alt="Profile"
                                      class="w-full h-full object-cover">
                             </button>
@@ -159,7 +174,7 @@
                                  class="hidden absolute right-0 mt-2 w-80 bg-fb-lightSurface dark:bg-fb-surface rounded-lg shadow-xl border border-fb-lightBorder dark:border-fb-border p-3 z-50">
                                 <a href="{% url 'users:detail' request.user.username %}"
                                    class="flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg cursor-pointer transition shadow-sm border border-fb-lightBorder dark:border-fb-border mb-2">
-                                    <img src="{{user.get_picture}}" class="w-12 h-12 rounded-full">
+                                    <img src="{{request.user.get_picture}}" class="w-12 h-12 rounded-full">
                                     <div>
                                         <h3 class="font-semibold text-fb-lightText dark:text-fb-text">
                                             {{request.user.get_full_name|default:request.user.username}}
@@ -207,7 +222,7 @@
                             <li>
                                 <a href="{% url 'users:detail' request.user.username %}"
                                    class="w-full flex items-center gap-3 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition">
-                                    <img src="{{user.get_picture}}" class="w-8 h-8 rounded-full">
+                                    <img src="{{request.user.get_picture}}" class="w-8 h-8 rounded-full">
                                     <span class="font-medium">{{request.user.get_full_name|default:request.user.username}}</span>
                                 </a>
                             </li>
@@ -326,8 +341,16 @@
                 profileMenu.classList.add('hidden');
             }
 
+            // Close dynamic postOptions, shareOptions, and msgOptions dropdowns
+            document.querySelectorAll('[id^="postOptions-"], [id^="shareOptions-"], [id="privacyDropdown"], [id^="msgReactOptions-"], [id^="msgMoreOptions-"], [id^="userMsgOptions-"]').forEach(dropdown => {
+                const id = dropdown.id;
+                if (!e.target.closest(`#${id}`) && !e.target.closest(`button[onclick*="toggleDropdown('${id}')"]`) && !e.target.closest(`a[onclick*="toggleDropdown('${id}')"]`)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
             // Close modals on outside click
-            ['newsFormModal', 'newsThreadModal'].forEach(id => {
+            ['newsFormModal', 'newsThreadModal', 'newsDeleteModal'].forEach(id => {
                 const modal = document.getElementById(id);
                 if (modal && e.target === modal) toggleModal(id);
             });
@@ -360,6 +383,20 @@
                 });
             }, 4000);
         });
+
+        function copyToClipboard(inputId, btnRef) {
+            var copyText = document.getElementById(inputId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                const icon = btnRef.querySelector('i');
+                if (icon) {
+                    const oldClass = icon.className;
+                    icon.className = "fa-solid fa-check text-green-500 text-xl";
+                    setTimeout(() => { icon.className = oldClass; }, 2000);
+                }
+            });
+        }
                 </script>
             {% endblock javascript %}
             {% block modal %}

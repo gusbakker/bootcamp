@@ -5,7 +5,11 @@
 {% trans 'Messages' %}
 {% endblock %}
 {% block head %}
-<link href="{% static 'css/messager.css' %}?v=2" rel="stylesheet">
+<link href="{% static 'css/messager.css' %}?v=3" rel="stylesheet">
+<style>
+    /* Messenger page: viewport-filling layout — hide the outer page scrollbar */
+    body { overflow: hidden !important; }
+</style>
 {% endblock head %}
 {% block main_class %}
 w-full max-w-full px-0 xl:px-0 lg:px-0
@@ -20,7 +24,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         class="w-full sm:w-[360px] flex-shrink-0 border-r border-fb-lightBorder dark:border-fb-border flex flex-col bg-fb-lightSurface dark:bg-fb-surface relative z-10 {% if active %}hidden sm:flex{% endif %}">
         <!-- Header -->
         <div
-            class="p-4 flex items-center justify-between border-b border-fb-lightBorder dark:border-fb-border sticky top-0 bg-fb-lightSurface/95 dark:bg-fb-surface/95 backdrop-blur-sm z-20">
+            class="p-4 flex items-center justify-between border-b border-fb-lightBorder dark:border-fb-border sticky top-0 bg-fb-lightSurface dark:bg-fb-surface z-20">
             <h2 class="text-2xl font-bold text-fb-lightText dark:text-fb-text">{% trans 'Chats' %}</h2>
             <button
                 class="w-9 h-9 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover flex items-center justify-center text-fb-lightText dark:text-fb-text hover:brightness-95 transition cursor-pointer">
@@ -32,7 +36,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
             <div class="relative">
                 <i
                     class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-fb-lightMuted dark:text-fb-muted"></i>
-                <input type="text"
+                <input type="text" id="messenger-search"
                     class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text rounded-full py-2 pl-9 pr-4 focus:outline-none focus:ring-1 focus:ring-fb-primary/50 text-[15px] placeholder-fb-lightMuted dark:placeholder-fb-muted"
                     placeholder="{% trans 'Search Messenger' %}">
             </div>
@@ -40,37 +44,59 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         <!-- Chat List -->
         <div class="flex-1 overflow-y-auto no-scrollbar p-2 space-y-1 users-list">
             {% for user, unread_messages in users_dict.items %}
-            <a href="{% url 'messager:conversation_detail' user.username %}"
-                class="chat-user flex items-center gap-3 p-2 rounded-xl transition cursor-pointer relative {% if active == user.username %}bg-blue-50/80 dark:bg-blue-900/20{% else %}hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover{% endif %}">
+            <div class="relative group/user flex items-center">
+                <a href="{% url 'messager:conversation_detail' user.username %}"
+                    class="chat-user w-full flex items-center gap-3 p-2 rounded-xl transition cursor-pointer relative {% if active == user.username %}bg-blue-50/80 dark:bg-blue-900/20{% else %}hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover{% endif %}">
 
-                <div class="relative flex-shrink-0">
-                    <img src="{{user.get_picture}}"
-                        class="w-14 h-14 rounded-full object-cover border border-black/5 dark:border-white/5"
-                        alt="{% trans 'User Image' %}">
-                    <div
-                        class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface">
+                    <div class="relative flex-shrink-0">
+                        <img src="{{user.get_picture}}"
+                            class="w-14 h-14 rounded-full object-cover border border-black/5 dark:border-white/5"
+                            alt="{% trans 'User Image' %}">
+                        <div
+                            class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-fb-lightSurface dark:border-fb-surface">
+                        </div>
+                    </div>
+
+                    <div class="flex-1 min-w-0 pr-6">
+                        <div class="flex items-center justify-between mb-0.5">
+                            <h3 class="text-[15px] font-semibold text-fb-lightText dark:text-fb-text truncate">
+                                {{user.get_profile_name|title}}</h3>
+                        </div>
+                        <p
+                            class="text-[13px] {% if unread_messages %}font-semibold text-fb-lightText dark:text-fb-text{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %} truncate">
+                            @{{user.username}}
+                        </p>
+                    </div>
+
+                    {% if unread_messages %}
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 min-w-[12px] h-4 px-1 bg-fb-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center badge transition-opacity group-hover/user:opacity-0"
+                        id="new-message-{{user.username}}">
+                        {{unread_messages}}
+                    </div>
+                    {% endif %}
+                </a>
+
+                <!-- 3 Dots Options Menu -->
+                <div class="opacity-0 group-hover/user:opacity-100 transition-opacity absolute right-3 z-20">
+                    <button onclick="toggleDropdown('userMsgOptions-{{user.username}}'); event.preventDefault();" class="w-8 h-8 rounded-full bg-fb-lightSurface dark:bg-fb-surface shadow-md border border-fb-lightBorder/50 dark:border-fb-border/50 hover:brightness-95 text-fb-lightText dark:text-fb-text flex items-center justify-center transition cursor-pointer">
+                        <i class="fa-solid fa-ellipsis text-[16px]"></i>
+                    </button>
+                    <div id="userMsgOptions-{{user.username}}" class="hidden absolute top-10 right-0 bg-fb-lightSurface dark:bg-fb-surface border border-fb-lightBorder dark:border-fb-border rounded-xl shadow-xl py-2 w-56 flex flex-col items-stretch z-[100]">
+                        <a href="{% url 'users:detail' user.username %}" class="text-left px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text font-semibold transition cursor-pointer text-[15px] flex items-center gap-2">
+                            <div class="w-6 flex justify-center text-lg"><i class="fa-solid fa-user"></i></div> {% trans 'View Profile' %}
+                        </a>
+                        <!-- Mute / Unmute -->
+                        <button onclick="muteConversation('{{user.username}}'); event.preventDefault();" class="text-left px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightText dark:text-fb-text font-semibold transition cursor-pointer text-[15px] flex items-center gap-2">
+                            <div class="w-6 flex justify-center text-[16px]"><i id="mute-icon-{{user.username}}" class="fa-solid {% if user in request.user.muted_users.all %}fa-bell{% else %}fa-bell-slash{% endif %}"></i></div>
+                            <span id="mute-text-{{user.username}}">{% if user in request.user.muted_users.all %}{% trans 'Unmute Notifications' %}{% else %}{% trans 'Mute Notifications' %}{% endif %}</span>
+                        </button>
+                        <!-- Delete Chat -->
+                        <button onclick="confirmDeleteConversation('{{user.username}}'); event.preventDefault();" class="text-left px-4 py-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-red-500 font-semibold transition cursor-pointer text-[15px] flex items-center gap-2">
+                            <div class="w-6 flex justify-center text-lg"><i class="fa-solid fa-trash-can"></i></div> {% trans 'Delete Chat' %}
+                        </button>
                     </div>
                 </div>
-
-                <div class="flex-1 min-w-0 pr-6">
-                    <div class="flex items-center justify-between mb-0.5">
-                        <h3 class="text-[15px] font-semibold text-fb-lightText dark:text-fb-text truncate">
-                            {{user.get_profile_name|title}}</h3>
-                        <!-- Can place mock timestamp here if desired -->
-                    </div>
-                    <p
-                        class="text-[13px] {% if unread_messages %}font-semibold text-fb-lightText dark:text-fb-text{% else %}text-fb-lightMuted dark:text-fb-muted{% endif %} truncate">
-                        @{{user.username}}
-                    </p>
-                </div>
-
-                {% if unread_messages %}
-                <div class="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 bg-fb-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center badge"
-                    id="new-message-{{user.username}}">
-                    {{unread_messages}}
-                </div>
-                {% endif %}
-            </a>
+            </div>
             {% endfor %}
         </div>
     </div>
@@ -80,7 +106,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         {% if active %}
         <!-- Active Chat Header -->
         <div
-            class="h-16 px-4 bg-fb-lightSurface/95 dark:bg-fb-surface/95 border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm">
+            class="h-16 px-4 bg-fb-lightSurface dark:bg-fb-surface border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex items-center justify-between sticky top-0 z-20">
             {% for user, unread in users_dict.items %}
             {% if user.username == active %}
             <div class="flex items-center gap-3">
@@ -122,10 +148,33 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
             {% endfor %}
         </div>
         <!-- Messages List -->
-        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 messages-list flex flex-col">
-            {% if message_list %}
-            {% for message in message_list %}
-            {% include 'messager/single_message.html' with message=message active=active current_user=request.user %}
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 messages-list flex flex-col">
+            {% if grouped_messages %}
+            {% for message in grouped_messages %}
+
+            {# Date separator: appears when the date changes between messages #}
+            {% ifchanged message.created|date:'Y-m-d' %}
+            <div class="flex items-center justify-center my-4">
+                <span class="text-[12px] text-fb-lightMuted dark:text-fb-muted bg-fb-lightBg dark:bg-fb-bg px-3 py-1 rounded-full font-medium">
+                    {% now "Y-m-d" as today %}
+                    {% if message.created|date:'Y-m-d' == today %}
+                        {% trans 'Today' %}
+                    {% else %}
+                        {{message.created|date:'N d, Y'}}
+                    {% endif %}
+                </span>
+            </div>
+            {% endifchanged %}
+
+            {% include 'messager/single_message.html' with message=message active=active current_user=request.user show_avatar=message.show_avatar is_first_in_group=message.is_first_in_group is_last_in_group=message.is_last_in_group %}
+
+            {# Seen indicator: only after the very last message, if sent by me and read #}
+            {% if forloop.last and message.sender == request.user and not message.unread %}
+            <div class="flex justify-end mt-0.5 pr-1">
+                <span class="text-[11px] text-fb-lightMuted dark:text-fb-muted">{% trans 'Seen' %}</span>
+            </div>
+            {% endif %}
+
             {% endfor %}
             {% else %}
             <div class="flex-1 flex flex-col items-center justify-center text-center px-4 mt-10">
@@ -144,20 +193,36 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
         </div>
         <!-- Chat Input Box -->
         <div
-            class="p-3 bg-fb-lightSurface/95 dark:bg-fb-surface/95 border-t border-fb-lightBorder/50 dark:border-fb-border/50 sticky bottom-0 z-20 backdrop-blur-md pb-6 sm:pb-3">
-            <form role="form" method="post" action="#" id="send" class="m-0 flex items-end gap-2">
+            class="bg-fb-lightSurface dark:bg-fb-surface border-t border-fb-lightBorder/50 dark:border-fb-border/50 sticky bottom-0 z-20 pb-6 sm:pb-3">
+            <!-- Reply Preview Bar -->
+            <div id="reply-bar" class="hidden px-4 py-2 bg-fb-lightSurfaceHover/50 dark:bg-fb-surfaceHover/50 border-b border-fb-lightBorder/30 dark:border-fb-border/30 flex items-center gap-3">
+                <div class="flex-1 min-w-0">
+                    <div class="text-[12px] font-semibold text-fb-primary">{% trans 'Replying to' %} <span id="reply-bar-name"></span></div>
+                    <div id="reply-bar-text" class="text-[13px] text-fb-lightMuted dark:text-fb-muted truncate"></div>
+                </div>
+                <button type="button" onclick="cancelReply()" class="w-6 h-6 rounded-full hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted flex items-center justify-center cursor-pointer flex-shrink-0">
+                    <i class="fa-solid fa-times text-sm"></i>
+                </button>
+            </div>
+
+            <div class="p-3">
+            <form role="form" method="post" action="#" id="send" class="m-0 flex items-center gap-2">
                 {% csrf_token %}
                 <input type="hidden" name="to" value="{{active}}">
+                <input type="hidden" name="reply_to" id="reply-to-input" value="">
 
-                <div class="flex items-center gap-1 pb-1">
+                <div class="flex items-center gap-1">
                     <button type="button"
                         class="w-8 h-8 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center border-none bg-transparent cursor-pointer ml-1">
                         <i class="fa-solid fa-circle-plus text-xl"></i>
                     </button>
-                    <button type="button"
-                        class="w-8 h-8 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center border-none bg-transparent cursor-pointer">
+                    <!-- IMAGE UPLOAD -->
+                    <label for="message-image-input" 
+                        class="w-8 h-8 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center border-none bg-transparent cursor-pointer m-0">
                         <i class="fa-regular fa-image text-xl"></i>
-                    </button>
+                    </label>
+                    <input type="file" id="message-image-input" name="image" accept="image/*" class="hidden">
+                    <!-- END IMAGE UPLOAD -->
                     <button type="button"
                         class="w-8 h-8 rounded-full text-fb-primary hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition flex items-center justify-center border-none bg-transparent cursor-pointer mr-1 hidden sm:flex">
                         <i class="fa-solid fa-note-sticky text-xl"></i>
@@ -166,11 +231,11 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
 
                 <div
                     class="flex-1 relative break-words bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-[20px] min-h-[40px] flex items-end px-3 py-2 border border-black/5 dark:border-white/5 focus-within:ring-1 focus-within:ring-fb-primary/50">
-                    <input type="text"
-                        class="form-control w-full bg-transparent border-none outline-none text-fb-lightText dark:text-fb-text text-[15px] placeholder-fb-lightMuted dark:placeholder-fb-muted break-words pr-8 min-h-[24px]"
-                        name="message" placeholder="{% trans 'Aa' %}" maxlength="1000" autocomplete="off" required>
-                    <button type="button"
-                        class="absolute right-3 bottom-2 text-fb-lightMuted dark:text-fb-muted hover:text-fb-primary transition">
+                    <textarea
+                        class="w-full bg-transparent border-none outline-none text-fb-lightText dark:text-fb-text text-[15px] placeholder-fb-lightMuted dark:placeholder-fb-muted resize-none overflow-hidden leading-[1.4] pr-8 m-0 max-h-[160px] overflow-y-auto"
+                        name="message" placeholder="{% trans 'Aa' %}" maxlength="5000" autocomplete="off" id="message-input" rows="1"></textarea>
+                    <button type="button" id="emoji-button"
+                        class="flex-shrink-0 mb-0.5 ml-1 text-fb-lightMuted dark:text-fb-muted hover:text-fb-primary transition flex items-center justify-center">
                         <i class="fa-solid fa-face-smile text-[18px]"></i>
                     </button>
                 </div>
@@ -181,6 +246,7 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
                     <i class="fa-solid fa-paper-plane text-xl"></i>
                 </button>
             </form>
+            </div>
         </div>
         {% else %}
         <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
@@ -202,8 +268,103 @@ w-full max-w-full px-0 xl:px-0 lg:px-0
 </div>
 {% endblock content %}
 {% block modal %}
+<div id="emoji-picker-container" class="hidden absolute right-4 sm:right-10 bottom-[80px] sm:bottom-[70px] z-50 shadow-xl rounded-xl overflow-hidden border border-fb-lightBorder dark:border-fb-border">
+    <emoji-picker></emoji-picker>
+</div>
+
+<!-- Image Preview Modal -->
+<div id="imagePreviewModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-md rounded-xl shadow-xl border border-fb-lightBorder dark:border-fb-border overflow-hidden mx-4">
+        <div class="flex justify-between items-center p-4 border-b border-fb-lightBorder/50 dark:border-fb-border/50">
+            <h3 class="font-bold text-lg text-fb-lightText dark:text-fb-text">{% trans 'Send Image' %}</h3>
+            <button onclick="toggleModal('imagePreviewModal'); document.getElementById('message-image-input').value='';" class="w-8 h-8 rounded-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover text-fb-lightMuted dark:text-fb-muted hover:text-red-500 transition flex items-center justify-center cursor-pointer">
+                <i class="fa-solid fa-times text-lg"></i>
+            </button>
+        </div>
+        <div class="p-4 flex flex-col items-center">
+            <img id="imagePreviewImg" class="max-h-64 object-contain rounded-lg shadow-sm border border-black/5 dark:border-white/5 mb-4" src="" alt="Preview">
+            <input type="text" id="imagePreviewCaption" class="w-full bg-fb-lightSurfaceHover dark:bg-fb-surfaceHover rounded-full py-2 px-4 focus:outline-none focus:ring-1 focus:ring-fb-primary/50 text-fb-lightText dark:text-fb-text placeholder-fb-lightMuted dark:placeholder-fb-muted mb-4" placeholder="{% trans 'Add a caption...' %}" autocomplete="off">
+            <button onclick="sendImagePreview()" class="w-full bg-fb-primary hover:bg-blue-600 transition text-white font-bold py-2 rounded-lg cursor-pointer">
+                {% trans 'Send' %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Message Modal -->
+<div id="deleteMessageModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-sm rounded-xl shadow-xl border border-fb-lightBorder dark:border-fb-border overflow-hidden mx-4">
+        <div class="px-5 py-4 border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-fb-lightText dark:text-fb-text">{% trans 'Remove Message?' %}</h3>
+            <button onclick="toggleModal('deleteMessageModal')" class="text-fb-lightMuted dark:text-fb-muted hover:text-red-500 transition cursor-pointer">
+                <i class="fa-solid fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-5">
+            <p class="text-[15px] text-fb-lightText dark:text-fb-text mb-6">{% trans 'Are you sure you want to remove this message? This action cannot be undone.' %}</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="toggleModal('deleteMessageModal')" class="px-4 py-2 rounded-lg font-semibold hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition text-fb-lightText dark:text-fb-text cursor-pointer">
+                    {% trans 'Cancel' %}
+                </button>
+                <button id="confirmDeleteMsgBtn" class="px-5 py-2 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition shadow-sm cursor-pointer">
+                    {% trans 'Remove' %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Conversation Modal -->
+<div id="deleteConversationModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-fb-lightSurface dark:bg-fb-surface w-full max-w-sm rounded-xl shadow-xl border border-fb-lightBorder dark:border-fb-border overflow-hidden mx-4">
+        <div class="px-5 py-4 border-b border-fb-lightBorder/50 dark:border-fb-border/50 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-fb-lightText dark:text-fb-text">{% trans 'Delete Chat?' %}</h3>
+            <button onclick="toggleModal('deleteConversationModal')" class="text-fb-lightMuted dark:text-fb-muted hover:text-red-500 transition cursor-pointer">
+                <i class="fa-solid fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-5">
+            <p class="text-[15px] text-fb-lightText dark:text-fb-text mb-6">{% trans 'You cannot undo this action. This chat will be permanently deleted for both of you.' %}</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="toggleModal('deleteConversationModal')" class="px-4 py-2 rounded-lg font-semibold hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover transition text-fb-lightText dark:text-fb-text cursor-pointer">
+                    {% trans 'Cancel' %}
+                </button>
+                <button id="confirmDeleteConversationBtn" class="px-5 py-2 rounded-lg font-bold bg-red-500 hover:bg-red-600 text-white transition cursor-pointer shadow-sm">
+                    {% trans 'Delete' %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Image Lightbox -->
+<div id="imageLightbox" class="hidden fixed inset-0 z-[200] bg-black/90 flex items-center justify-center" onclick="closeLightbox(event)">
+    <div class="absolute top-4 right-4 flex items-center gap-3 z-10">
+        <a id="lightbox-download" href="#" download class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="{% trans 'Download' %}">
+            <i class="fa-solid fa-download text-lg"></i>
+        </a>
+        <button onclick="closeLightbox()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="{% trans 'Close' %}">
+            <i class="fa-solid fa-times text-xl"></i>
+        </button>
+    </div>
+    <img id="lightbox-img" src="" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg" alt="Preview" onclick="event.stopPropagation()">
+</div>
+
+<script type="module" src="https://unpkg.com/emoji-picker-element@1"></script>
 <script type="text/javascript">
     var activeUser = "{{active}}";
+
+    // Keep the body overflow hidden even after toggleModal restores it
+    // (toggleModal in base.html sets overflow:'auto' on close — override for messenger)
+    var _basToggleModal = window.toggleModal;
+    window.toggleModal = function(id) {
+        _basToggleModal(id);
+        // After the base handler runs, always restore hidden on the messenger page
+        var modal = document.getElementById(id);
+        if (modal && modal.classList.contains('hidden')) {
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
     // Auto-scroll to bottom of chat
     window.onload = function () {
         var msgs = $('.messages-list');

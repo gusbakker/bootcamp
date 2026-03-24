@@ -25,7 +25,7 @@
                 <div class="relative group cursor-pointer block rounded-full"
                      id="avatar-upload-trigger"
                      title="{% trans 'Change profile picture' %}">
-                    <img src="{{user.get_picture}}"
+                    <img src="{{user.get_picture}}?_={% now 'U' %}"
                          class="w-[150px] h-[150px] rounded-full border-4 border-fb-lightSurface dark:border-fb-surface object-cover shadow-sm bg-white dark:bg-gray-800 group-hover:opacity-80 transition"
                          alt="{% trans 'User Image' %}">
                     <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition rounded-full">
@@ -115,10 +115,10 @@
                         {% if uploaded_picture %}
                             <form method="post" action="{% url 'users:save_uploaded_picture' %}">
                                 {% csrf_token %}
-                                <input type="hidden" id="x" name="x" />
-                                <input type="hidden" id="y" name="y" />
-                                <input type="hidden" id="w" name="w" />
-                                <input type="hidden" id="h" name="h" />
+                                <input type="hidden" id="x" name="x" value="0" />
+                                <input type="hidden" id="y" name="y" value="0" />
+                                <input type="hidden" id="w" name="w" value="200" />
+                                <input type="hidden" id="h" name="h" value="200" />
                                 <!-- Crop Modal -->
                                 <div class="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4 transition-opacity"
                                      id="crop-modal-tailwind">

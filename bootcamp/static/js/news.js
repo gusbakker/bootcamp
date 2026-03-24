@@ -101,41 +101,53 @@ $(function () {
         });
     });
 
-    // Super enhanced debugging for delete functionality
+    // Intercept delete click to show modal
     $("ul.stream").on("click", ".remove-news", function (e) {
         e.preventDefault();
 
+        // Update modal text based on whether it's a post or a comment
+        var dataType = $(this).attr("data-type") || "post";
+        if (dataType === "comment") {
+            $("#deleteModalTitle").text("Delete Comment");
+            $("#deleteModalBody").text("Are you sure you want to delete this comment? This action cannot be undone.");
+        } else {
+            $("#deleteModalTitle").text("Delete Post");
+            $("#deleteModalBody").text("Are you sure you want to delete this post? This action cannot be undone.");
+        }
+
         // Find the parent li
         var li = $(this).closest("li.infinite-item");
-
-        // Debug output for the li
-        console.log("Parent li element:", li);
-        console.log("Parent li HTML:", li.prop('outerHTML'));
 
         // Try multiple methods to get the news ID
         var news_id = li.attr("news-id");
         var data_news_id = li.data("news-id");
         var news_uuid_attr = li.attr("data-news-uuid");
 
-        console.log("All possible IDs - attr news-id:", news_id);
-        console.log("All possible IDs - data news-id:", data_news_id);
-        console.log("All possible IDs - attr data-news-uuid:", news_uuid_attr);
-
         // Use the first available ID
         var news = news_id || data_news_id || news_uuid_attr;
 
         if (!news) {
-            console.error("Could not find news ID. Please check the HTML structure.");
             alert("Error: Could not identify the post to delete.");
             return;
         }
 
-        console.log("Using news ID for deletion:", news);
+        // Store the ID in the modal and explicitly clear older pending markers
+        $("#deletePostId").val(news);
+        $("li.pending-delete").removeClass("pending-delete");
+        li.addClass("pending-delete"); // Marking it so the confirm button knows which DOM element to remove
 
-        // Ask for confirmation
-        //        if (!confirm("Are you sure you want to delete this post?")) {
-        //            return;
-        //        }
+        // Show modal gracefully
+        const modal = document.getElementById("newsDeleteModal");
+        if (modal) {
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+    });
+
+    // Handle actual deletion after confirmation
+    $("#confirmDeletePostBtn").click(function () {
+        var news = $("#deletePostId").val();
+        var li = $("li.pending-delete");
 
         $.ajax({
             url: '/news/remove/',
@@ -145,18 +157,18 @@ $(function () {
             type: 'post',
             cache: false,
             success: function (data) {
-                console.log("Delete successful:", data);
+                // Hide modal gracefully
+                const modal = document.getElementById("newsDeleteModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    modal.classList.add("hidden");
+                    document.body.style.overflow = "auto";
+                }
+
                 $(li).fadeOut(400, function () {
                     $(li).remove();
                 });
             },
             error: function (xhr, status, error) {
-                console.error("Delete failed:", status, error);
-                console.error("Response text:", xhr.responseText);
-                console.error("Status code:", xhr.status);
-                console.error("Ready state:", xhr.readyState);
-                console.error("Complete XHR object:", xhr);
-
                 alert("Error deleting post. Please try again or contact support.");
             }
         });
@@ -260,5 +272,61 @@ $(function () {
             }
         });
         return false;
+    });
+
+    // Likers Dropdown Logic
+    window.showLikers = function(newsId) {
+        const dropdown = $(`#likers-dropdown-${newsId}`);
+        const list = $(`#likers-list-${newsId}`);
+
+        if (!dropdown.hasClass('hidden')) {
+            dropdown.addClass('hidden');
+            return;
+        }
+
+        // Hide all other likers dropdowns first
+        $('.news-likers-list').parent().addClass('hidden');
+
+        $.ajax({
+            url: '/news/get-likers/',
+            data: { 'news': newsId },
+            type: 'GET',
+            cache: false,
+            beforeSend: function() {
+                list.html('<div class="p-4 flex justify-center"><div class="animate-spin rounded-full h-5 w-5 border-b-2 border-fb-primary"></div></div>');
+                dropdown.removeClass('hidden');
+            },
+            success: function(data) {
+                list.empty();
+                if (data.length > 0) {
+                    data.forEach(user => {
+                        const html = `
+                            <a href="${user.url}" class="flex items-center gap-2 p-2 hover:bg-fb-lightSurfaceHover dark:hover:bg-fb-surfaceHover rounded-lg transition text-decoration-none">
+                                <img src="${user.image}" class="w-8 h-8 rounded-full object-cover">
+                                <div class="flex flex-col min-w-0">
+                                    <span class="font-bold text-xs text-fb-lightText dark:text-fb-text truncate">${user.name}</span>
+                                    <span class="text-[10px] text-fb-lightMuted dark:text-fb-muted truncate">@${user.username}</span>
+                                </div>
+                            </a>
+                        `;
+                        list.append(html);
+                    });
+                } else {
+                    list.html('<div class="p-4 text-center text-xs text-fb-lightMuted dark:text-fb-muted">No likes yet</div>');
+                }
+            }
+        });
+    };
+
+    // Close likers dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('[id^="likers-dropdown-"]').length && !$(e.target).closest('div[onclick^="showLikers"]').length) {
+            $('[id^="likers-dropdown-"]').addClass('hidden');
+        }
+    });
+
+    // Handle comment click from summary text
+    $("ul.stream").on("click", ".comment-trigger", function() {
+        $(this).closest("li").find(".comment").trigger("click");
     });
 });

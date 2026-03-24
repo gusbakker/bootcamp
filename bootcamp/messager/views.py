@@ -20,6 +20,29 @@ class MessagesListView(LoginRequiredMixin, ListView):
     paginate_by = 50
     template_name = "messager/message_list.html"
 
+    def _annotate_grouping(self, messages):
+        """Pre-compute grouping flags for each message so the template can
+        render grouped bubbles, avatars, and timestamps correctly."""
+        msgs = list(messages)
+        # Prefetch reply_to to avoid N+1 when rendering reply previews
+        reply_ids = [m.reply_to_id for m in msgs if m.reply_to_id]
+        if reply_ids:
+            replies = {m.uuid_id: m for m in Message.objects.filter(uuid_id__in=reply_ids).select_related('sender')}
+            for m in msgs:
+                if m.reply_to_id and m.reply_to_id in replies:
+                    m.reply_to = replies[m.reply_to_id]
+        annotated = []
+        for i, msg in enumerate(msgs):
+            prev_sender = msgs[i - 1].sender_id if i > 0 else None
+            next_sender = msgs[i + 1].sender_id if i < len(msgs) - 1 else None
+            same_as_prev = msg.sender_id == prev_sender
+            same_as_next = msg.sender_id == next_sender
+            msg.is_first_in_group = not same_as_prev
+            msg.is_last_in_group = not same_as_next
+            msg.show_avatar = msg.is_last_in_group
+            annotated.append(msg)
+        return annotated
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         contact_list = self.request.user.contact_list.all().order_by("username")
@@ -32,6 +55,8 @@ class MessagesListView(LoginRequiredMixin, ListView):
             self.request.user
         )
         context["active"] = last_conversation.username
+        # Annotated messages with grouping info
+        context["grouped_messages"] = self._annotate_grouping(context["object_list"])
         return context
 
     def get_queryset(self):
@@ -67,13 +92,27 @@ def send_message(request):
     sender = request.user
     recipient_username = request.POST.get("to")
     recipient = get_user_model().objects.get(username=recipient_username)
-    message = request.POST.get("message")
-    if len(message.strip()) == 0:
+    message = request.POST.get("message", "")
+    image = request.FILES.get("image")
+    reply_to_id = request.POST.get("reply_to")
+    reply_to_msg = None
+    if reply_to_id:
+        try:
+            reply_to_msg = Message.objects.get(pk=reply_to_id)
+        except Message.DoesNotExist:
+            pass
+    if len(message.strip()) == 0 and not image:
         return HttpResponse()
 
     if sender != recipient:
-        msg = Message.send_message(sender, recipient, message)
-        return render(request, "messager/single_message.html", {"message": msg})
+        msg = Message.send_message(sender, recipient, message, image=image, reply_to=reply_to_msg)
+        return render(request, "messager/single_message.html", {
+            "message": msg,
+            "current_user": request.user,
+            "show_avatar": True,
+            "is_first_in_group": True,
+            "is_last_in_group": True,
+        })
 
     return HttpResponse()
 
@@ -90,7 +129,13 @@ def receive_message(request):
     except Message.DoesNotExist as e:
         raise e
 
-    return render(request, "messager/single_message.html", {"message": message})
+    return render(request, "messager/single_message.html", {
+        "message": message,
+        "current_user": request.user,
+        "show_avatar": True,
+        "is_first_in_group": True,
+        "is_last_in_group": True,
+    })
 
 
 @login_required
@@ -109,3 +154,69 @@ def mark_read_messages(request):
     sender = get_user_model().objects.get(username=sender_str)
     Message.objects.mark_conversation_as_read(sender, request.user)
     return JsonResponse({"mark_messages_state": "success"})
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def delete_message(request, message_id):
+    try:
+        message = Message.objects.get(pk=message_id)
+        if message.sender == request.user:
+            message.delete()
+            return JsonResponse({"status": "deleted"})
+        return JsonResponse({"status": "unauthorized"}, status=403)
+    except Message.DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def react_message(request, message_id):
+    try:
+        reaction = request.POST.get("reaction")
+        message = Message.objects.get(pk=message_id)
+        # Anyone in the conversation can react
+        if request.user in [message.sender, message.recipient]:
+            # Toggle off if the reaction is already set to the same emoji
+            if message.reaction == reaction:
+                message.reaction = ""
+            else:
+                message.reaction = reaction
+            message.save()
+            return JsonResponse({"status": "reacted", "reaction": message.reaction})
+        return JsonResponse({"status": "unauthorized"}, status=403)
+    except Message.DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def mute_conversation(request, username):
+    try:
+        target_user = get_user_model().objects.get(username=username)
+        if target_user in request.user.muted_users.all():
+            request.user.muted_users.remove(target_user)
+            muted = False
+        else:
+            request.user.muted_users.add(target_user)
+            muted = True
+        return JsonResponse({"status": "success", "muted": muted})
+    except get_user_model().DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)
+
+
+@login_required
+@ajax_required
+@require_http_methods(["POST"])
+def delete_conversation(request, username):
+    try:
+        target_user = get_user_model().objects.get(username=username)
+        # Two deletes to avoid TypeError on union() queryset
+        Message.objects.filter(sender=request.user, recipient=target_user).delete()
+        Message.objects.filter(sender=target_user, recipient=request.user).delete()
+        return JsonResponse({"status": "success"})
+    except get_user_model().DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)

@@ -30,6 +30,9 @@ class User(AbstractUser):
     pending_list = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name='my_pending_requests', blank=True
     )
+    muted_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name='muted_by', blank=True
+    )
     member_since = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
